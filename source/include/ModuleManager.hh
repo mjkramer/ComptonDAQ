@@ -3,6 +3,12 @@
 //v1290 - VME TDC
 //v1720 - VME digitizer
 
+#include <stdio.h>
+#include <cstdlib>
+#include <cstdint>  //c++11 standard
+
+using namespace std;
+
 #ifndef SOURCE_INCLUDE_MODULEMANAGER_H_
 #define SOURCE_INCLUDE_MODULEMANAGER_H_
 
@@ -19,14 +25,18 @@ class ModuleManager{
     virtual int SetOnline();
     virtual int SetOffline();
     virtual int DataReady();
-    virtual int DeleteBuffer();
-    virtual int ResetModule();
+  	virtual int DeleteBuffer();
+  	virtual int ResetModule();
     virtual int CloseConnection();
     virtual double GetModuleBuffer();
 
+   	//GetAddress()
 
-  private:
-
+  protected:
+    const int success = 1;
+    const int failure = -1;
+    int32_t handle;  //The handle that identifies the device.
+    CVAddressModifier AM = cvA32_S_DATA // default address modifier
    	};
 
 #endif //SOURCE_INCLUDE_MODULEMANAGER_H_
