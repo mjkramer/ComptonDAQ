@@ -33,7 +33,7 @@ endif
 
 #names of the targets
 OBJS = $(TEMP)/DataAcquistion.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/VisManager.o $(TEMP)/main.o
-OBJS += $(TEMP)/ModuleManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o
+OBJS += $(TEMP)/ModuleManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1720.o
 
 LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm
 
@@ -73,6 +73,10 @@ $(TEMP)/DataBlock.o: $(SRC_DIR)/DataBlock.cc
 
 #Driver files for each card
 $(TEMP)/v2718.o: $(DRIVER_DIR)/v2718.cc
+	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS)
+	@echo Compiling $<...
+
+$(TEMP)/v1720.o: $(DRIVER_DIR)/v1720.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS)
 	@echo Compiling $<...
 
