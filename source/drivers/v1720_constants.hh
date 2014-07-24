@@ -1,8 +1,9 @@
-#if !defined(SOURCE_DRIVERS_V1720_CONSTATNS_H_)
+#ifndef SOURCE_DRIVERS_V1720_CONSTATNS_H_)
 #define SOURCE_DRIVERS_V1720_CONSTATNS_H_
 
-const int aAAA = 100;
-const int BBBb = 0x7f;
+int error;
+
+#define	 v1720_ADDRESS				(unsigned int)	 0x11110000
 
 
 #endif //SOURCE_DRIVERS_V1720_CONSTATNS_H_
