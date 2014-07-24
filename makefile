@@ -7,9 +7,8 @@ $(VERBOSE).SILENT:
 #Paths for files
 SRC_DIR = source/src
 DRIVER_DIR = source/drivers
-INCLUDES = -I source/include
+INCLUDES = -I source/include -I /usr/include
 TEMP = source/temp
-
 
 # Compiler
 CC = gcc
@@ -35,13 +34,13 @@ endif
 OBJS = $(TEMP)/DataAcquistion.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/VisManager.o $(TEMP)/main.o
 OBJS += $(TEMP)/ModuleManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1720.o
 
-LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm
+LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm -lCAENDigitizer
 
 
 all: main
 
 main: $(OBJS)
-	$(CXX) -o $@ $^ $(INCLUDES) $(ROOTCFLAGS) $(ROOTLIBS) 
+	$(CXX) -o $@ $^ $(INCLUDES) $(ROOTCFLAGS) $(ROOTLIBS) $(LIBS) 
 	@echo Linking...
 	@echo DONE!
 	@echo

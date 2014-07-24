@@ -1,9 +1,13 @@
+#include <stdio.h>
+#include <CAENDigitizer.h>
+
 #include "v1720.hh"
 #include "v1720_constants.hh"
-#include <CAENDigitizer.h>
 
 
 int Module_v1720::InitializeVMEModule(){
+	int handle = 1;
+
 	printf("Initializing CAEN v1720 VME digitizer card...\n");
   	error = CAEN_DGTZ_OpenDigitizer(v1720_LinkType, v1720_LinkNum, v1720_ConetNode, v1720_BaseAddress, &handle);
   	if(error){

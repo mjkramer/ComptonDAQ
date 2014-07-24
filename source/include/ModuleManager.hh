@@ -19,8 +19,8 @@ class ModuleManager{
     virtual int SetOnline();
     virtual int SetOffline();
     virtual int DataReady();
-  	virtual int DeleteBuffer();
-  	virtual int ResetModule();
+    virtual int DeleteBuffer();
+    virtual int ResetModule();
     virtual int CloseConnection();
     virtual double GetModuleBuffer();
 
