@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "v1720.hh"
 #include "v1720_constants.hh"
 #include <CAENDigitizer.h>
