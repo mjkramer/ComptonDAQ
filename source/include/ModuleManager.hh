@@ -33,10 +33,6 @@ class ModuleManager{
    	//GetAddress()
 
   protected:
-    const int success = 1;
-    const int failure = -1;
-    int32_t handle;  //The handle that identifies the device.
-    CVAddressModifier AM = cvA32_S_DATA // default address modifier
    	};
 
 #endif //SOURCE_INCLUDE_MODULEMANAGER_H_
