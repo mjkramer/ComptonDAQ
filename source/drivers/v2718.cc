@@ -33,11 +33,11 @@ int Module_v2718:: InitializeVMEModule(){
 		return VME.failure;
 	}
 	printf("Setting transfer mode to A32 non-privileged block transfer...\n");
-	AM = cvA32_U_BLT;
+	VME.AM = cvA32_U_BLT;
 	
-	if(AM != cvA32_U_BLT){
+	if(VME.AM != cvA32_U_BLT){
 		printf("Error: Was not able to set transfer mode to A32!\n");
-	 	return failure;}
+	 	return VME.failure;}
 
 }
 
@@ -85,18 +85,20 @@ int ModuleManager::CloseConnection(){
 // the handle).
 
 void Module_v2718:: V2718_PulserConfSet(int32_t handle, int pulser, uint32_t period, uint32_t width, int pulseNo){
-    CVPulserSelect pulSel = 0;  // 0 for pulser A, 1 for pulser B
-	CVOutputSelect outSel = 0;  // the number represents the output line no.
-	CVTimeUnits unit = 0; 
+    CVPulserSelect pulSel;  // 0 for pulser A, 1 for pulser B
+	CVOutputSelect outSel_1, outSel_2;  // the number represents the output line no.
+	CVTimeUnits unit;
 	
 	switch (pulser){
 	case 0:  //Pulser A
 		pulSel = cvPulserA;
-		outSel = cvOutput0;
+		outSel_1 = cvOutput0;
+		outSel_2 = cvOutput1;
 		break;
 	case 1:  //Pulser B
 		pulSel = cvPulserB;
-		outSel = cvOutput2;
+		outSel_1 = cvOutput2;
+		outSel_2 = cvOutput3;
 		break;
 	}
 	
@@ -126,15 +128,15 @@ void Module_v2718:: V2718_PulserConfSet(int32_t handle, int pulser, uint32_t per
 	else if (width > 255)
 	    width = 255;
     
-    CAENVME_SetOutputConf(handle, outSel, cvDirect, cvActiveHigh, cvMiscSignals);
-    CAENVME_SetOutputConf(handle, outSel+1, cvDirect, cvActiveHigh, cvMiscSignals);
+    CAENVME_SetOutputConf(handle, outSel_1, cvDirect, cvActiveHigh, cvMiscSignals);
+    CAENVME_SetOutputConf(handle, outSel_2, cvDirect, cvActiveHigh, cvMiscSignals);
     CAENVME_SetPulserConf(handle, pulSel, period, width, unit, pulseNo, cvManualSW, cvManualSW);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v2718:: V2718_PulserStart(int32_t handle, int pulser){
-	CVPulserSelect pulSel = 0;
+	CVPulserSelect pulSel;
 	
 	switch (pulser){
 	case 0:  //Pulser A
@@ -150,7 +152,7 @@ void Module_v2718:: V2718_PulserStart(int32_t handle, int pulser){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v2718:: V2718_PulserStop(int32_t handle, int pulser){
-	CVPulserSelect pulSel = 0;
+	CVPulserSelect pulSel;
 	
 	switch (pulser){
 	case 0:  //Pulser A
