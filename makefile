@@ -31,7 +31,7 @@ ROOTLIBS   += -lThread
 endif
 
 #names of the targets
-OBJS = $(TEMP)/DataAcquistion.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/VisManager.o $(TEMP)/main.o
+OBJS = $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/VisManager.o $(TEMP)/main.o
 OBJS += $(TEMP)/ModuleManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1720.o
 
 LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm -lCAENDigitizer
@@ -50,7 +50,7 @@ $(TEMP)/main.o: main.cc
 	@echo Compiling $<...
 
 
-$(TEMP)/DataAcquistion.o: $(SRC_DIR)/DataAcquistion.cc
+$(TEMP)/DataAcquisition.o: $(SRC_DIR)/DataAcquisition.cc
 	$(CXX) -c $< -o $@ $(INCLUDES)
 	@echo Compiling $<...
 
