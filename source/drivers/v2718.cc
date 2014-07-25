@@ -1,43 +1,43 @@
 #include "v2718.hh"
 
-int Module_v2718:: InitializeVMEModule(){
+int Module_v2718:: InitializeVMEModule(int32_t *handle, CVAddressModifier *AM){
 	int error_code = 0;
 	short board_number = 0; 
-	int handle = 0;
+	int32_t obtain_handle = 0;
 	printf("Opening connection to VME controller.\n");
 	
-	error_code = CAENVME_Init(cvV2718, LINK, board_number, &handle);  //getting the handle
-	VME.handle = handle;
+	error_code = CAENVME_Init(cvV2718, LINK, board_number, &obtain_handle);  //getting the handle
+	*handle = obtain_handle;
 	if (error_code == cvSuccess){
 		printf("Initialization of V2718 completed successfully\n");
-		return VME.success;
+		return 1;
 	}else if (error_code == cvBusError){
 		printf("VME bus error during the cycle.\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return VME.failure;
+		return 0;
 	}else if (error_code == cvCommError){
 		printf("Communication error\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return VME.failure;
+		return 0;
 	}else if (error_code == cvGenericError){
 		printf("Encounter unspecified error\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return VME.failure;
+		return 0;
 	}else if (error_code == cvInvalidParam){
 		printf("Invalid parameter\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return VME.failure;
+		return 0;
 	}else if (error_code == cvTimeoutError){
 		printf("Timeout error\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return VME.failure;
+		return 0;
 	}
 	printf("Setting transfer mode to A32 non-privileged block transfer...\n");
-	VME.AM = cvA32_U_BLT;
+	*AM = cvA32_U_BLT;
 	
-	if(VME.AM != cvA32_U_BLT){
+	if(*AM != cvA32_U_BLT){
 		printf("Error: Was not able to set transfer mode to A32!\n");
-	 	return VME.failure;}
+	 	return 0;}
 
 }
 

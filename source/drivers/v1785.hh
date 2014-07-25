@@ -50,21 +50,21 @@ class Module_v1785: public ModuleManager{
   public:
 	int InitializeVMEModule(); //not implemented yet
 	
-	int V1785_CSR1Read(int32_t handle, uint32_t base);
-	int V1785_CSR2Read(int32_t handle, uint32_t base);
-	int V1785_BitSet2Read(int32_t handle, uint32_t base);
-	void V1785_BitSet2Set(int32_t handle, uint32_t base, uint16_t pat);  //pat is generated from V1785_ControlRegister1Read
-	void V1785_BitSet2Clear(int32_t handle, uint32_t base, uint16_t pat);
-	uint16_t V1785_ControlRegister1Read(int32_t handle, uint32_t base);
-	void V1785_ControlRegister1Write(int32_t handle, uint32_t base, uint16_t pat);
-	void V1785_OnlineSet(int32_t handle, uint32_t base);
-	void V1785_OfflineSet(int32_t handle, uint32_t base);
-	void V1785_BlkEndEnable(int32_t handle, uint32_t base);
+	int V1785_CSR1Read(int32_t handle, uint32_t base, CVAddressModifier AM);
+	int V1785_CSR2Read(int32_t handle, uint32_t base, CVAddressModifier AM);
+	int V1785_BitSet2Read(int32_t handle, uint32_t base, CVAddressModifier AM);
+	void V1785_BitSet2Set(int32_t handle, uint32_t base, uint16_t pat, CVAddressModifier AM);  //pat is generated from V1785_ControlRegister1Read
+	void V1785_BitSet2Clear(int32_t handle, uint32_t base, uint16_t pat, CVAddressModifier AM);
+	uint16_t V1785_ControlRegister1Read(int32_t handle, uint32_t base, CVAddressModifier AM);
+	void V1785_ControlRegister1Write(int32_t handle, uint32_t base, uint16_t pat, CVAddressModifier AM);
+	void V1785_OnlineSet(int32_t handle, uint32_t base, CVAddressModifier AM);
+	void V1785_OfflineSet(int32_t handle, uint32_t base, CVAddressModifier AM);
+	void V1785_BlkEndEnable(int32_t handle, uint32_t base, CVAddressModifier AM);
 	
 	
 	
-	int V1785_DataReady(int32_t handle, uint32_t base);
-	int V1785_BufferFull(int32_t handle, uint32_t base);  //checks if the buffer of the module is full and data is ready
+	int V1785_DataReady(int32_t handle, uint32_t base, CVAddressModifier AM);
+	int V1785_BufferFull(int32_t handle, uint32_t base, CVAddressModifier AM);  //checks if the buffer of the module is full and data is ready
 	
 };
 
