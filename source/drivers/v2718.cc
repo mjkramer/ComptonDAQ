@@ -1,6 +1,6 @@
 #include "v2718.hh"
 
-int Module_v2718:: InitializeVMEModule(int32_t *handle, CVAddressModifier *AM){
+int Module_v2718:: InitializeVMEModule(){
 	int error_code = 0;
 	short board_number = 0; 
 	int32_t obtain_handle = 0;
@@ -32,12 +32,6 @@ int Module_v2718:: InitializeVMEModule(int32_t *handle, CVAddressModifier *AM){
 		printf("Error: Could not open the connection to the VME controller!\n");
 		return 0;
 	}
-	printf("Setting transfer mode to A32 non-privileged block transfer...\n");
-	*AM = cvA32_U_BLT;
-	
-	if(*AM != cvA32_U_BLT){
-		printf("Error: Was not able to set transfer mode to A32!\n");
-	 	return 0;}
 
 }
 

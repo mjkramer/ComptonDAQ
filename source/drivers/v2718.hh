@@ -45,7 +45,7 @@ using namespace std;
 
 class Module_v2718: public ModuleManager{
   public:
-	int InitializeVMEModule(int32_t *handle, CVAddressModifier *AM);  //return 1 if succeed and 0 if failed
+	int InitializeVMEModule();  //return 1 if succeed and 0 if failed
 	
 	// Configuration of the pulsers.
 	// @param pulser:   0=PulserA, 1=PulserB
@@ -56,7 +56,13 @@ class Module_v2718: public ModuleManager{
 	void V2718_PulserStart(int32_t handle, int pulser);
 	void V2718_PulserStop(int32_t handle, int pulser);
     
+    int32_t *handle;
+    CVAddressModifier AM;
 
+    Module_v2718(){
+    	int32_t *handle = 0;
+    	CVAddressModifier AM = cvA32_U_BLT;  //default
+    }
 };
 
 
