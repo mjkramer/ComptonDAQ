@@ -118,7 +118,7 @@ int Module_v1785:: V1785_DataReady(int32_t handle, uint32_t base){
 	
 	status = CAENVME_ReadCycle(handle, base+V1785_CSR1_RO, &read, AM, cvD16);
     data_ready = read & 0x1;
-    return success;
+    return VME.success;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -136,9 +136,9 @@ int Module_v1785:: V1785_BufferFull(int32_t handle, uint32_t base){
 	data_ready  = return_data_ready & 0x1;
 	
 	if(data_ready && buffer_full){
-		return success;
+		return VME.success;
 	}else{
-		return failure;
+		return VME.failure;
 	}
 		
 }

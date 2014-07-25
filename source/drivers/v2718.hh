@@ -3,6 +3,8 @@
 #include "CAENVMElib.h"
 #include "ModuleManager.hh"
 
+using namespace std;
+
 #ifndef SOURCE_DRIVERS_V2718_H_
 #define SOURCE_DRIVERS_V2718_H_
 
@@ -54,8 +56,6 @@ class Module_v2718: public ModuleManager{
 	void V2718_PulserStart(int32_t handle, int pulser);
 	void V2718_PulserStop(int32_t handle, int pulser);
     
-  private:
-	uint32_t V2718_BASE = 0xA1000000;
 
 };
 

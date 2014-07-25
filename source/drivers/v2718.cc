@@ -3,32 +3,34 @@
 int Module_v2718:: InitializeVMEModule(){
 	int error_code = 0;
 	short board_number = 0; 
+	int handle = 0;
 	printf("Opening connection to VME controller.\n");
 	
-	error_code = CAENVME_Init(cvV2718, LINK, board_number, &handle);
+	error_code = CAENVME_Init(cvV2718, LINK, board_number, &handle);  //getting the handle
+	VME.handle = handle;
 	if (error_code == cvSuccess){
 		printf("Initialization of V2718 completed successfully\n");
-		return success;
+		return VME.success;
 	}else if (error_code == cvBusError){
 		printf("VME bus error during the cycle.\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return failure;
+		return VME.failure;
 	}else if (error_code == cvCommError){
 		printf("Communication error\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return failure;
+		return VME.failure;
 	}else if (error_code == cvGenericError){
 		printf("Encounter unspecified error\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return failure;
+		return VME.failure;
 	}else if (error_code == cvInvalidParam){
 		printf("Invalid parameter\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return failure;
+		return VME.failure;
 	}else if (error_code == cvTimeoutError){
 		printf("Timeout error\n");
 		printf("Error: Could not open the connection to the VME controller!\n");
-		return failure;
+		return VME.failure;
 	}
 	printf("Setting transfer mode to A32 non-privileged block transfer...\n");
 	AM = cvA32_U_BLT;

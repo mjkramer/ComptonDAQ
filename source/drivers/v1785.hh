@@ -66,8 +66,6 @@ class Module_v1785: public ModuleManager{
 	int V1785_DataReady(int32_t handle, uint32_t base);
 	int V1785_BufferFull(int32_t handle, uint32_t base);  //checks if the buffer of the module is full and data is ready
 	
-  private:
-	uint32_t V1785_BASE = 0xC1000000;
 };
 
 
