@@ -7,6 +7,14 @@ using namespace std;
 #define CAEN_VME_DEF_H_
 
 
+class CAENVME{
+  public:
+
+    int32_t handle;
+    CVAddressModifier AM;
+    
+};
+
 struct V2718{
 	static const int32_t base = 0xA1000000;
 };

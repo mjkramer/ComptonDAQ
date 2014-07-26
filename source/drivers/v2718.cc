@@ -4,12 +4,17 @@ int Module_v2718:: InitializeVMEModule(){
 	int error_code = 0;
 	short board_number = 0; 
 	int32_t obtain_handle = 0;
+	CAENVME vme;
+
 	printf("Opening connection to VME controller.\n");
 	
 	error_code = CAENVME_Init(cvV2718, LINK, board_number, &obtain_handle);  //getting the handle
-	*handle = obtain_handle;
+	vme.handle = obtain_handle;
 	if (error_code == cvSuccess){
 		printf("Initialization of V2718 completed successfully\n");
+
+		printf("Setting transfer mode to A32 non-privileged block transfer...\n");
+		vme.AM = cvA32_U_BLT;
 		return 1;
 	}else if (error_code == cvBusError){
 		printf("VME bus error during the cycle.\n");

@@ -2,6 +2,7 @@
 
 int Module_v1785:: InitializeVMEModule(){
 
+    return 1;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -111,6 +112,20 @@ void Module_v1785:: V1785_BlkEndEnable(int32_t handle, uint32_t base, CVAddressM
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void Module_v1785:: V1785_OverRangeEnable(int32_t handle, uint32_t base, CVAddressModifier AM){
+	int status = 0;  //Error code if any
+	uint16_t write = 0x08;
+
+	status = CAENVME_WriteCycle(handle, base+V1785_BIT_CLEAR2_WO, &write, AM, cvD16);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+
+
+
+
 
 
 
