@@ -6,6 +6,7 @@
 #include "ModuleManager.hh"
 #include "HistoManager.hh"
 #include "VisManager.hh"
+#include "v2718.hh"
 
 
 int main()
@@ -35,7 +36,9 @@ int main()
 
 //	if Keyboard:
 //		daq.end()
-
+	Module_v2718 *v2718 = new Module_v2718();
+	v2718->InitializeVMEModule();
+	std::cout << "Working" <<endl;
 
   std::cout << "Hello World!\n";
 
