@@ -7,7 +7,7 @@ using namespace std;
 #define CAEN_VME_DEF_H_
 
 
-class CAENVME{
+class CAEN{
   public:
 
     int32_t handle;

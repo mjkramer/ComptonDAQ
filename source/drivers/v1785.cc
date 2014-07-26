@@ -1,7 +1,12 @@
 #include "v1785.hh"
 
 int Module_v1785:: InitializeVMEModule(){
+    int32_t handle;
+    CVAddressModifier AM;
 
+    CAEN vme;
+    handle = vme.handle;
+    AM = vme.AM;
     return 1;
 }
 
@@ -122,9 +127,14 @@ void Module_v1785:: V1785_OverRangeEnable(int32_t handle, uint32_t base, CVAddre
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+void V1785_OverRangeDisable(int32_t handle, uint32_t base, CVAddressModifier AM){
+	int status = 0;  //Error code if any
+	uint16_t write = 0x08;
 
+	status = CAENVME_WriteCycle(handle, base+V1785_BIT_SET2_RW, &write, AM, cvD16);
+}
 
-
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
 

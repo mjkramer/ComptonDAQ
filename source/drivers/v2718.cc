@@ -4,7 +4,7 @@ int Module_v2718:: InitializeVMEModule(){
 	int error_code = 0;
 	short board_number = 0; 
 	int32_t obtain_handle = 0;
-	CAENVME vme;
+	CAEN vme;
 
 	printf("Opening connection to VME controller.\n");
 	
