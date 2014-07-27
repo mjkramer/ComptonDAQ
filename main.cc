@@ -5,7 +5,7 @@
 #include "DataAcquisition.hh"
 #include "ModuleManager.hh"
 #include "HistoManager.hh"
-#include "VisManager.hh"
+#include "UiManager.hh"
 #include "v2718.hh"
 
 
@@ -24,7 +24,7 @@ int main()
   histo->Save();
 //	daq->Add(histo);
 
-	VisManager *vis = new VisManager();
+	UiManager *vis = new UiManager();
 //	daq->Add(vis);
 
 //	daq.initialize();

@@ -31,7 +31,7 @@ ROOTLIBS   += -lThread
 endif
 
 #names of the targets
-OBJS = $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/VisManager.o $(TEMP)/main.o
+OBJS = $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/UiManager.o $(TEMP)/main.o
 OBJS += $(TEMP)/ModuleManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1720.o $(TEMP)/v1785.o
 
 LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm -lCAENDigitizer
@@ -62,7 +62,7 @@ $(TEMP)/ModuleManager.o: $(SRC_DIR)/ModuleManager.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
 	@echo Compiling $<...
 
-$(TEMP)/VisManager.o: $(SRC_DIR)/VisManager.cc
+$(TEMP)/UiManager.o: $(SRC_DIR)/UiManager.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
 	@echo Compiling $<...
 
@@ -78,7 +78,7 @@ $(TEMP)/v2718.o: $(DRIVER_DIR)/v2718.cc
 $(TEMP)/v1720.o: $(DRIVER_DIR)/v1720.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
 	@echo Compiling $<...
-	
+
 $(TEMP)/v1785.o: $(DRIVER_DIR)/v1785.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
 	@echo Compiling $<...

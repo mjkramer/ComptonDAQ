@@ -1,16 +1,16 @@
 
-#include "VisManager.hh"
+#include "UiManager.hh"
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-VisManager::VisManager(){ 
+UiManager::UiManager(){ 
 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-VisManager::~VisManager(){ 
+UiManager::~UiManager(){ 
 
 }
 

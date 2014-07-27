@@ -1,7 +1,7 @@
-class VisManager{
+class UiManager{
   
   public:
-    VisManager();
-    ~VisManager();
+    UiManager();
+    ~UiManager();
 
    	};
