@@ -1,7 +1,9 @@
 #include  <stdlib.h>
 #include  <stdint.h>
 #include "CAENVMElib.h"
-#include "ModuleManager.hh"
+#include "CAEN_VME_def.hh"
+
+using namespace std;
 
 #ifndef SOURCE_DRIVERS_V1785_H_
 #define SOURCE_DRIVERS_V1785_H_
@@ -46,7 +48,7 @@
 #define  V1785_THRES_BASE         (uint32_t) (0x1080)  
 
 
-class Module_v1785: public ModuleManager{
+class Module_v1785: public CAEN{
   public:
 	int InitializeVMEModule(); //not implemented yet
 	
@@ -60,6 +62,8 @@ class Module_v1785: public ModuleManager{
 	void V1785_OnlineSet(int32_t handle, uint32_t base, CVAddressModifier AM);
 	void V1785_OfflineSet(int32_t handle, uint32_t base, CVAddressModifier AM);
 	void V1785_BlkEndEnable(int32_t handle, uint32_t base, CVAddressModifier AM);
+	void V1785_OverRangeEnable(int32_t handle, uint32_t base, CVAddressModifier AM);
+	void V1785_OverRangeDisable(int32_t handle, uint32_t base, CVAddressModifier AM);
 	
 	
 	

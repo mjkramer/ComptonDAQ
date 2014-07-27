@@ -1,7 +1,7 @@
 #include  <stdlib.h>
 #include  <stdint.h>
 #include "CAENVMElib.h"
-#include "ModuleManager.hh"
+#include "CAEN_VME_def.hh"
 
 using namespace std;
 
@@ -43,9 +43,9 @@ using namespace std;
 #define  V2718_LM_C_RW            (uint32_t) (0x002C)
 #define	 LINK					  (short)	 3
 
-class Module_v2718: public ModuleManager{
+class Module_v2718: public CAEN{
   public:
-	int InitializeVMEModule();  //return 1 if succeed and 0 if failed
+	int InitializeVMEModule();  // Return 1 if succeed and 0 if failed
 	
 	// Configuration of the pulsers.
 	// @param pulser:   0=PulserA, 1=PulserB
@@ -56,13 +56,6 @@ class Module_v2718: public ModuleManager{
 	void V2718_PulserStart(int32_t handle, int pulser);
 	void V2718_PulserStop(int32_t handle, int pulser);
     
-    int32_t *handle;
-    CVAddressModifier AM;
-
-    Module_v2718(){
-    	int32_t *handle = 0;
-    	CVAddressModifier AM = cvA32_U_BLT;  //default
-    }
 };
 
 
