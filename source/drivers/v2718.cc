@@ -1,46 +1,34 @@
 #include "v2718.hh"
 
 int Module_v2718:: InitializeVMEModule(){
-	int error_code = 0;
+	CVErrorCodes error_code;
 	short board_number = 0; 
-	int32_t obtain_handle = 0;
-	CAEN vme;
+	int error_status = 1;  //1 for success, 0 for failure
+	int32_t handle = 0;
+	// CAEN vme;
 
 	printf("Opening connection to VME controller.\n");
 	
-	error_code = CAENVME_Init(cvV2718, LINK, board_number, &obtain_handle);  //getting the handle
-	vme.handle = obtain_handle;
-	if (error_code == cvSuccess){
-		printf("Initialization of V2718 completed successfully\n");
+	error_code = CAENVME_Init(cvV2718, LINK, board_number, &handle);  //getting the handle
+	CAEN::handle = handle;
+    error_status = CAEN::ErrorDecode(error_code);
 
-		printf("Setting transfer mode to A32 non-privileged block transfer...\n");
-		vme.AM = cvA32_U_BLT;
-		return 1;
-	}else if (error_code == cvBusError){
-		printf("VME bus error during the cycle.\n");
-		printf("Error: Could not open the connection to the VME controller!\n");
-		return 0;
-	}else if (error_code == cvCommError){
-		printf("Communication error\n");
-		printf("Error: Could not open the connection to the VME controller!\n");
-		return 0;
-	}else if (error_code == cvGenericError){
-		printf("Encounter unspecified error\n");
-		printf("Error: Could not open the connection to the VME controller!\n");
-		return 0;
-	}else if (error_code == cvInvalidParam){
-		printf("Invalid parameter\n");
-		printf("Error: Could not open the connection to the VME controller!\n");
-		return 0;
-	}else if (error_code == cvTimeoutError){
-		printf("Timeout error\n");
-		printf("Error: Could not open the connection to the VME controller!\n");
-		return 0;
-	}
+    if (error_status == 1){
+	    printf("Initialization of V2718 completed successfully\n");
+
+	    printf("Setting transfer mode to A32 non-privileged block transfer...\n");
+	    CAEN::AM = cvA32_U_BLT;
+	    return 1;
+    }else{
+    	printf("Failed to initialize the V2718 controller!\n");
+    	return 0;
+    }
+
 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 
 /* Standard fuctions:
 

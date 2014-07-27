@@ -1,7 +1,7 @@
 #include  <stdlib.h>
 #include  <stdint.h>
 #include "CAENVMElib.h"
-#include "ModuleManager.hh"
+#include "CAEN_VME_def.hh"
 
 using namespace std;
 
@@ -48,7 +48,7 @@ using namespace std;
 #define  V1785_THRES_BASE         (uint32_t) (0x1080)  
 
 
-class Module_v1785: public ModuleManager{
+class Module_v1785: public CAEN{
   public:
 	int InitializeVMEModule(); //not implemented yet
 	

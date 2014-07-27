@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <cstdlib>
 #include <cstdint>  //c++11 standard
-#include "CAEN_VME_def.hh"
 
 
 using namespace std;

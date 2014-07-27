@@ -1,7 +1,7 @@
 #include  <stdlib.h>
 #include  <stdint.h>
 #include "CAENVMElib.h"
-#include "ModuleManager.hh"
+#include "CAEN_VME_def.hh"
 
 using namespace std;
 
@@ -43,7 +43,7 @@ using namespace std;
 #define  V2718_LM_C_RW            (uint32_t) (0x002C)
 #define	 LINK					  (short)	 3
 
-class Module_v2718: public ModuleManager{
+class Module_v2718: public CAEN{
   public:
 	int InitializeVMEModule();  // Return 1 if succeed and 0 if failed
 	
