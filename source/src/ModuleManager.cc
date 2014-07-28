@@ -17,7 +17,7 @@ ModuleManager::~ModuleManager(){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
-int ModuleManager::InitializeVMEModule(){
+int ModuleManager::InitializeVMEModule(VME_INTERFACE *vme){
 	return 1;
 }
 
