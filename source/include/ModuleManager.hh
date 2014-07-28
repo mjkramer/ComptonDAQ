@@ -3,7 +3,7 @@
 //v1290 - VME TDC
 //v1720 - VME digitizer
 
-#include <cstdio>
+#include <stdio.h>
 #include <cstdlib>
 #include <cstdint>  //c++11 standard
 
@@ -13,10 +13,6 @@ using namespace std;
 #ifndef SOURCE_INCLUDE_MODULEMANAGER_H_
 #define SOURCE_INCLUDE_MODULEMANAGER_H_
 
-typedef struct{
-	int32_t handle;
-
-} VME_INTERFACE;
 
 class ModuleManager{
   
@@ -26,7 +22,7 @@ class ModuleManager{
 
 
     //return 1 on success and 0 on failure
-    virtual int InitializeVMEModule(VME_INTERFACE *vme);
+    virtual int InitializeVMEModule();
     virtual int SetOnline();
     virtual int SetOffline();
     virtual int DataReady();
@@ -39,7 +35,5 @@ class ModuleManager{
 
   protected:
    	};
-
-
 
 #endif //SOURCE_INCLUDE_MODULEMANAGER_H_

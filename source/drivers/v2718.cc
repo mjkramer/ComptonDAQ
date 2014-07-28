@@ -1,37 +1,34 @@
 #include "v2718.hh"
 
-
-int Module_v2718:: InitializeVMEModule(VME_INTERFACE *vme){
-	CAEN caen;
-	short board_number = 0;
+int Module_v2718:: InitializeVMEModule(){
 	CVErrorCodes error_code;
-	int error_status = 1;
-	int32_t Handle = 5000;
+	short board_number = 0; 
+	int error_status = 1;  //1 for success, 0 for failure
+	int32_t handle = 0;
+	// CAEN vme;
 
-	printf("***************************************************\n");
-	printf("*    Initializing CAEN V1785 Peak ADC...          *\n");
-	printf("***************************************************\n\n\n");
-
-	error_code = CAENVME_Init(cvV2718, LINK, board_number, &Handle);
-
-	vme->handle = Handle;  //passing the handle to the struct
-
-	error_status = caen.ErrorDecode(error_code);
-
-
+	printf("Opening connection to VME controller.\n");
+	
+	error_code = CAENVME_Init(cvV2718, LINK, board_number, &handle);  //getting the handle
+	CAEN::handle = handle;
+    error_status = CAEN::ErrorDecode(error_code);
 
     if (error_status == 1){
-	    printf("Initialization of V2718 completed successfully\n\n");
+	    printf("Initialization of V2718 completed successfully\n");
+
+	    printf("Setting transfer mode to A32 non-privileged block transfer...\n");
+	    CAEN::AM = cvA32_U_BLT;
 	    return 1;
     }else{
     	printf("Failed to initialize the V2718 controller!\n");
     	return 0;
     }
 
+
 }
 
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 
 /* Standard fuctions:
 
@@ -155,7 +152,7 @@ void Module_v2718:: V2718_PulserStop(int32_t handle, int pulser){
 	CAENVME_StopPulser(handle, pulSel);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 
 
 
