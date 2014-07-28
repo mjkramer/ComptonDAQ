@@ -11,7 +11,7 @@
 
 int main()
 {
-
+    VME_INTERFACE *caen;
 
 	DataAcquisition *daq = new DataAcquisition();
 
@@ -37,7 +37,9 @@ int main()
 //	if Keyboard:
 //		daq.end()
 	Module_v2718 *v2718 = new Module_v2718();
-	v2718->InitializeVMEModule();
+	Module_v1785 *v1785 = new Module_v1785();
+	v2718->InitializeVMEModule(&caen);
+	v1785->InitializeVMEModule(&caen);
 	std::cout << "Working" <<endl;
 
   std::cout << "Hello World!\n";

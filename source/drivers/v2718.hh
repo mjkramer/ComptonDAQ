@@ -2,12 +2,12 @@
 #include  <stdint.h>
 #include "CAENVMElib.h"
 #include "CAEN_VME_def.hh"
+#include "ModuleManager.hh"
 
 using namespace std;
 
 #ifndef SOURCE_DRIVERS_V2718_H_
 #define SOURCE_DRIVERS_V2718_H_
-
 
 
 #define  V2718_STATUS_RO          (uint32_t) (0x0000)
@@ -43,10 +43,11 @@ using namespace std;
 #define  V2718_LM_C_RW            (uint32_t) (0x002C)
 #define	 LINK					  (short)	 3
 
-class Module_v2718: public CAEN{
+class Module_v2718: public ModuleManager{
+
   public:
-	int InitializeVMEModule();  // Return 1 if succeed and 0 if failed
-	
+	int InitializeVMEModule(VME_INTERFACE *vme);  // Return 1 if succeed and 0 if failed
+
 	// Configuration of the pulsers.
 	// @param pulser:   0=PulserA, 1=PulserB
 	// @param period:   period in ns
@@ -56,6 +57,8 @@ class Module_v2718: public CAEN{
 	void V2718_PulserStart(int32_t handle, int pulser);
 	void V2718_PulserStop(int32_t handle, int pulser);
     
+
+
 };
 
 
