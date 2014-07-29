@@ -32,7 +32,7 @@ endif
 
 #names of the targets
 OBJS = $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/UiManager.o $(TEMP)/main.o
-OBJS += $(TEMP)/ModuleManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1720.o $(TEMP)/v1785.o
+OBJS += $(TEMP)/ModuleManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1720.o $(TEMP)/v1785.o $(TEMP)/v1290N.o
 
 LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm -lCAENDigitizer
 
@@ -83,6 +83,9 @@ $(TEMP)/v1785.o: $(DRIVER_DIR)/v1785.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
 	@echo Compiling $<...
 
+$(TEMP)/v1290N.o: $(DRIVER_DIR)/v1290N.cc
+	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
+	@echo Compiling $<...
 
 .PHONY: clean
 clean:

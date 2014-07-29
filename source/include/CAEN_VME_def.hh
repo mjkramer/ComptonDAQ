@@ -130,6 +130,11 @@ struct V1785{
                                                       // Check the compatibility before changing it!
 };
 
+struct V1290N{
+	static const int32_t base = 0xD1000000;
+	static const CVAddressModifier am = cvA32_S_DATA;
+};
+
 
 
 
