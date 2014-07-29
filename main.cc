@@ -5,7 +5,7 @@
 #include "DataAcquisition.hh"
 #include "ModuleManager.hh"
 #include "HistoManager.hh"
-#include "VisManager.hh"
+#include "UiManager.hh"
 #include "v2718.hh"
 #include "v1785.hh"
 
@@ -21,11 +21,11 @@ int main()
 //	daq->Add(module);
 
 	HistoManager *histo = new HistoManager();
-  histo->Book();
-  histo->Save();
+    histo->Book();
+    histo->Save();
 //	daq->Add(histo);
 
-	VisManager *vis = new VisManager();
+	UiManager *vis = new UiManager();
 //	daq->Add(vis);
 
 //	daq.initialize();
@@ -44,13 +44,15 @@ int main()
 	Module_v1785 *v1785 = new Module_v1785();
 	v1785->InitializeVMEModule(&caen);
 
-  std::cout << "Hello World!\n";
+    std::cout << "Hello World!\n";
 
 
   delete daq;
   delete module;
   delete histo;
   delete vis;
+  delete v1785;
+  delete v2718;
 
 
   return 1;
