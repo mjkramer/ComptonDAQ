@@ -220,7 +220,7 @@ int  Module_v1290N::v1290N_MicroWrite(int32_t handle, uint32_t base, uint16_t da
 			error_code = CAENVME_WriteCycle(handle, base+V1290N_MICRO_RW, &write, AM, cvD16);
 			return 1;
 		}
-		udelay(500);
+		usleep(500);
 	}
 	
 	printf("v1290N_MicroWrite: Micro not ready for writing!\n");
@@ -244,7 +244,7 @@ int  Module_v1290N::v1290N_MicroRead(int32_t handle, const uint32_t base, CVAddr
 			error_code = CAENVME_ReadCycle(handle, base+V1290N_MICRO_RW, &reg, AM, cvD16);
 			return reg;
 		}
-		udelay(500);
+		usleep(500);
 	}
 	return -1;
 }
@@ -440,7 +440,7 @@ int  Module_v1290N::v1290N_Status(int32_t handle, uint32_t base, CVAddressModifi
 	
 	//-------------------------------------------------
 	printf("\n");
-	printf("V1290N TDC at VME A24 0x%06x:\n", base);
+	printf("V1290N TDC at VME A32 0x%06x:\n", base);
 	printf("\n--- Trigger Section [0x1600]:\n");
 	code = 0x1600;
 	if ((value = v1290N_MicroWrite(handle, base, code, AM)) < 0)
