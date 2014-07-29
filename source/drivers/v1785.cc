@@ -4,7 +4,8 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
-
+	
+    printf("\n\n\n");
 	printf("***************************************************\n");
 	printf("*    Initializing CAEN V1785 Peak ADC...          *\n");
 	printf("***************************************************\n\n\n");

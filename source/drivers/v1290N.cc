@@ -2,8 +2,10 @@
 
 int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
 	
+	printf("\n\n\n");
+	
 	printf("***************************************************\n");
-	printf("*    Initializing CAEN V1785 Peak ADC...          *\n");
+	printf("*    Initializing CAEN V1290N Peak ADC...          *\n");
 	printf("***************************************************\n\n\n");
 
 	int32_t Handle;
