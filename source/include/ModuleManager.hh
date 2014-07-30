@@ -1,7 +1,7 @@
 //v2718 - VME controller
 //v1785 - VME peak sensing ADC
 //v1290 - VME TDC
-//v1720 - VME digitizer
+//v1731 - VME digitizer
 
 #include <cstdio>
 #include <cstdlib>
@@ -33,7 +33,7 @@ class ModuleManager{
   	virtual int DeleteBuffer();
   	virtual int ResetModule();
     virtual int CloseConnection();
-    virtual double GetModuleBuffer();
+    virtual double GetModuleBuffer(VME_INTERFACE *vme);
 
    	//GetAddress()
 

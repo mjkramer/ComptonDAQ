@@ -1,5 +1,6 @@
 #include <cstdint>
 #include "CAENVMElib.h"
+#include "CAENDigitizer.h"
 
 
 using namespace std;
@@ -116,23 +117,204 @@ class CAEN{
 		printf(" mode\n");
 	}
 	
+	int ErrorDecode_DGTZ(CAEN_DGTZ_ErrorCode error_code){
+		int err = 0;  // 1 for success, 0 for failure
+		
+		switch(error_code){
+		    case CAEN_DGTZ_Success:  //success
+		    	printf("Operation completed successfully\n");
+		    	err = 1;
+		    	break;
+		    	
+		    case CAEN_DGTZ_CommError:
+		    	printf("Communication error\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_GenericError:
+		        printf("Unspecified error\n");
+		        err = 0;
+		        break;
+		        
+		    case CAEN_DGTZ_InvalidParam:
+		    	printf("Invalid parameter\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_InvalidLinkType:
+		    	printf("Invalid Link Type\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_InvalidHandle:
+		    	printf("Invalid device handle\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_MaxDevicesError:
+		    	printf("Maximum number of devices exceeded\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_BadBoardType:
+		    	printf("The operation is not allowed on this type of board\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_BadInterruptLev:
+		    	printf("The interrupt level is not allowed\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_BadEventNumber:
+		    	printf("The event number is bad\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_ReadDeviceRegisterFail:
+		        printf("Unable to read the registry\n");
+		        err = 0;
+		        break;
+		        
+		    case CAEN_DGTZ_WriteDeviceRegisterFail:
+		    	printf("Unable to write into the registry\n");
+		    	err = 0;
+		        break;
+		        
+		    case CAEN_DGTZ_InvalidChannelNumber:
+		    	printf("The channel number is invalid\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_ChannelBusy:
+		        printf("The Channel is busy\n");
+		        err = 0;
+		        break;
+		        
+		    case CAEN_DGTZ_FPIOModeInvalid:
+		    	printf("Invalid FPIO Mode\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_WrongAcqMode:
+		        printf("Wrong acquisition mode\n");
+		        err = 0;
+		        break;
+		        
+		    case CAEN_DGTZ_FunctionNotAllowed:
+		        printf("This function is not allowed for this module\n");
+		        err = 0;
+		        break;
+		        
+		    case CAEN_DGTZ_Timeout:
+		    	printf("Communication Timeout\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_InvalidBuffer:
+		    	printf("The buffer is invalid\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_EventNotFound:
+		    	printf("The event is not found\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_InvalidEvent:
+		    	printf("The event is invalid\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_OutOfMemory:
+		    	printf("Out of memory\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_CalibrationError:
+		        printf("Unable to calibrate the board\n");
+		        err = 0;
+		        break;
+		        
+		    case CAEN_DGTZ_DigitizerNotFound:
+		        printf("Unable to open the digitizer\n");
+		        err = 0;
+		        break;
+		        
+		    case CAEN_DGTZ_DigitizerAlreadyOpen:
+		    	printf("The Digitizer is already open\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_DigitizerNotReady:
+		    	printf("The Digitizer is not ready to operate\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_InterruptNotConfigured:
+		    	printf("The Digitizer has not the IRQ configured\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_DigitizerMemoryCorrupted:
+		    	printf("The digitizer flash memory is corrupted\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_DPPFirmwareNotSupported:
+		    	printf("CAEN_DGTZ_DPPFirmwareNotSupported\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_InvalidLicense:
+		    	printf("Invalid Firmware License\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_InvalidDigitizerStatus:
+		    	printf("The digitizer is found in a corrupted status\n");
+		    	err = 0;
+		    	break;
+		    	
+		    case CAEN_DGTZ_NotYetImplemented:
+		    	printf("The function is not yet implemented\n");
+		    	err = 0;
+		    	break;
+		    	
+		    default:
+		    	printf("Unknown DGTZ error code");
+		        err = 0;    
+		}
+		return err;
+	}
+	
 
 };
 
 
 struct V2718{
-	static const int32_t base = 0xA1000000;
+	static const uint32_t base                       = 0xA1000000;
 };
 
 struct V1785{  
-	static const int32_t base = 0xC1000000;
-	static const CVAddressModifier am = cvA32_S_DATA;  // A32 supervisory data access.
-                                                      // Check the compatibility before changing it!
+	static const uint32_t base                       = 0xC1000000;
+	static const CVAddressModifier am               = cvA32_S_DATA;  // A32 supervisory data access.
+                                                                     // Check the compatibility before changing it!
 };
 
 struct V1290N{
-	static const int32_t base = 0xD1000000;
-	static const CVAddressModifier am = cvA32_S_DATA;
+	static const uint32_t base                       = 0xD1000000;
+	static const CVAddressModifier am               = cvA32_S_DATA;
+};
+
+struct V1731{
+	static const uint32_t base                      = 0x11110000;
+	static const int LinkNum                        = 3;
+	static const int ConetNode                      = 0;
+	static const CVAddressModifier am               = cvA32_S_DATA;
+	
+	static const CAEN_DGTZ_ConnectionType LinkType  = CAEN_DGTZ_OpticalLink;
+
 };
 
 

@@ -9,6 +9,7 @@
 #include "v2718.hh"
 #include "v1785.hh"
 #include "v1290N.hh"
+#include "v1731.hh"
 
 
 int main()
@@ -40,13 +41,17 @@ int main()
 //		daq.end()
 	Module_v2718 *v2718 = new Module_v2718();
 	v2718->InitializeVMEModule(&caen);
-	std::cout << "Working" <<endl;
 
 	Module_v1785 *v1785 = new Module_v1785();
 	v1785->InitializeVMEModule(&caen);
 	
 	Module_v1290N *v1290N = new Module_v1290N();
 	v1290N->InitializeVMEModule(&caen);
+	
+	Module_v1731 *v1731 = new Module_v1731();
+	v1731->InitializeVMEModule(&caen);
+	
+	std::cout << "Working" <<endl;
 
     std::cout << "Hello World!\n";
 

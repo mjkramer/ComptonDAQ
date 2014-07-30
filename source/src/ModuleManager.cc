@@ -41,7 +41,7 @@ int ModuleManager::ResetModule(){
 	return 1;
 }
 
-double ModuleManager::GetModuleBuffer(){
+double ModuleManager::GetModuleBuffer(VME_INTERFACE *vme){
 	return 1.0;
 }
 
