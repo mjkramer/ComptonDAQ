@@ -31,10 +31,6 @@ int Module_v1720::InitializeVMEModule(VME_INTERFACE *vme){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-double ModuleManager::GetModuleBuffer(){
-	return 1.0;
-}
-
 
 /* Standard fuctions:
 

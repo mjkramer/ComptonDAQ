@@ -31,7 +31,54 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){
+double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
+	
+	CVErrorCodes error_code;
+	V1731 v1731;
+	CVAddressModifier AM;
+	uint32_t base;
+	
+	int32_t Handle = vme->handle;
+	
+	AM = v1731.am;
+	base = v1731.base;
+	
+	CAEN caen;
+	
+	printf("Press [s] to start acquistion and [q] to stop.");
+	int c;
+	
+	do {
+		c = getchar();
+	}while (c != 's');
+	
+	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x4, AM);  //start acquisition
+	
+	uint32_t event[2000];
+	
+	printf("Size of the event: %d\n", event[0]);
+	printf("Board ID         : %d\n", event[1]);
+	printf("Event counter    : %d\n", event[2]);
+	printf("Trigger Time Tag : %d\n", event[3]);
+	
+	do {
+		v1731_RegisterWrite(Handle, base, 0x8108, 1, AM);
+	    error_code = CAENVME_ReadCycle(Handle, base, &event, AM, cvD32);
+	    
+		for (int i=0; i<1024;i++){
+			printf("Data             : %d\n", event[i+4]);
+		}
+		printf("\n\n\n");
+		printf("------------------------------------");
+		printf("\n\n\n");
+		v1731_RegisterWrite(Handle, base, V1731_SW_CLEAR, 1, AM);
+		c = getchar();
+		
+	}while (c != 'q');
+	
+	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0, AM);  //stop
+	v1731_RegisterWrite(Handle, base, V1731_SW_CLEAR, 1, AM);  //clear memory
+	
 	return 1.0;
 }
 
@@ -88,12 +135,14 @@ uint32_t Module_v1731::v1731_RegisterRead(int32_t handle, uint32_t base, int off
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x8010
 uint32_t Module_v1731::v1731_BufferFreeRead(int32_t handle, uint32_t base, CVAddressModifier AM){
 	  return v1731_RegisterRead(handle, base, V1731_BUFFER_FREE, AM);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x1n94
 uint32_t Module_v1731::v1731_BufferOccupancy(int32_t handle, uint32_t base, uint32_t channel, CVAddressModifier AM){
 	uint32_t reg;
 	reg = V1731_BUFFER_OCCUPANCY + (channel<<16);
@@ -102,6 +151,7 @@ uint32_t Module_v1731::v1731_BufferOccupancy(int32_t handle, uint32_t base, uint
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x8010
 uint32_t Module_v1731::v1731_BufferFree(int32_t handle, uint32_t base, int nbuffer, CVAddressModifier AM){
 	int mode;
 	
@@ -118,7 +168,7 @@ uint32_t Module_v1731::v1731_BufferFree(int32_t handle, uint32_t base, int nbuff
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
-
+// 0x8100
 void     Module_v1731::v1731_AcqCtl(int32_t handle, uint32_t base, uint32_t operation, CVAddressModifier AM){
 	uint32_t reg;
 	
@@ -180,23 +230,35 @@ void     Module_v1731::v1731_RegisterWrite(int32_t handle, uint32_t base, int of
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0xEF24
 void     Module_v1731::v1731_Reset(int32_t handle, uint32_t base, CVAddressModifier AM){
 	v1731_RegisterWrite(handle, base, V1731_SW_RESET, 0, AM);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0xEF08, 0x8140, 0x8104
 void     Module_v1731::v1731_Status(int32_t handle, uint32_t base, CVAddressModifier AM){
 	printf("================================================\n");
 	printf("V1731 at A32 0x%x\n", (int)base);
 	printf("Board ID             : 0x%x\n", v1731_RegisterRead(handle, base, V1731_BOARD_ID, AM));
 	printf("Board Info           : 0x%x\n", v1731_RegisterRead(handle, base, V1731_BOARD_INFO, AM));
 	printf("Acquisition status   : 0x%8.8x\n", v1731_RegisterRead(handle, base, V1731_ACQUISITION_STATUS, AM));
+	
+	int buffer_organization_output = v1731_RegisterRead(handle, base, V1731_BUFFER_ORGANIZATION, AM);
+	int block_nr = 1;
+	if (buffer_organization_output != 0){
+		for (int i=1; i<=buffer_organization_output; i++){
+			block_nr = block_nr * 2;
+		}
+	}
+	printf("Block number         : %d\n", block_nr);
 	printf("================================================\n");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+// 0x800C, 0x810C, 0x8120, 0x8114, 0x8100
 int      Module_v1731::v1731_Setup(int32_t handle, uint32_t base, int mode, CVAddressModifier AM){
 	
 	switch (mode) {
@@ -208,8 +270,17 @@ int      Module_v1731::v1731_Setup(int32_t handle, uint32_t base, int mode, CVAd
 	    printf("--------------------------------------------\n");
 	    printf("Trigger from FP, 8ch, 1Ks, postTrigger 800\n");
 	    printf("--------------------------------------------\n");
-	    v1731_RegisterWrite(handle, base, V1731_BUFFER_ORGANIZATION,  0x0A, AM);    // 1K buffer
-	    v1731_RegisterWrite(handle, base, V1731_TRIG_SRCE_EN_MASK,    0x4000, AM);  // External Trigger
+	    
+	    // This register bits [3:0] set the number of buffer blocks which
+	    // equals 2^(code). Eg. when buffer code == 0x0A, number == 2^10 == 1024.
+	    v1731_RegisterWrite(handle, base, V1731_BUFFER_ORGANIZATION,  0x0A, AM);    // 1024 buffer
+	    
+	    // This register bits [0,7] enable the channels to generate a local trigger
+	    // when the signal exceeds the threshold which is set by bits [26:24].
+	    // Bit 0 set channel 0 and so on.
+	    // Bit 30 enables the board to sense TRG-IN signals, while
+	    // bit 31 enables the board to sense software trigger
+	    v1731_RegisterWrite(handle, base, V1731_TRIG_SRCE_EN_MASK,    0x4000, AM);  // 0x4000 for External Trigger
 	    v1731_RegisterWrite(handle, base, V1731_CHANNEL_EN_MASK,      0xFF, AM);    // 8ch enable
 	    v1731_RegisterWrite(handle, base, V1731_POST_TRIGGER_SETTING, 800, AM);     // PreTrigger (1K-800)
 	    v1731_RegisterWrite(handle, base, V1731_ACQUISITION_CONTROL,   0x00, AM);   // Reset Acq Control
@@ -232,6 +303,7 @@ int      Module_v1731::v1731_Setup(int32_t handle, uint32_t base, int mode, CVAd
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+// 0x800C, 0x8120
 void     Module_v1731::v1731_info(int32_t handle, uint32_t base, int *nchannels, uint32_t *n32word, CVAddressModifier AM){
 	int i, chanmask;
 	// Evaluate the event size
@@ -258,6 +330,7 @@ void     Module_v1731::v1731_info(int32_t handle, uint32_t base, int *nchannels,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+// 0x0000
 uint32_t Module_v1731::v1731_DataRead(int32_t handle, uint32_t base, uint32_t *pdata, uint32_t n32w, CVAddressModifier AM){
 	uint32_t i;
 	
@@ -290,6 +363,7 @@ uint32_t Module_v1731::v1731_DataBlockRead(int32_t handle, uint32_t base, uint32
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x1n80
 void     Module_v1731::v1731_ChannelThresholdSet(int32_t handle, uint32_t base, uint32_t channel, uint32_t threshold, CVAddressModifier AM){
 	uint32_t reg;
 	reg = V1731_CHANNEL_THRESHOLD | (channel << 8);
@@ -299,6 +373,7 @@ void     Module_v1731::v1731_ChannelThresholdSet(int32_t handle, uint32_t base, 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x1n84
 void     Module_v1731::v1731_ChannelOUThresholdSet(int32_t handle, uint32_t base, uint32_t channel, uint32_t threshold, CVAddressModifier AM){
 	uint32_t reg;
 	reg = V1731_CHANNEL_OUTHRESHOLD | (channel << 8);
@@ -309,6 +384,7 @@ void     Module_v1731::v1731_ChannelOUThresholdSet(int32_t handle, uint32_t base
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x1n98
 void     Module_v1731::v1731_ChannelDACSet(int32_t handle, uint32_t base, uint32_t channel, uint32_t dac, CVAddressModifier AM){
 	uint32_t reg;
 	reg = V1731_CHANNEL_DAC | (channel << 8);
@@ -331,6 +407,7 @@ int      Module_v1731::v1731_ChannelDACGet(int32_t handle, uint32_t base, uint32
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x1n80, 0x1n84, 0x1n98
 void     Module_v1731::v1731_ChannelSet(int32_t handle, uint32_t base, uint32_t channel, uint32_t what, uint32_t that, CVAddressModifier AM){
 	uint32_t reg, mask;
 
@@ -344,6 +421,7 @@ void     Module_v1731::v1731_ChannelSet(int32_t handle, uint32_t base, uint32_t 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x1n80, 0x1n84, 0x1n98
 uint32_t Module_v1731::v1731_ChannelGet(int32_t handle, uint32_t base, uint32_t channel, uint32_t what, CVAddressModifier AM){
     uint32_t reg, mask;
 
@@ -356,6 +434,7 @@ uint32_t Module_v1731::v1731_ChannelGet(int32_t handle, uint32_t base, uint32_t 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0x8000
 void     Module_v1731::v1731_ChannelConfig(int32_t handle, uint32_t base, uint32_t operation, CVAddressModifier AM){
 	uint32_t reg;
 	  
@@ -377,6 +456,7 @@ void     Module_v1731::v1731_ChannelConfig(int32_t handle, uint32_t base, uint32
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//0xEF00, 0x20
 void     Module_v1731::v1731_Align64Set(int32_t handle, uint32_t base, CVAddressModifier AM){
 	v1731_RegisterWrite(handle, base, V1731_VME_CONTROL, V1731_ALIGN64, AM);
 }

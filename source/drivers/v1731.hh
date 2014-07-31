@@ -1,6 +1,7 @@
 #include "ModuleManager.hh"
 #include "CAEN_VME_def.hh"
 
+
 #ifndef SOURCE_DRIVERS_V1731_H_
 #define SOURCE_DRIVERS_V1731_H_
 
@@ -82,8 +83,14 @@ class Module_v1731: public ModuleManager{
 	double GetModuleBuffer(VME_INTERFACE *vme);
 	
 	uint32_t v1731_RegisterRead(int32_t handle, uint32_t base, int offset, CVAddressModifier AM);
+	
+	// The returned integer states which buffers are free
 	uint32_t v1731_BufferFreeRead(int32_t handle, uint32_t base, CVAddressModifier AM);
+	
+	// The returned integer states which buffers are occupied (in binary)
 	uint32_t v1731_BufferOccupancy(int32_t handle, uint32_t base, uint32_t channel, CVAddressModifier AM);
+	
+	// Free the first "nbuffer" output buffer memory blocks // 
 	uint32_t v1731_BufferFree(int32_t handle, uint32_t base, int nbuffer, CVAddressModifier AM);
 
 	void     v1731_AcqCtl(int32_t handle, uint32_t base, uint32_t operation, CVAddressModifier AM);
