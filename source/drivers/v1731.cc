@@ -1,6 +1,7 @@
 #include <cstdio>
 #include "v1731.hh"
-
+#include <fstream>  //testing
+#include <iostream> //testing
 
 
 int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
@@ -21,9 +22,33 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	
 	CAEN caen;
 	
+	printf("-------------------Setting-------------------------\n\n");
 	
+	printf("Enable ONLY CH0 and 2.\n");
+	// 0x8120
+	v1731_RegisterWrite(Handle, base, V1731_CHANNEL_EN_MASK, 5, AM); // Bit[2] and Bit[0] = 1
+	
+	printf("Enable external trigger.\n");
+	// 0x810C
+	v1731_RegisterWrite(Handle, base, V1731_TRIG_SRCE_EN_MASK, 0x40000000, AM);  //Bit[30] = 1
+	
+	printf("Setting post trigger sample number to be 0...\n");
+	// 0x8114
+	v1731_RegisterWrite(Handle, base, V1731_POST_TRIGGER_SETTING, 0, AM);  //All pre trigger samples
+	
+	// 0x8000
+	printf("Setting sampling rate to be 1GS/s...\n");
+	v1731_RegisterWrite(Handle, base, V1731_CHANNEL_CONFIG, 0x1010, AM);  // Bit[12] = 1 for 1GS/s sampling rate,
+	                                                                      // Bit[4]  = 1 for Memory sequential access
+	// 0x800C
+	printf("Setting number of buffer block(s) = 1\n");
+	v1731_RegisterWrite(handle, base, V1731_BUFFER_ORGANIZATION,  0, AM);  //Setting 1 buffer block
+	
+	printf("\n");
+	printf("---------------------------------------------------\n\n");
 	
 	v1731_Status(Handle, base, AM);
+	
 	
 	return 1;
 
@@ -34,6 +59,8 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
 	
 	CVErrorCodes error_code;
+	int error_status;
+	
 	V1731 v1731;
 	CVAddressModifier AM;
 	uint32_t base;
@@ -44,40 +71,27 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
 	base = v1731.base;
 	
 	CAEN caen;
-	
-	printf("Press [s] to start acquistion and [q] to stop.");
-	int c;
-	
-	do {
-		c = getchar();
-	}while (c != 's');
-	
-	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x4, AM);  //start acquisition
-	
-	uint32_t event[2000];
-	
-	printf("Size of the event: %d\n", event[0]);
-	printf("Board ID         : %d\n", event[1]);
-	printf("Event counter    : %d\n", event[2]);
-	printf("Trigger Time Tag : %d\n", event[3]);
-	
-	do {
-		v1731_RegisterWrite(Handle, base, 0x8108, 1, AM);
-	    error_code = CAENVME_ReadCycle(Handle, base, &event, AM, cvD32);
-	    
-		for (int i=0; i<1024;i++){
-			printf("Data             : %d\n", event[i+4]);
-		}
-		printf("\n\n\n");
-		printf("------------------------------------");
-		printf("\n\n\n");
-		v1731_RegisterWrite(Handle, base, V1731_SW_CLEAR, 1, AM);
-		c = getchar();
 		
-	}while (c != 'q');
+    uint32_t event[131072];  // 4 MBytes in the buffer, 32 bytes per element. Nr_of_elem == 1024^2*4 /32 == 131072
+    
+    printf("Data acquisition starts...\n");
+    // 0x8100
+	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x4, AM);  //Bit[2] = 1 for acquisition run
 	
-	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0, AM);  //stop
-	v1731_RegisterWrite(Handle, base, V1731_SW_CLEAR, 1, AM);  //clear memory
+	// 0x0000 (NO offset)
+	error_code = CAENVME_ReadCycle(handle, base, &event, AM, cvD32);
+	
+	error_status = caen.ErrorDecode(error_code);
+	
+	ofstream fout("output.dat");
+	
+	for(int i=4; i<131072; i++){
+		fout << event[i] << endl;
+	}
+	
+	fout.close();
+	
+	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //stop
 	
 	return 1.0;
 }
@@ -244,6 +258,9 @@ void     Module_v1731::v1731_Status(int32_t handle, uint32_t base, CVAddressModi
 	printf("Board ID             : 0x%x\n", v1731_RegisterRead(handle, base, V1731_BOARD_ID, AM));
 	printf("Board Info           : 0x%x\n", v1731_RegisterRead(handle, base, V1731_BOARD_INFO, AM));
 	printf("Acquisition status   : 0x%8.8x\n", v1731_RegisterRead(handle, base, V1731_ACQUISITION_STATUS, AM));
+	printf("Channel 0 ZS_NSAMP   : 0x%x\n", v1731_RegisterRead(handle, base, V1731_ZS_NSAMP, AM));
+	printf("CHannel 2 ZS_NSAMP   : 0x%x\n", v1731_RegisterRead(handle, base, V1731_ZS_NSAMP_CH2, AM))
+	printf("Block number         : %d\n",v1731_RegisterRead(handle, base, V1731_BUFFER_ORGANIZATION, AM));
 	
 	int buffer_organization_output = v1731_RegisterRead(handle, base, V1731_BUFFER_ORGANIZATION, AM);
 	int block_nr = 1;
