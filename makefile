@@ -17,11 +17,6 @@ CXX = g++
 #Compiler Flags
 CXX_FLAGS = -std=c++0x
 
-# ROOT flags and libs (OSX)
-#ROOTCFLAGS := -I /Applications/root/include
-#ROOTLIBS   := -L /Applications/root/lib -lGpad -lHist -lGraf -lGraf3d -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lRIO -lNet -lThread -lCore -lCint -ldl
-#end (OSX)
-
 # ROOT flags and libs (Scientific Linux)
 ifdef ROOTSYS
 ROOTCFLAGS := $(shell  $(ROOTSYS)/bin/root-config --cflags)
@@ -32,9 +27,10 @@ endif
 
 #names of the targets
 OBJS = $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/UiManager.o $(TEMP)/main.o
-OBJS += $(TEMP)/ModuleManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1731.o $(TEMP)/v1785.o $(TEMP)/v1290N.o
+OBJS += $(TEMP)/ModuleManager.o $(TEMP)/ConfigFileManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1720.o  
+OBJS += $(TEMP)/v1290N.o $(TEMP)/v1785.o
 
-LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm -lCAENDigitizer
+LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm -lCAENDigitizer -lconfig++
 
 
 all: main
@@ -49,6 +45,9 @@ $(TEMP)/main.o: main.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
 	@echo Compiling $<...
 
+$(TEMP)/ConfigFileManager.o: $(SRC_DIR)/ConfigFileManager.cc
+	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
+	@echo Compiling $<...
 
 $(TEMP)/DataAcquisition.o: $(SRC_DIR)/DataAcquisition.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
@@ -70,12 +69,13 @@ $(TEMP)/DataBlock.o: $(SRC_DIR)/DataBlock.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
 	@echo Compiling $<...
 
+
 #Driver files for each card
 $(TEMP)/v2718.o: $(DRIVER_DIR)/v2718.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
 	@echo Compiling $<...
 
-$(TEMP)/v1731.o: $(DRIVER_DIR)/v1731.cc
+$(TEMP)/v1720.o: $(DRIVER_DIR)/v1720.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
 	@echo Compiling $<...
 
