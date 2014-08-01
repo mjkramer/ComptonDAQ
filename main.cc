@@ -1,11 +1,12 @@
 #include <iostream>
 #include <cstdint>
 
-//msdaq includes
+//daq includes
 #include "DataAcquisition.hh"
 #include "ModuleManager.hh"
 #include "HistoManager.hh"
 #include "UiManager.hh"
+#include "ConfigFileManager.hh"
 #include "v2718.hh"
 #include "v1785.hh"
 #include "v1290N.hh"
@@ -17,10 +18,10 @@ int main()
     VME_INTERFACE caen;
 
     ConfigFileManager *config = new ConfigFileManager();
-    config.OpenConfigFile();
-    config.IncrementRunNumber();
-    config.GetRunNumber();
-    config.CloseConfigFile();
+    config->OpenConfigFile();
+    config->IncrementRunNumber();
+    config->GetRunNumber();
+    config->CloseConfigFile();
 
 
 
