@@ -56,6 +56,7 @@ void ConfigFileManager::CloseConfigFile(){
   catch(const FileIOException &fioex){
     cerr << "I/O error while writing file: " << config_file << endl;
     exit (EXIT_FAILURE);}
+    exit (EXIT_SUCCESS);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
