@@ -55,6 +55,15 @@
 #define V1731_BUFFER_OCCUPANCY                0x1094      /* For channel 0 */
 #define V1731_CHANNEL_DAC                     0x1098      /* For channel 0 */
 
+#define V1731_ZS_THRESHOLD_CH2                0x1224      /* For channel 2 */
+#define V1731_ZS_NSAMP_CH2                    0x1228      /* For channel 2 */
+#define V1731_CHANNEL_THRESHOLD_CH2           0x1280      /* For channel 2 */
+#define V1731_CHANNEL_OUTHRESHOLD_CH2         0x1284      /* For channel 2 */
+#define V1731_CHANNEL_STATUS_CH2              0x1288      /* For channel 2 */
+#define V1731_FPGA_FWREV_CH2                  0x128C      /* For channel 2 */
+#define V1731_BUFFER_OCCUPANCY_CH2            0x1294      /* For channel 2 */
+#define V1731_CHANNEL_DAC_CH2                 0x1298      /* For channel 2 */
+
 #define V1731_RUN_START                             0x0001
 #define V1731_RUN_STOP                              0x0002
 #define V1731_REGISTER_RUN_MODE                     0x0003

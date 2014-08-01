@@ -22,7 +22,11 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	
 	CAEN caen;
 	
+	
 	printf("-------------------Setting-------------------------\n\n");
+	
+	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //Reset acquisition
+	v1731_RegisterWrite(Handle, base, V1731_BUFFER_FREE, 1, AM);  //Clean buffer block 1
 	
 	printf("Enable ONLY CH0 and 2.\n");
 	// 0x8120
@@ -42,7 +46,7 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	                                                                      // Bit[4]  = 1 for Memory sequential access
 	// 0x800C
 	printf("Setting number of buffer block(s) = 1\n");
-	v1731_RegisterWrite(handle, base, V1731_BUFFER_ORGANIZATION,  0, AM);  //Setting 1 buffer block
+	v1731_RegisterWrite(Handle, base, V1731_BUFFER_ORGANIZATION,  0, AM);  //Setting 1 buffer block
 	
 	printf("\n");
 	printf("---------------------------------------------------\n\n");
@@ -62,36 +66,68 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
 	int error_status;
 	
 	V1731 v1731;
-	CVAddressModifier AM;
-	uint32_t base;
 	
 	int32_t Handle = vme->handle;
 	
-	AM = v1731.am;
-	base = v1731.base;
 	
 	CAEN caen;
 		
-    uint32_t event[131072];  // 4 MBytes in the buffer, 32 bytes per element. Nr_of_elem == 1024^2*4 /32 == 131072
+    uint32_t              event[125000];  // 4 MBytes in the buffer, 32 bytes per element. Nr_of_elem == 1000^2*4 /32 == 125000
+    CVDataWidth           datawidth[125000];
+    CVAddressModifier     AM[125000];
+    uint32_t              base[125000];
+    CVErrorCodes          err_code[125000];
+    
+    for(int i=0; i<125000; i++){
+    	event[i]         = 0;  //initialize the array
+    	datawidth[i]     = cvD32;
+    	AM[i]            = v1731.am;
+    	base[i]          = v1731.base;
+    	err_code[i]      = cvSuccess;
+    }
+    
+    printf("Memory cleared...\n");
+    
+    v1731_RegisterWrite(Handle, v1731.base, V1731_SW_CLEAR, 0x1, v1731.am);
     
     printf("Data acquisition starts...\n");
+    
     // 0x8100
-	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x4, AM);  //Bit[2] = 1 for acquisition run
+	v1731_RegisterWrite(Handle, v1731.base, V1731_ACQUISITION_CONTROL, 0x4, v1731.am);  //Bit[2] = 1 for acquisition run
 	
-	// 0x0000 (NO offset)
-	error_code = CAENVME_ReadCycle(handle, base, &event, AM, cvD32);
+	while (event[1] == 0){
+	    // 0x0000 (NO offset)
+	    error_code = CAENVME_MultiRead(Handle, base, event, 125000, AM, datawidth, err_code);
+	    error_status = caen.ErrorDecode(error_code);
+	}
 	
-	error_status = caen.ErrorDecode(error_code);
+	ofstream fout;
+	fout.open("/home/dayabay/daq1/output.dat");
 	
-	ofstream fout("output.dat");
-	
-	for(int i=4; i<131072; i++){
+	for(int i=0; i<125000; i++){
 		fout << event[i] << endl;
 	}
 	
 	fout.close();
 	
-	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //stop
+	printf("Data written\n");
+	
+	v1731_RegisterWrite(Handle, v1731.base, V1731_ACQUISITION_CONTROL, 0x0, v1731.am);  //stop
+	printf("Acquisition stops.\n");
+	
+	uint32_t data[499984];
+	
+	FILE *pfile;
+	pfile = fopen("/home/dayabay/daq1/data.dat", "w");
+	
+	for (int i=4; i<125000;i++){
+        fprintf (pfile, "%d\n", (((event[i]) <<24 )>>24));  
+        fprintf (pfile, "%d\n", (((event[i]) <<16 )>>24)); 
+        fprintf (pfile, "%d\n", (((event[i]) <<8  )>>24));
+        fprintf (pfile, "%d\n" , ((event[i]) >>24));  
+	}
+	
+	fclose(pfile);
 	
 	return 1.0;
 }
@@ -259,8 +295,7 @@ void     Module_v1731::v1731_Status(int32_t handle, uint32_t base, CVAddressModi
 	printf("Board Info           : 0x%x\n", v1731_RegisterRead(handle, base, V1731_BOARD_INFO, AM));
 	printf("Acquisition status   : 0x%8.8x\n", v1731_RegisterRead(handle, base, V1731_ACQUISITION_STATUS, AM));
 	printf("Channel 0 ZS_NSAMP   : 0x%x\n", v1731_RegisterRead(handle, base, V1731_ZS_NSAMP, AM));
-	printf("CHannel 2 ZS_NSAMP   : 0x%x\n", v1731_RegisterRead(handle, base, V1731_ZS_NSAMP_CH2, AM))
-	printf("Block number         : %d\n",v1731_RegisterRead(handle, base, V1731_BUFFER_ORGANIZATION, AM));
+	printf("CHannel 2 ZS_NSAMP   : 0x%x\n", v1731_RegisterRead(handle, base, V1731_ZS_NSAMP_CH2, AM));
 	
 	int buffer_organization_output = v1731_RegisterRead(handle, base, V1731_BUFFER_ORGANIZATION, AM);
 	int block_nr = 1;

@@ -3,8 +3,7 @@
 #include  <unistd.h>
 #include  <sys/time.h>
 #include  <libconfig.h++>
-//#include  <time.h>
-#include  <unistd.h>
+#include  <time.h>
 #include "CAENVMElib.h"
 #include "CAEN_VME_def.hh"
 #include "ModuleManager.hh"
