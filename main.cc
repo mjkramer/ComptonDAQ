@@ -16,6 +16,14 @@ int main()
 {
     VME_INTERFACE caen;
 
+    ConfigFileManager *config = new ConfigFileManager();
+    config.OpenConfigFile();
+    config.IncrementRunNumber();
+    config.GetRunNumber();
+    config.CloseConfigFile();
+
+
+
 	DataAcquisition *daq = new DataAcquisition();
 
 	ModuleManager *module = new ModuleManager();
