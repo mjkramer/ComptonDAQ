@@ -1,7 +1,7 @@
 #include <cstdio>
 #include "v1731.hh"
-#include <fstream>  //testing
-#include <iostream> //testing
+#include <unistd.h>
+
 
 
 int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
@@ -26,7 +26,11 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	printf("-------------------Setting-------------------------\n\n");
 	
 	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //Reset acquisition
-	v1731_RegisterWrite(Handle, base, V1731_BUFFER_FREE, 1, AM);  //Clean buffer block 1
+	v1731_RegisterWrite(Handle, base, V1731_SW_RESET, 0, AM);  //Clean buffer block 1
+	
+	
+	v1731_RegisterWrite(Handle, base, V1731_ZS_NSAMP, 0,AM);
+	v1731_RegisterWrite(Handle, base, V1731_ZS_NSAMP_CH2, 0, AM);
 	
 	printf("Enable ONLY CH0 and 2.\n");
 	// 0x8120
@@ -92,42 +96,57 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
     
     printf("Data acquisition starts...\n");
     
+    
     // 0x8100
 	v1731_RegisterWrite(Handle, v1731.base, V1731_ACQUISITION_CONTROL, 0x4, v1731.am);  //Bit[2] = 1 for acquisition run
 	
-	while (event[1] == 0){
-	    // 0x0000 (NO offset)
-	    error_code = CAENVME_MultiRead(Handle, base, event, 125000, AM, datawidth, err_code);
-	    error_status = caen.ErrorDecode(error_code);
-	}
+    usleep(75000);  //wait for trigger, delay time must larger than 50000 us
+	error_code = CAENVME_MultiRead(Handle, base, event, 125000, AM, datawidth, err_code);
+	error_status = caen.ErrorDecode(error_code);
+
 	
-	ofstream fout;
-	fout.open("/home/dayabay/daq1/output.dat");
+    FILE *pfile0;
+	pfile0 = fopen("/home/dayabay/daq1/output.dat","w");
 	
 	for(int i=0; i<125000; i++){
-		fout << event[i] << endl;
+		fprintf(pfile0, "%u\n", (event[i]) );
 	}
 	
-	fout.close();
+	fclose(pfile0);
 	
 	printf("Data written\n");
 	
 	v1731_RegisterWrite(Handle, v1731.base, V1731_ACQUISITION_CONTROL, 0x0, v1731.am);  //stop
 	printf("Acquisition stops.\n");
 	
-	uint32_t data[499984];
 	
-	FILE *pfile;
-	pfile = fopen("/home/dayabay/daq1/data.dat", "w");
+	FILE *pfile1;
+	pfile1 = fopen("/home/dayabay/daq1/data1.dat", "w");
 	
-	for (int i=4; i<125000;i++){
-        fprintf (pfile, "%d\n", (((event[i]) <<24 )>>24));  
-        fprintf (pfile, "%d\n", (((event[i]) <<16 )>>24)); 
-        fprintf (pfile, "%d\n", (((event[i]) <<8  )>>24));
-        fprintf (pfile, "%d\n" , ((event[i]) >>24));  
+	FILE *pfile2;
+	pfile2 = fopen("/home/dayabay/daq1/data2.dat", "w");
+	
+	
+	
+	for (int i=4 ; i<62502;i++){  //CH0
+        fprintf (pfile1, "%d\n", (((event[i]) <<24 )>>24));  
+        fprintf (pfile1, "%d\n", (((event[i]) <<16 )>>24)); 
+        fprintf (pfile1, "%d\n", (((event[i]) <<8  )>>24));
+        fprintf (pfile1, "%d\n" , ((event[i]) >>24));  
 	}
 	
-	fclose(pfile);
+	for(int i=62502; i<125000; i++){  //CH2
+        fprintf (pfile2, "%d\n", (((event[i]) <<24 )>>24));  
+        fprintf (pfile2, "%d\n", (((event[i]) <<16 )>>24)); 
+        fprintf (pfile2, "%d\n", (((event[i]) <<8  )>>24));
+        fprintf (pfile2, "%d\n" , ((event[i]) >>24));
+	}
+	
+	
+
+	fclose(pfile1);
+	fclose(pfile2);
+	
 	
 	return 1.0;
 }
