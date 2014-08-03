@@ -1,9 +1,7 @@
-#include  <stdlib.h>
-#include  <stdint.h>
+#include  <cstdlib>
+#include  <cstdint>
 #include  <unistd.h>
-#include  <sys/time.h>
-#include  <libconfig.h++>
-#include  <time.h>
+
 #include "CAENVMElib.h"
 #include "CAEN_VME_def.hh"
 #include "ModuleManager.hh"
@@ -57,7 +55,7 @@ class Module_v1290N: public ModuleManager{
 
   public:
 	int InitializeVMEModule(VME_INTERFACE *vme);  // Return 1 if succeed and 0 if failed
-	
+	double GetModuleBuffer(VME_INTERFACE *vme);
 	
 	int  v1290N_EventRead(int32_t handle, uint32_t base, uint32_t *pdest, int *nentry, CVAddressModifier AM);  //need to check
 	int  v1290N_DataRead(int32_t handle, uint32_t base, uint32_t *pdest, int nentry, CVAddressModifier AM);    //need to check, return -1 when failed

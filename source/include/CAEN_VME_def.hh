@@ -298,13 +298,13 @@ struct V2718{
 
 struct V1785{  
 	static const uint32_t base                       = 0xC1000000;
-	static const CVAddressModifier am               = cvA32_S_DATA;  // A32 supervisory data access.
+	static const CVAddressModifier am                = cvA32_S_DATA;  // A32 supervisory data access.
                                                                      // Check the compatibility before changing it!
 };
 
 struct V1290N{
 	static const uint32_t base                       = 0xD1000000;
-	static const CVAddressModifier am               = cvA32_S_DATA;
+	static const CVAddressModifier am                = cvA32_S_DATA;
 };
 
 struct V1731{

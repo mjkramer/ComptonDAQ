@@ -27,12 +27,80 @@ int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
         return 0;
     }
     printf("-----------------------------------------\n\n");
+    
+    printf("Setting to Trigger Matching Mode...\n");
+    v1290N_TriggerMatchingSet(Handle, v1290N.base, v1290N.am);
+    
+    printf("Setting to detect the leading edge of the hot signal...\n");
+    int eLeading = 1;
+    int eTrailing = 0;
+    v1290N_SetEdgeDetection(Handle, v1290N.base, eLeading, eTrailing, v1290N.am);
+    
+    printf("Setting the the search window width to be 400 ns (0x10)...\n");
+    v1290N_WidthSet(Handle, v1290N.base, 0x10, v1290N.am);
+    
+    printf("Setting the window offset to be -425 ns (0xFFEE)...\n");
+    v1290N_OffsetSet(Handle, v1290N.base, 0xFFEE, v1290N.am);
+    
+    printf("Setting the reject margin to be 25 ns (0x1)...\n");
+    v1290N_RejectSet(Handle, v1290N.base, 0x1, v1290N.am);
+    
+    v1290N_ExtraSet(Handle, v1290N.base, 0, v1290N.am);  //no extra search margin
+    
+    printf("Disable TDC Headers and Trailers\n");
+    v1290N_Disable_Header_Trailer(Handle, v1290N.base, v1290N.am);
+    
+    printf("Settings of v1290N completed\n");
+    printf("-----------------------------------------\n\n");
+    
     v1290N_Status(Handle, v1290N.base, v1290N.am);
     
     return 1;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+double Module_v1290N::GetModuleBuffer(VME_INTERFACE *vme){
+	
+	int nentry =0;
+	uint32_t data[100]; //arbitary dimension
+	int t1, t2;
+	double time_diff;
+	int32_t Handle;
+	
+	Handle = vme->handle;
+	
+	V1290N v1290N;
+	CAEN caen;
+	
+	
+	v1290N_SoftClear(Handle, v1290N.base, v1290N.am);
+	
+	v1290N_EventRead(Handle, v1290N.base, data, &nentry, v1290N.am);
+	
+	if (nentry != 4){ //receiving more than 2 hits or only 1 hit
+		// Event = Global Header + TDC Measurements + Global Trailer
+	    // , so 4 entries means there are 2 measurements
+		return -99999.0;
+	}else if ( (abs( (long)data[2] - (long)data[1] ) <= 2097151) ){ //SAME channel receives 2 hits
+		// Maximum time = 1+2+4+...+2^20 == 2^21 - 1 == 2097151
+		// if both hits are in the SAME channel, |data[2]-data[1]| <= 2097151
+		
+		return -88888.0;
+	}else{
+		t1 = (data[1] << 11) >> 11;
+		t2 = (data[2] << 11) >> 11;
+		
+		time_diff = (t2 - t1)*0.025;  //unit: nanosecond
+		printf("%d\n", time_diff);
+		return time_diff;
+	}
+
+}
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 int  Module_v1290N::v1290N_EventRead(int32_t handle, uint32_t base, uint32_t *pdest, int *nentry, CVAddressModifier AM){
 	
 	uint32_t hdata;
