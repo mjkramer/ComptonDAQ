@@ -62,8 +62,17 @@ int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
 
 double Module_v1290N::GetModuleBuffer(VME_INTERFACE *vme){
 	
-	int nentry =0;
-	uint32_t data[100]; //arbitary dimension
+	int nentry = 0;
+	uint32_t rawdata[100]; //arbitary dimension
+	
+	for(int i=0; i<100; i++){
+		rawdata[i] = 0;
+	}
+	
+	int32_t header[100];
+	int32_t channel[100]; //channel number
+	int32_t time[100];
+	
 	int t1, t2;
 	double time_diff;
 	int32_t Handle;
@@ -73,28 +82,33 @@ double Module_v1290N::GetModuleBuffer(VME_INTERFACE *vme){
 	V1290N v1290N;
 	CAEN caen;
 	
+	FILE *pfile;
+	pfile = fopen("v1290N_data.dat", "w");
 	
 	v1290N_SoftClear(Handle, v1290N.base, v1290N.am);
 	
-	v1290N_EventRead(Handle, v1290N.base, data, &nentry, v1290N.am);
+	v1290N_EventRead(Handle, v1290N.base, rawdata, &nentry, v1290N.am);
 	
-	if (nentry != 4){ //receiving more than 2 hits or only 1 hit
-		// Event = Global Header + TDC Measurements + Global Trailer
-	    // , so 4 entries means there are 2 measurements
-		return -99999.0;
-	}else if ( (abs( (long)data[2] - (long)data[1] ) <= 2097151) ){ //SAME channel receives 2 hits
-		// Maximum time = 1+2+4+...+2^20 == 2^21 - 1 == 2097151
-		// if both hits are in the SAME channel, |data[2]-data[1]| <= 2097151
-		
-		return -88888.0;
-	}else{
-		t1 = (data[1] << 11) >> 11;
-		t2 = (data[2] << 11) >> 11;
-		
-		time_diff = (t2 - t1)*0.025;  //unit: nanosecond
-		printf("%d\n", time_diff);
-		return time_diff;
+	for (int i=0; i<(nentry - 1); i++){
+		header[i] = (rawdata[i] >> 27);  //Bits [31,27] identify the type
 	}
+	
+	int i = 0;
+	while (header[i] != 0){  //locate the first TDC measurement
+		i = i + 1;
+	}
+	
+	while (header[i] == 0){  //record until reaching the trailer
+		channel[i] = ((rawdata[i] << 6) >> 27);
+		time[i]    = ((rawdata[i] << 11) >> 11);
+		if (time[i] != 0){
+		    fprintf(pfile, "%d  %d\n", channel[i], time[i]);
+		}
+	    i = i + 1;
+	}
+    
+	fclose(pfile);
+	return 1.0;
 
 }
 
