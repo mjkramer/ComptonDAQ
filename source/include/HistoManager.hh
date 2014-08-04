@@ -29,7 +29,11 @@ class HistoManager{
 
     void Fill1DHisto(int id1D, int bin, double weight = 1.0);
     void Fill2DHisto(int id2D, int xbin, int ybin);   
-	  void FillNtuple(float eLs, float eGe, float aBsT, float rBsT);
+    void FillNtuple(float eLs, float eGe, float aBsT, float rBsT);
+
+    TH1F* Get1DHisto(int id1D);
+    TH2F* Get2DHisto(int id2D);
+  
     
    private:
     TFile*   rootFile;

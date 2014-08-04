@@ -84,6 +84,28 @@ cout << "Warning from Histomanager::Fill1DHisto() : histogram " << id2D << " doe
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+TH1F* HistoManager::Get1DHisto(int id1D) {
+  if (id1D >= maxHisto1D) {
+    cout << "Warning from HistoManager::Get1DHisto() : histogram " << id1D
+	 << " does not exist!" << endl;
+    return;
+  }
+  if (histo1D[id1D]) { return histo1D[id1D]; }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+TH2F* HistoManager::Get2DHisto(int id2D) {
+  if (id2D >= maxHisto2D) {
+    cout << "Warning from HistoManager::Get2DHisto() : histogram " << id2D
+	 << " does not exist!" << endl;
+    return;
+  }
+  if (histo2D[id2D]) { return histo2D[id2D]; }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 void HistoManager::FillNtuple(float eLs, float eGe, float aBsT, float rElT){
 
 Els = eLs;
