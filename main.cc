@@ -31,20 +31,11 @@ int main()
 
 
 
-    ModuleManager *module = new ModuleManager();
-  
-
-
-
-
   delete daq;
-  delete module;
+  delete config;
   delete histo;
   delete vis;
-  delete v1785;
-  delete v2718;
-  delete v1290N;
-  delete v1731;
+
 
 
   return 1;
