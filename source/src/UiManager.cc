@@ -114,11 +114,11 @@ UiManager::DaqCmd UiManager::Service(int fd)
 
     switch (req.cmd) {
     case UiProtocol::GetHist1D:
-      SendHist(1, fd, req.arg);
+      SendHist(fd, 1, req.arg);
       return NoCmd;
 
     case UiProtocol::GetHist2D:
-      SendHist(2, fd, req.arg);
+      SendHist(fd, 2, req.arg);
       return NoCmd;
 
     case UiProtocol::GetInfo:
