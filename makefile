@@ -6,8 +6,9 @@ $(VERBOSE).SILENT:
 
 #Paths for files
 SRC_DIR = source/src
+INCLUDE_DIR = source/include
 DRIVER_DIR = source/drivers
-INCLUDES = -I source/include -I /usr/include -I source/drivers
+INCLUDES = -I $(INCLUDE_DIR) -I /usr/include -I source/drivers
 TEMP = source/temp
 
 # Compiler
@@ -61,9 +62,13 @@ $(TEMP)/ModuleManager.o: $(SRC_DIR)/ModuleManager.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
 	@echo Compiling $<...
 
-$(TEMP)/UiManager.o: $(SRC_DIR)/UiManager.cc
-	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
-	@echo Compiling $<...
+$(TEMP)/RootDict.cxx: $(INCLUDE_DIR)/LinkDef.hh
+	rootcint -f $@ -c $^
+	sed -i '1i#include <map>' $(subst .cxx,.h,$@)
+
+$(TEMP)/UiManager.o: $(SRC_DIR)/UiManager.cc $(TEMP)/RootDict.cxx
+	$(CXX) -c $^ -o $@ $(INCLUDES) -I $(TEMP) $(CXX_FLAGS) $(ROOTCFLAGS)
+	@echo Compiling $^...
 
 $(TEMP)/DataBlock.o: $(SRC_DIR)/DataBlock.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
@@ -90,5 +95,5 @@ $(TEMP)/v1290N.o: $(DRIVER_DIR)/v1290N.cc
 .PHONY: clean
 clean:
 	rm -f *.o *~ \*
-	rm -r source/temp/*.o
+	rm -r source/temp/*.o source/temp/RootDict.*
 	rm -f main
