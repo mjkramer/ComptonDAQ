@@ -47,10 +47,10 @@ int main(int argc, char** argv)
 
   TBufferFile* buf = get_response(sock, UiProtocol::GetInfo, 0);
   TClass* mapClass = gROOT->FindSTLClass("std::map<std::string,std::string>", true);
-  map<string, string>* data = (map<string, string>*) buf->ReadObjectAny(mapClass);
+  map<string, string>& data = *(map<string, string>*) buf->ReadObjectAny(mapClass);
 
-  for (map<string, string>::iterator it = data->begin();
-       it != data->end(); ++it)
+  for (map<string, string>::iterator it = data.begin();
+       it != data.end(); ++it)
     cout << it->first << " = " << it->second << endl;
 
   buf = get_response(sock, UiProtocol::GetHist1D, 0);
