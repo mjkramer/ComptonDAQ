@@ -1,4 +1,8 @@
 #include "DataAcquisition.hh"
+#include "ConfigFileManager.hh"
+#include "ModuleManager.hh"
+#include "HistoManager.hh"
+#include "UiManager.hh"
 #include "v2718.hh"
 #include "v1785.hh"
 #include "v1290N.hh"
@@ -18,10 +22,10 @@ DataAcquisition::~DataAcquisition(){
 	delete fUiManager;
 
 	fConfigFileManager = 0;
-	fHistoManager 0;
+	fHistoManager = 0;
 	fUiManager = 0;
 
-	for(i = modules.begin(); i != modules.end(); i++){
+	for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
 		delete *i;
 		*i = 0;
 	}	
@@ -40,8 +44,8 @@ int DataAcquisition::Initialize(){
     modules.push_back(new Module_v1290N()); //TDC
     modules.push_back(new Module_v1731()); //Digitizer
 
-    for(i = modules.begin(); i != modules.end(); i++){
-    	*i->IntitializeVMEModule(&caen);
+    for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+    	(*i)->InitializeVMEModule(&caen);
     }
 
 

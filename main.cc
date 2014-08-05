@@ -11,8 +11,6 @@
 
 int main()
 {
-    VME_INTERFACE caen;
-
     ConfigFileManager *config = new ConfigFileManager();
     HistoManager *histo = new HistoManager();
     UiManager *vis = new UiManager();
@@ -20,8 +18,8 @@ int main()
     //pass some information to the run here..
 
 
-    DataAcquisition *daq = new DataAcquisition(*config, *histo, *vis);
-      daq->initialize();
+    DataAcquisition *daq = new DataAcquisition(config, histo, vis);
+      daq->Initialize();
 
       //if(key pressed):
       daq->StartRun();
@@ -29,14 +27,9 @@ int main()
       //if(key pressed):
       daq->StopRun();
 
+  delete daq; 
+  daq = 0;
+  
 
-
-  delete daq;
-  delete config;
-  delete histo;
-  delete vis;
-
-
-
-  return 1;
+  return 0;
 }
