@@ -37,7 +37,8 @@ DataAcquisition::~DataAcquisition(){
 
 int DataAcquisition::Initialize(){
     fConfigFileManager->OpenConfigFile();
-    fHistoManager->Book();
+    run_number = fConfigFileManager->GetRunNumber();
+    fHistoManager->Book(run_number + 1);
 
     modules.push_back(new Module_v2718()); // controller card
     modules.push_back(new Module_v1785()); //Peak sensing ADC
@@ -60,7 +61,7 @@ int DataAcquisition::Initialize(){
 
 int DataAcquisition::StartRun(){
 	fConfigFileManager->IncrementRunNumber();
-	run_number = fConfigFileManager->GetRunNumber();
+	
 
 
 	return 0;

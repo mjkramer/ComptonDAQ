@@ -29,9 +29,13 @@ HistoManager::~HistoManager(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void HistoManager::Book(){ 
+void HistoManager::Book(int run_number){ 
 
- rootFile = new TFile("tobereplaced.root","RECREATE");
+  char buf[40];
+  sprintf(buf,"/home/dayabay/compton_data/run%i.root",run_number);
+  const char *filename = buf;
+ 
+ rootFile = new TFile(filename,"RECREATE");
  if(!rootFile) {
    cout << "Problems creating ROOT file!" << endl;
    return;
