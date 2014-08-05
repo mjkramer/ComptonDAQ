@@ -1,0 +1,4 @@
+This directory contains a basic testing harness for the UiManager
+class. After compiling, run "./server <port>" and, in another
+terminal, "./client <port>". If all goes well, the client will display
+dummy data provided by the server via UiManager.
