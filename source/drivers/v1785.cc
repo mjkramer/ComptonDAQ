@@ -58,6 +58,29 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+double Module_v1755::GetModuleBuffer(VME_INTERFACE *vme){
+	
+	int32_t Handle = vme->handle;
+	V1785 v1785;
+	
+    int i;
+	int nentry = 0;
+	int value =0;
+	int channel =0;
+	uint32_t data[V1785_MAX_CHANNELS+2];
+	V1785_EventRead(Handle, v1785.base, data, &nentry, v1785.am);
+
+	for (i = 0; i < nentry; i++) {
+	    uint32_t w = data[i];
+	    if (((w >> 24) & 0x7) != 0) continue;
+	        channel = (w >> 17) & 0xF;
+	        value = (w & 0x3FFF);}
+	
+	return value
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 int Module_v1785:: V1785_CSR1Read(int32_t handle, uint32_t base, CVAddressModifier AM){
 	CAEN caen;
 	CVErrorCodes error_code;  //Error code if any
