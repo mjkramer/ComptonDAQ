@@ -53,8 +53,7 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	printf("Setting number of buffer block(s) = 1\n");
 	v1731_RegisterWrite(Handle, base, V1731_BUFFER_ORGANIZATION,  0, AM);  //Setting 1 buffer block
 	
-	printf("Setting recording 60000 samples only...\n");
-	v1731_RegisterWrite(Handle, base, V1731_CUSTOM_SIZE, 0xEA6, AM);  //Setting 60000 samples per channel
+
 	
 	printf("\n");
 	printf("---------------------------------------------------\n\n");
@@ -69,90 +68,29 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
-	
-	CVErrorCodes error_code;
-	int error_status;
-	
 	V1731 v1731;
-	
 	int32_t Handle = vme->handle;
-	
-	
-	CAEN caen;
-		
-    uint32_t              event[30004]; 
-    CVDataWidth           datawidth[30004];
-    CVAddressModifier     AM[30004];
-    uint32_t              base[30004];
-    CVErrorCodes          err_code[30004];
+	int status;
+	int nsample = 60000;
+    int CH0[nsample];
+    int CH2[nsample];
     
-    for(int i=0; i<30004; i++){
-    	event[i]         = 0;  //initialize the array
-    	datawidth[i]     = cvD32;
-    	AM[i]            = v1731.am;
-    	base[i]          = v1731.base;
-    	err_code[i]      = cvSuccess;
+    for(int i=0; i<nsample; i++){
+    	CH0[i] = 0;
+    	CH2[i] = 0;
     }
-    
-    printf("Memory cleared...\n");
-    
-    v1731_RegisterWrite(Handle, v1731.base, V1731_SW_CLEAR, 0x2, v1731.am);
-    
-    printf("Data acquisition starts...\n");
-    
-    
-    // 0x8100
-	v1731_RegisterWrite(Handle, v1731.base, V1731_ACQUISITION_CONTROL, 0x4, v1731.am);  //Bit[2] = 1 for acquisition run
+		
+	status = v1731_ReadBuffer_and_Output(Handle, v1731.base, nsample, v1731.am, CH0, CH2);
 	
-    usleep(75000);  //wait for trigger
-	error_code = CAENVME_MultiRead(Handle, base, event, 30004, AM, datawidth, err_code);
-	error_status = caen.ErrorDecode(error_code);
-
+	FILE *pfile0 = fopen("data.dat", "w");
 	
-    FILE *pfile0;
-	pfile0 = fopen("/home/dayabay/daq1/output.dat","w");
-	
-	for(int i=0; i<30004; i++){
-		fprintf(pfile0, "%u\n", (event[i]) );
+	for(int i=0; i<nsample; i++){
+		fprintf(pfile0, "%d      %d\n", CH0[i], CH2[i]);
 	}
 	
 	fclose(pfile0);
 	
-	printf("Data written\n");
-	
-	v1731_RegisterWrite(Handle, v1731.base, V1731_ACQUISITION_CONTROL, 0x0, v1731.am);  //stop
-	printf("Acquisition stops.\n");
-	
-	
-	FILE *pfile1;
-	pfile1 = fopen("/home/dayabay/daq1/data1.dat", "w");
-	
-	FILE *pfile2;
-	pfile2 = fopen("/home/dayabay/daq1/data2.dat", "w");
-	
-	
-	
-	for (int i=4 ; i<15004;i++){  //CH0
-        fprintf (pfile1, "%d\n", (((event[i]) <<24 )>>24));  
-        fprintf (pfile1, "%d\n", (((event[i]) <<16 )>>24)); 
-        fprintf (pfile1, "%d\n", (((event[i]) <<8  )>>24));
-        fprintf (pfile1, "%d\n" , ((event[i]) >>24));  
-	}
-	
-	for(int i=15004; i<30004; i++){  //CH2
-        fprintf (pfile2, "%d\n", (((event[i]) <<24 )>>24));  
-        fprintf (pfile2, "%d\n", (((event[i]) <<16 )>>24)); 
-        fprintf (pfile2, "%d\n", (((event[i]) <<8  )>>24));
-        fprintf (pfile2, "%d\n" , ((event[i]) >>24));
-	}
-	
-	
-
-	fclose(pfile1);
-	fclose(pfile2);
-	
-	
-	return 1.0;
+	return status;
 }
 
 
@@ -536,6 +474,86 @@ void     Module_v1731::v1731_Align64Set(int32_t handle, uint32_t base, CVAddress
 	v1731_RegisterWrite(handle, base, V1731_VME_CONTROL, V1731_ALIGN64, AM);
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, int *CH0, int *CH2){
+	CAEN caen;
+	V1731 v1731;
+	CVErrorCodes error_code;
+	int memory_location = nsample / 16;  //for double sampling rate. Dividied by 8 for 500MS/s
+	
+	printf("Setting recording %d samples only...\n", nsample);
+	v1731_RegisterWrite(handle, base, V1731_CUSTOM_SIZE, memory_location, AM);  //Setting designated number of samples per channel
+	
+	
+	int nr_elem = (nsample / 4) * 2 + 4;  // 1/4 samples per DWORD, there are 2 CHs and 4 DWORDs for the header
+	int error_status;
+	
+    uint32_t              rawdata[nr_elem];
+    CVDataWidth           datawidth[nr_elem];
+    CVAddressModifier     am[nr_elem];
+    uint32_t              BASE[nr_elem];
+    CVErrorCodes          err_code[nr_elem];
+    
+    for(int i=0; i<nr_elem; i++){
+    	rawdata[i]       = 0;  //initialize the array
+    	datawidth[i]     = cvD32;
+    	am[i]            = v1731.am;
+    	BASE[i]          = v1731.base;
+    	err_code[i]      = cvSuccess;
+    }
+    
+    printf("Memory cleared...\n");
+    
+    v1731_RegisterWrite(handle, v1731.base, V1731_SW_CLEAR, 0x2, v1731.am);
+    
+    printf("Data acquisition starts...\n");
+    
+    // 0x8100
+	v1731_RegisterWrite(handle, base, V1731_ACQUISITION_CONTROL, 0x4, AM);  //Bit[2] = 1 for acquisition run
+	
+    usleep(200000);  //wait for buffer. Depends on the size of the data block
+	error_code = CAENVME_MultiRead(handle, BASE, rawdata, nr_elem, am, datawidth, err_code);
+	error_status = caen.ErrorDecode(error_code);
+	
+	if (error_status == 1){
+		
+	    /*
+        FILE *pfile0;
+	    pfile0 = fopen("rawoutput.dat","w");
+	
+	    for(int i=0; i<nr_elem; i++){  
+		    fprintf(pfile0, "%u\n", (rawdata[i]) );
+	    }
+	
+	    fclose(pfile0);
+	    */
+	
+	
+	    v1731_RegisterWrite(handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //stop
+	    printf("Acquisition stops.\n");
+	
+	    for (int i=4 ; i<((nr_elem-4)/2 + 4) ;i++){  //CH0
+	    	CH0[(4*i-16)] = (int) (((rawdata[i]) <<24 )>>24);
+	    	CH0[(4*i-15)] = (int) (((rawdata[i]) <<16 )>>24);
+	    	CH0[(4*i-14)] = (int) (((rawdata[i]) <<8  )>>24);
+	    	CH0[(4*i-13)] = (int)  ((rawdata[i]) >>24);
+	    }
+	
+	    for(int i=((nr_elem-4)/2 + 4); i<nr_elem; i++){  //CH2  
+	    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) )]    = (int) (((rawdata[i]) <<24 )>>24);
+	    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 1)] = (int) (((rawdata[i]) <<16 )>>24);
+	    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 2)] = (int) (((rawdata[i]) <<8  )>>24);
+	    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 3)] = (int)  ((rawdata[i]) >>24);
+	    }
+
+	    printf("Data written\n");
+	    
+	    return 1;
+	}else{
+		return 0;
+	}
+}
 
 
 

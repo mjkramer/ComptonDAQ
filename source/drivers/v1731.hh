@@ -124,7 +124,7 @@ class Module_v1731: public ModuleManager{
 	void     v1731_Align64Set(int32_t handle, uint32_t base, CVAddressModifier AM);
 	
 
-	
+	int      v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, int *CH0, int *CH2);
 
 
 };
