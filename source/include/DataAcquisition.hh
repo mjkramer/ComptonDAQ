@@ -2,11 +2,12 @@
 #define SOURCE_INCLUDE_DATAAQUISITION_H_
 
 #include <vector>
+#include <ModuleManager.hh>
 
 class ConfigFileManager;
 class HistoManager;
 class UiManager;
-class ModuleManager;
+//class ModuleManager;
 
 
 
@@ -30,7 +31,7 @@ class DataAcquisition{
   	int run_number;
   	VME_INTERFACE caen;
   	std::vector<ModuleManager*>modules;
-  	std::vector<ModuleManager*>::iterator i; 
+ 
   	
 
 
