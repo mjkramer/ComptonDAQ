@@ -26,7 +26,8 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	printf("-------------------Setting-------------------------\n\n");
 	
 	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //Reset acquisition
-	v1731_RegisterWrite(Handle, base, V1731_SW_RESET, 0, AM);  //Clean buffer block 1
+	v1731_RegisterWrite(Handle, base, V1731_SW_RESET, 1, AM);  
+	v1731_RegisterWrite(Handle, base, V1731_SW_CLEAR, 0x2, v1731.am);
 	
 	
 	v1731_RegisterWrite(Handle, base, V1731_ZS_NSAMP, 0,AM);
@@ -52,6 +53,9 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	printf("Setting number of buffer block(s) = 1\n");
 	v1731_RegisterWrite(Handle, base, V1731_BUFFER_ORGANIZATION,  0, AM);  //Setting 1 buffer block
 	
+	printf("Setting recording 60000 samples only...\n");
+	v1731_RegisterWrite(Handle, base, V1731_CUSTOM_SIZE, 0xEA6, AM);  //Setting 60000 samples per channel
+	
 	printf("\n");
 	printf("---------------------------------------------------\n\n");
 	
@@ -76,13 +80,13 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
 	
 	CAEN caen;
 		
-    uint32_t              event[125000];  // 4 MBytes in the buffer, 32 bytes per element. Nr_of_elem == 1000^2*4 /32 == 125000
-    CVDataWidth           datawidth[125000];
-    CVAddressModifier     AM[125000];
-    uint32_t              base[125000];
-    CVErrorCodes          err_code[125000];
+    uint32_t              event[30004]; 
+    CVDataWidth           datawidth[30004];
+    CVAddressModifier     AM[30004];
+    uint32_t              base[30004];
+    CVErrorCodes          err_code[30004];
     
-    for(int i=0; i<125000; i++){
+    for(int i=0; i<30004; i++){
     	event[i]         = 0;  //initialize the array
     	datawidth[i]     = cvD32;
     	AM[i]            = v1731.am;
@@ -92,7 +96,7 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
     
     printf("Memory cleared...\n");
     
-    v1731_RegisterWrite(Handle, v1731.base, V1731_SW_CLEAR, 0x1, v1731.am);
+    v1731_RegisterWrite(Handle, v1731.base, V1731_SW_CLEAR, 0x2, v1731.am);
     
     printf("Data acquisition starts...\n");
     
@@ -100,15 +104,15 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
     // 0x8100
 	v1731_RegisterWrite(Handle, v1731.base, V1731_ACQUISITION_CONTROL, 0x4, v1731.am);  //Bit[2] = 1 for acquisition run
 	
-    usleep(75000);  //wait for trigger, delay time must larger than 50000 us
-	error_code = CAENVME_MultiRead(Handle, base, event, 125000, AM, datawidth, err_code);
+    usleep(75000);  //wait for trigger
+	error_code = CAENVME_MultiRead(Handle, base, event, 30004, AM, datawidth, err_code);
 	error_status = caen.ErrorDecode(error_code);
 
 	
     FILE *pfile0;
 	pfile0 = fopen("/home/dayabay/daq1/output.dat","w");
 	
-	for(int i=0; i<125000; i++){
+	for(int i=0; i<30004; i++){
 		fprintf(pfile0, "%u\n", (event[i]) );
 	}
 	
@@ -128,14 +132,14 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
 	
 	
 	
-	for (int i=4 ; i<62502;i++){  //CH0
+	for (int i=4 ; i<15004;i++){  //CH0
         fprintf (pfile1, "%d\n", (((event[i]) <<24 )>>24));  
         fprintf (pfile1, "%d\n", (((event[i]) <<16 )>>24)); 
         fprintf (pfile1, "%d\n", (((event[i]) <<8  )>>24));
         fprintf (pfile1, "%d\n" , ((event[i]) >>24));  
 	}
 	
-	for(int i=62502; i<125000; i++){  //CH2
+	for(int i=15004; i<30004; i++){  //CH2
         fprintf (pfile2, "%d\n", (((event[i]) <<24 )>>24));  
         fprintf (pfile2, "%d\n", (((event[i]) <<16 )>>24)); 
         fprintf (pfile2, "%d\n", (((event[i]) <<8  )>>24));
