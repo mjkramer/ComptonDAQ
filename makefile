@@ -62,7 +62,7 @@ $(TEMP)/ModuleManager.o: $(SRC_DIR)/ModuleManager.cc
 	@echo Compiling $<...
 
 $(TEMP)/UiManager.o: $(SRC_DIR)/UiManager.cc
-	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
+	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS) $(ROOTCFLAGS)
 	@echo Compiling $<...
 
 $(TEMP)/DataBlock.o: $(SRC_DIR)/DataBlock.cc
