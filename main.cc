@@ -1,6 +1,10 @@
 #include <iostream>
 #include <cstdint>
 
+extern "C" {
+#include "keyhit.h"
+}
+
 //daq includes
 #include "DataAcquisition.hh"
 #include "ModuleManager.hh"
@@ -11,25 +15,25 @@
 
 int main()
 {
+    
     ConfigFileManager *config = new ConfigFileManager();
     HistoManager *histo = new HistoManager();
     UiManager *vis = new UiManager(histo);
-
-    //pass some information to the run here..
-
-
     DataAcquisition *daq = new DataAcquisition(config, histo, vis);
-      daq->Initialize();
 
-      //if(key pressed):
-      daq->StartRun();
+    daq->SetRunState(false);
+    daq->Initialize();
 
-      //if(key pressed):
-      daq->StopRun();
+    std::cout << "Press [s] to start the run and [q] to stop it!" << std::endl;
+    int c = 0;
+    c = getch();
+    if(c == 's'){
+	daq->SetRunState(true);
+        daq->StartRun();}
+
 
   delete daq; 
   daq = 0;
   
-
   return 0;
 }

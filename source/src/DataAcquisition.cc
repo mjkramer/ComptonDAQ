@@ -8,6 +8,10 @@
 #include "v1290N.hh"
 #include "v1731.hh"
 
+extern "C" {
+#include "keyhit.h"
+}
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataAcquisition::DataAcquisition(ConfigFileManager* fConfig, HistoManager* fHisto, UiManager* fUi):fConfigFileManager(fConfig), fHistoManager(fHisto), fUiManager(fUi){ 
@@ -49,8 +53,6 @@ int DataAcquisition::Initialize(){
     	(*i)->InitializeVMEModule(&caen);
     }
 
-
-
     return 0;
 
 
@@ -61,7 +63,16 @@ int DataAcquisition::Initialize(){
 
 int DataAcquisition::StartRun(){
 	fConfigFileManager->IncrementRunNumber();
-	
+
+	while(state){
+		CheckKeyboardCommands(); //sets "state"
+
+		std::cout << "Hello" << std::endl;
+
+	}
+
+
+
 
 
 	return 0;
@@ -77,4 +88,21 @@ int DataAcquisition::StopRun(){
 
 
 	return 0;	
+}
+
+
+void DataAcquisition::CheckKeyboardCommands(){
+    int c = 0;
+
+    if(!kbhit())
+        return;
+
+    c = getch();
+
+    if(c == 'q'){
+	SetRunState(false);}
+
+    if(c == 's'){
+	SetRunState(true);}
+
 }
