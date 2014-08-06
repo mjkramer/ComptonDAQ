@@ -9,34 +9,33 @@ using namespace std;
 #define CAEN_VME_DEF_H_
 
 
-class CAEN{
+namespace CAEN{
 
-  public:
 	int ErrorDecode(CVErrorCodes error_code){  // Print the error message to screen 
 		                                       // ,and return 1 for success and 0 for failure
 		if (error_code == cvSuccess){
 			//Print nothing
-			return 1; 
+			return 0; 
 			
 		}else if (error_code == cvBusError){
 			printf("VME bus error during the cycle.\n");
-			return 0;
+			return 1;
 			
 		}else if (error_code == cvCommError){
 			printf("Communication error\n");
-			return 0;
+			return 1;
 			
 		}else if (error_code == cvGenericError){
 			printf("Encounter unspecified error\n");
-			return 0;
+			return 1;
 			
 		}else if (error_code == cvInvalidParam){
 			printf("Invalid parameter\n");
-			return 0;
+			return 1;
 			
 		}else if (error_code == cvTimeoutError){
 			printf("Timeout error\n");
-			return 0;
+			return 1;
 		}
 
 	}
@@ -289,12 +288,13 @@ class CAEN{
 	}
 	
 
-};
+}//end namespace CAEN
 
 
-struct V2718{
+namespace V2718{
 	static const uint32_t base                       = 0xA1000000;
-};
+	static const short board_number					 = 0;
+}
 
 struct V1785{  
 	static const uint32_t base                       = 0xC1000000;

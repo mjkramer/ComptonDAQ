@@ -1,74 +1,22 @@
 #include "v2718.hh"
+#include "CAEN_VME_def.hh"
 
 
-int Module_v2718:: InitializeVMEModule(VME_INTERFACE *vme){
-	CAEN caen;
-	short board_number = 0;
-	CVErrorCodes error_code;
-	int error_status = 1;
+int Module_v2718::InitializeVMEModule(VME_INTERFACE *vme){
+	printf("\n****Initializing CAEN V2718****\n");
+	
 	int32_t Handle = 5000;
-    
-	printf("\n\n\n");
-	printf("***************************************************\n");
-	printf("*    Initializing CAEN V2718                      *\n");
-	printf("***************************************************\n\n\n");
+    CVErrorCodes error_code = CAENVME_Init(cvV2718, LINK, V2718::board_number, &Handle);
 
-	error_code = CAENVME_Init(cvV2718, LINK, board_number, &Handle);
+	if(CAEN::ErrorDecode(error_code)){
+		printf("Failed to initialize the V2718 controller!\n");
+		return 1;
+	}
 
-	vme->handle = Handle;  //passing the handle to the struct
-
-	error_status = caen.ErrorDecode(error_code);
-
-
-
-    if (error_status == 1){
-	    printf("Initialization of V2718 completed successfully\n\n");
-	    return 1;
-    }else{
-    	printf("Failed to initialize the V2718 controller!\n");
-    	return 0;
-    }
-
+	vme->handle = Handle;  //passing the handle to struct in ModuleManager.hh
 }
 
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-/* Standard fuctions:
-
-int ModuleManager::InitializeVMEModule(){
-	return 1;
-}
-
-int ModuleManager::SetOnline(){
-	return 1;
-}
-
-int ModuleManager::SetOffline(){
-	return 1;
-}
-
-int ModuleManager::DataReady(){
-	return 1;
-}
-
-int ModuleManager::DeleteBuffer(){
-	return 1;
-}
-
-int ModuleManager::ResetModule(){
-	return 1;
-}
-
-double ModuleManager::GetModuleBuffer(){
-	return 1.0;
-}
-
-int ModuleManager::CloseConnection(){
-	return 1;
-}
-
-*/
 
 
 

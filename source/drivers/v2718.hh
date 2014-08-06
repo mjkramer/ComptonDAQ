@@ -1,10 +1,8 @@
 #include  <stdlib.h>
 #include  <stdint.h>
 #include "CAENVMElib.h"
-#include "CAEN_VME_def.hh"
 #include "ModuleManager.hh"
 
-using namespace std;
 
 #ifndef SOURCE_DRIVERS_V2718_H_
 #define SOURCE_DRIVERS_V2718_H_
@@ -46,7 +44,7 @@ using namespace std;
 class Module_v2718: public ModuleManager{
 
   public:
-	int InitializeVMEModule(VME_INTERFACE *vme);  // Return 1 if succeed and 0 if failed
+	int InitializeVMEModule(VME_INTERFACE *vme); 
 
 	// Configuration of the pulsers.
 	// @param pulser:   0=PulserA, 1=PulserB
