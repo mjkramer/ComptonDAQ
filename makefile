@@ -96,5 +96,5 @@ $(TEMP)/v1290N.o: $(DRIVER_DIR)/v1290N.cc
 .PHONY: clean
 clean:
 	rm -f *.o *~ \*
-	rm -r source/temp/*.o source/temp/RootDict.*
+	rm -rf source/temp/*.o source/temp/RootDict.*
 	rm -f main

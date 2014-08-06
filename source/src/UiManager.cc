@@ -58,8 +58,10 @@ static int get_client(int listener)
 
 void UiManager::StartListener(int port)
 {
-  int listener = serv_sock(port);
-  m_pollfds.push_back({listener, POLLIN, 0});
+  pollfd pfd;
+  pfd.fd = serv_sock(port);
+  pfd.events = POLLIN;
+  m_pollfds.push_back(pfd);
 }
 
 static inline int dt_us(timespec& t1, timespec& t2)
@@ -74,8 +76,12 @@ UiManager::DaqCmd UiManager::ProcessIO()
 
   poll(&m_pollfds[0], m_pollfds.size(), 0);
 
-  if (m_pollfds[0].revents & POLLIN) // new connection
-    m_pollfds.push_back({get_client(m_pollfds[0].fd), POLLIN, 0});
+  if (m_pollfds[0].revents & POLLIN) { // new connection
+    pollfd pfd;
+    pfd.fd = get_client(m_pollfds[0].fd);
+    pfd.events = POLLIN;
+    m_pollfds.push_back(pfd);
+  }
 
   timespec tnow;
 
