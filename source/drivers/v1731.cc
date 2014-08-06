@@ -82,6 +82,7 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
 		
 	status = v1731_ReadBuffer_and_Output(Handle, v1731.base, nsample, v1731.am, CH0, CH2);
 	
+	/* For testing only
 	FILE *pfile0 = fopen("data.dat", "w");
 	
 	for(int i=0; i<nsample; i++){
@@ -89,6 +90,7 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
 	}
 	
 	fclose(pfile0);
+	*/
 	
 	return status;
 }
@@ -482,7 +484,7 @@ int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base
 	CVErrorCodes error_code;
 	int memory_location = nsample / 16;  //for double sampling rate. Dividied by 8 for 500MS/s
 	
-	printf("Setting recording %d samples only...\n", nsample);
+	printf("Setting for recording %d samples only...\n", nsample);
 	v1731_RegisterWrite(handle, base, V1731_CUSTOM_SIZE, memory_location, AM);  //Setting designated number of samples per channel
 	
 	
@@ -512,7 +514,8 @@ int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base
     // 0x8100
 	v1731_RegisterWrite(handle, base, V1731_ACQUISITION_CONTROL, 0x4, AM);  //Bit[2] = 1 for acquisition run
 	
-    usleep(200000);  //wait for buffer. Depends on the size of the data block
+    usleep(75000);  //Wait for buffer. Delay time depends on the size of the data block.
+                    // If there is a VME Bus Error, try to increase the delay time.
 	error_code = CAENVME_MultiRead(handle, BASE, rawdata, nr_elem, am, datawidth, err_code);
 	error_status = caen.ErrorDecode(error_code);
 	
