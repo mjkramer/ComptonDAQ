@@ -27,7 +27,7 @@ ROOTLIBS   += -lThread
 endif
 
 #names of the targets
-OBJS = $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/UiManager.o $(TEMP)/main.o
+OBJS = $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/UiManager.o $(TEMP)/RootDict.o $(TEMP)/main.o
 OBJS += $(TEMP)/ModuleManager.o $(TEMP)/ConfigFileManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1731.o  
 OBJS += $(TEMP)/v1290N.o $(TEMP)/v1785.o
 
@@ -62,12 +62,13 @@ $(TEMP)/ModuleManager.o: $(SRC_DIR)/ModuleManager.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
 	@echo Compiling $<...
 
-$(TEMP)/RootDict.cxx: $(INCLUDE_DIR)/LinkDef.hh
-	rootcint -f $@ -c $^
-	sed -i '1i#include <map>' $(subst .cxx,.h,$@)
+$(TEMP)/RootDict.o: $(INCLUDE_DIR)/LinkDef.hh
+	rootcint -f $(subst .o,.cxx,$@) -c $^
+	sed -i '1i#include <map>' $(subst .o,.h,$@)
+	$(CXX) -c $(subst .o,.cxx,$@) -o $@ $(INCLUDES) -I $(TEMP) $(CXX_FLAGS) $(ROOTCFLAGS) 
 
-$(TEMP)/UiManager.o: $(SRC_DIR)/UiManager.cc $(TEMP)/RootDict.cxx
-	$(CXX) -c $^ -o $@ $(INCLUDES) -I $(TEMP) $(CXX_FLAGS) $(ROOTCFLAGS)
+$(TEMP)/UiManager.o: $(SRC_DIR)/UiManager.cc
+	$(CXX) -c $^ -o $@ $(INCLUDES) $(CXX_FLAGS) $(ROOTCFLAGS)
 	@echo Compiling $^...
 
 $(TEMP)/DataBlock.o: $(SRC_DIR)/DataBlock.cc
