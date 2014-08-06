@@ -24,7 +24,7 @@ int main()
     daq->SetRunState(false);
     daq->Initialize();
 
-    std::cout << "Press [s] to start the run!" << std::endl;
+    std::cout << "Press [s] to start the run and [q] to stop it!" << std::endl;
     int c = 0;
     c = getch();
     if(c == 's'){
