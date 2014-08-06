@@ -60,7 +60,7 @@ int DataAcquisition::Initialize(){
 int DataAcquisition::StartRun(){
 	fConfigFileManager->IncrementRunNumber();
 
-	
+	std::cout << "Hello world, !" << std::endl;
 
 
 

@@ -3,13 +3,13 @@ kbhit() and getch() for Linux/UNIX
 Chris Giese <geezer@execpc.com>	http://my.execpc.com/~geezer
 */
 
-#ifdef LINUX
     #include <sys/time.h> /* struct timeval, select() */
     #include <termios.h> /* tcgetattr(), tcsetattr() */
     #include <stdlib.h> /* atexit(), exit() */
     #include <unistd.h> /* read() */
     #include <stdio.h> /* printf() */
     #include <string.h> /* memcpy() */
+    #include "keyhit.h"
 
 static struct termios g_old_kbd_mode;
 
@@ -80,10 +80,4 @@ int kbhit()
     return (status);
 }
 
-
-#else  // Windows
-
-    #include <conio.h>
-
-#endif
 

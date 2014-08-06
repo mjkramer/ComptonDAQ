@@ -29,7 +29,7 @@ endif
 #names of the targets
 OBJS = $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/UiManager.o $(TEMP)/RootDict.o $(TEMP)/main.o
 OBJS += $(TEMP)/ModuleManager.o $(TEMP)/ConfigFileManager.o $(TEMP)/DataBlock.o $(TEMP)/v2718.o $(TEMP)/v1731.o  
-OBJS += $(TEMP)/v1290N.o $(TEMP)/v1785.o $(TEMP)/keyhit.o
+OBJS += $(TEMP)/v1290N.o $(TEMP)/keyhit.o $(TEMP)/v1785.o
 
 LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm -lCAENDigitizer -lconfig++
 
@@ -76,7 +76,7 @@ $(TEMP)/DataBlock.o: $(SRC_DIR)/DataBlock.cc
 	@echo Compiling $<...
 
 $(TEMP)/keyhit.o: $(SRC_DIR)/keyhit.c
-	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
+	$(CC) -c $< -o $@ $(INCLUDES)
 	@echo Compiling $<...
 
 
