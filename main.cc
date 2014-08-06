@@ -21,14 +21,16 @@ int main()
     UiManager *vis = new UiManager(histo);
     DataAcquisition *daq = new DataAcquisition(config, histo, vis);
 
+    daq->SetRunState(false);
     daq->Initialize();
 
-    int c = 0;
     std::cout << "Press [s] to start the run!" << std::endl;
+    int c = 0;
     c = getch();
-
     if(c == 's'){
+	daq->SetRunState(true);
         daq->StartRun();}
+
 
   delete daq; 
   daq = 0;

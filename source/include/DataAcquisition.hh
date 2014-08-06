@@ -21,7 +21,9 @@ class DataAcquisition{
     int StartRun();
     int StopRun();
 
-
+    bool GetRunState(){return state;}
+    void SetRunState(bool s){state = s;}
+    void CheckKeyboardCommands();
 
   private:
   	ConfigFileManager *fConfigFileManager;
@@ -29,6 +31,7 @@ class DataAcquisition{
   	UiManager *fUiManager;
 
   	int run_number;
+	bool state;
   	VME_INTERFACE caen;
   	std::vector<ModuleManager*>modules;
  

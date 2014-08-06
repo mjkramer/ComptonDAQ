@@ -64,25 +64,8 @@ int DataAcquisition::Initialize(){
 int DataAcquisition::StartRun(){
 	fConfigFileManager->IncrementRunNumber();
 
-	while(true){
-		if(kbhit()){
-			std::cout<< "To quit the run press [q], to resume press any other key."
-			int c = 0;
-			c = getch()
-			if(c == q){
-				break;
-			}
-		}//end kbhit
-
-
-
-
-
-
-
-
-
-
+	while(state){
+		CheckKeyboardCommands(); //sets "state"
 
 		std::cout << "Hello" << std::endl;
 
@@ -90,25 +73,6 @@ int DataAcquisition::StartRun(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
 
 
 	return 0;
@@ -124,4 +88,21 @@ int DataAcquisition::StopRun(){
 
 
 	return 0;	
+}
+
+
+void DataAcquisition::CheckKeyboardCommands(){
+    int c = 0;
+
+    if(!kbhit())
+        return;
+
+    c = getch();
+
+    if(c == 'q'){
+	SetRunState(false);}
+
+    if(c == 's'){
+	SetRunState(true);}
+
 }
