@@ -16,11 +16,11 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
 
 
     V1785 v1785;  // The struct contains the base addr and the addr modifier (in "include/CAEN_VME_def.hh")
-    CAEN caen;      // The class that contains error decoding and AM decoding function (in "include/CAEN_VME_def.hh")
+          // The class that contains error decoding and AM decoding function (in "include/CAEN_VME_def.hh")
 
     CVErrorCodes error_code;
     printf("Base Address of this CAEN V1785: 0x%x\n", v1785.base);
-    caen.print_AM_Decode(v1785.am);  //print the address modifier mode
+    CAEN::print_AM_Decode(v1785.am);  //print the address modifier mode
 
     if(V1785_isPresent(Handle, v1785.base, v1785.am) != 0){
     	printf("\n");
@@ -82,13 +82,13 @@ double Module_v1785::GetModuleBuffer(VME_INTERFACE *vme){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785:: V1785_CSR1Read(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	int read;
 	int error_status;
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1785_CSR1_RO, &read, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		return read;
@@ -103,13 +103,13 @@ int Module_v1785:: V1785_CSR1Read(int32_t handle, uint32_t base, CVAddressModifi
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785:: V1785_CSR2Read(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	int read;
 	int error_status;
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1785_CSR2_RO, &read, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		return read;
@@ -124,13 +124,13 @@ int Module_v1785:: V1785_CSR2Read(int32_t handle, uint32_t base, CVAddressModifi
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785:: V1785_BitSet2Read(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	int read;
 	int error_status;
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1785_BIT_SET2_RW, &read, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		return read;
@@ -145,12 +145,12 @@ int Module_v1785:: V1785_BitSet2Read(int32_t handle, uint32_t base, CVAddressMod
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785:: V1785_BitSet2Set(int32_t handle, uint32_t base, uint16_t pat, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	int error_status;
 	
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_SET2_RW, &pat, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -164,12 +164,12 @@ void Module_v1785:: V1785_BitSet2Set(int32_t handle, uint32_t base, uint16_t pat
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785:: V1785_BitSet2Clear(int32_t handle, uint32_t base, uint16_t pat, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	int error_status;
 	
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_CLEAR2_WO, &pat, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -183,13 +183,13 @@ void Module_v1785:: V1785_BitSet2Clear(int32_t handle, uint32_t base, uint16_t p
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 uint16_t Module_v1785:: V1785_ControlRegister1Read(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t pat;
 	int error_status;
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1785_CR1_RW, &pat, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		return pat;
@@ -204,12 +204,12 @@ uint16_t Module_v1785:: V1785_ControlRegister1Read(int32_t handle, uint32_t base
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785:: V1785_ControlRegister1Write(int32_t handle, uint32_t base, uint16_t pat, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	int error_status;
 	
 	error_code = CAENVME_WriteCycle(handle, base+V1785_CR1_RW, &pat, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -223,13 +223,13 @@ void Module_v1785:: V1785_ControlRegister1Write(int32_t handle, uint32_t base, u
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785:: V1785_OnlineSet(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t write_online = 0x2;
 	int error_status;
 	
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_CLEAR2_WO, &write_online, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -244,13 +244,13 @@ void Module_v1785:: V1785_OnlineSet(int32_t handle, uint32_t base, CVAddressModi
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785:: V1785_OfflineSet(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t write_offline = 0x2;
 	int error_status;
 	
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_SET2_RW, &write_offline, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -264,7 +264,7 @@ void Module_v1785:: V1785_OfflineSet(int32_t handle, uint32_t base, CVAddressMod
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785:: V1785_BlkEndEnable(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code_1;  //Error code if any
 	CVErrorCodes error_code_2;  //Error code if any
 	uint16_t pat;
@@ -272,11 +272,11 @@ void Module_v1785:: V1785_BlkEndEnable(int32_t handle, uint32_t base, CVAddressM
 	int error_status_2;
 
 	error_code_1 = CAENVME_ReadCycle(handle, base+V1785_CR1_RW, &pat, AM, cvD16);
-	error_status_1 = caen.ErrorDecode(error_code_1);
+	error_status_1 = CAEN::ErrorDecode(error_code_1);
 	
 	uint16_t write = (pat|0x04)&0x74;
 	error_code_2 = CAENVME_WriteCycle(handle, base+V1785_CR1_RW, &write, AM, cvD16);
-	error_status_2 = caen.ErrorDecode(error_code_2);
+	error_status_2 = CAEN::ErrorDecode(error_code_2);
 
 	if ( (error_status_1 == 1) && (error_status_2 == 1) ){  //success
 		//do nothing
@@ -291,13 +291,13 @@ void Module_v1785:: V1785_BlkEndEnable(int32_t handle, uint32_t base, CVAddressM
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785:: V1785_OverRangeEnable(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t write = 0x08;
 	int error_status;
 
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_CLEAR2_WO, &write, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -311,13 +311,13 @@ void Module_v1785:: V1785_OverRangeEnable(int32_t handle, uint32_t base, CVAddre
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785::V1785_OverRangeDisable(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t write = 0x08;
 	int error_status;
 
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_SET2_RW, &write, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -331,13 +331,13 @@ void Module_v1785::V1785_OverRangeDisable(int32_t handle, uint32_t base, CVAddre
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785::V1785_LowThEnable(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;
 	uint16_t write = 0x10;
 	int error_status;
 
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_CLEAR2_WO, &write, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -351,13 +351,13 @@ void Module_v1785::V1785_LowThEnable(int32_t handle, uint32_t base, CVAddressMod
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785::V1785_LowThDisable(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;
 	uint16_t write = 0x10;
 	int error_status;
 
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_SET2_RW, &write, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -371,13 +371,13 @@ void Module_v1785::V1785_LowThDisable(int32_t handle, uint32_t base, CVAddressMo
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785::V1785_EmptyEnable(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;
 	uint16_t write = 0x1000;
 	int error_status;
 
 	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_SET2_RW, &write, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		//do nothing
@@ -399,14 +399,14 @@ void Module_v1785::V1785_EmptyEnable(int32_t handle, uint32_t base, CVAddressMod
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785:: V1785_DataReady(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code;  //Error code if any
 	int read; //read from CAENVME_Readcycle
 	int data_ready;
 	int error_status;
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1785_CSR1_RO, &read, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
     data_ready = read & 0x1;
 
     if (error_status == 1){  //success
@@ -421,17 +421,17 @@ int Module_v1785:: V1785_DataReady(int32_t handle, uint32_t base, CVAddressModif
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785:: V1785_BufferFull(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code_buffer_full, error_code_data_ready;
 	int read_buffer_full, read_data_ready;
 	int buffer_full, data_ready;
 	int error_status_buffer_full, error_status_data_ready;
 	
 	error_code_buffer_full = CAENVME_ReadCycle(handle, base+V1785_CSR2_RO, &read_buffer_full, AM, cvD16);
-	error_status_buffer_full = caen.ErrorDecode(error_code_buffer_full);
+	error_status_buffer_full = CAEN::ErrorDecode(error_code_buffer_full);
 
 	error_code_data_ready  = CAENVME_ReadCycle(handle, base+V1785_CSR1_RO, &read_data_ready, AM, cvD16);
-	error_status_data_ready = caen.ErrorDecode(error_code_data_ready);
+	error_status_data_ready = CAEN::ErrorDecode(error_code_data_ready);
 	
 	buffer_full = read_buffer_full & 0x4;
 	data_ready  = read_data_ready & 0x1;
@@ -462,7 +462,7 @@ int Module_v1785::V1785_isEvtReady(int32_t handle, uint32_t base, CVAddressModif
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785::V1785_isBusy(int32_t handle, uint32_t base, CVAddressModifier AM){
-	CAEN caen;
+	
 	int busy, timeout, read, error_status;
 	CVErrorCodes error_code;
 	timeout = 1000;
@@ -473,7 +473,7 @@ int Module_v1785::V1785_isBusy(int32_t handle, uint32_t base, CVAddressModifier 
 	     timeout--;
 	   } while (busy || timeout);
 
-	 error_status = caen.ErrorDecode(error_code);
+	 error_status = CAEN::ErrorDecode(error_code);
 	 if (error_status == 1){  //success
 	 return (busy != 0 ? 1 : 0);
 
@@ -489,7 +489,7 @@ int Module_v1785::V1785_EventRead(int32_t handle, uint32_t base, uint32_t *pdest
 #define USE_BLT_READ_2
 
 #ifdef USE_SINGLE_READ
-  CAEN caen;
+  
   uint32_t hdata, data;
   CVErrorCodes error_code_1, error_code_2;
   //  int error_status, error_status_2;
@@ -500,14 +500,14 @@ int Module_v1785::V1785_EventRead(int32_t handle, uint32_t base, uint32_t *pdest
   if (V1785_DataReady(handle, base)) {
     do {
       error_code_1 = CAENVME_ReadCycle(handle, base, &hdata, AM, cvD32);
-      //  error_status_1 = caen.ErrorDecode(error_code_1);
+      //  error_status_1 = CAEN::ErrorDecode(error_code_1);
     } while (!(hdata & 0x02000000)); // skip up to the header
 
     pdest[*nentry] = hdata;
     *nentry += 1;
     do {
       error_code_2 = CAENVME_ReadCycle(handle, base, &data, AM, cvD32);
-      //  error_status_2 = caen.ErrorDecode(error_code_2);
+      //  error_status_2 = CAEN::ErrorDecode(error_code_2);
       pdest[*nentry] = data;
       *nentry += 1;
     } while (!(pdest[*nentry-1] & 0x04000000)); // copy until the trailer
@@ -518,7 +518,7 @@ int Module_v1785::V1785_EventRead(int32_t handle, uint32_t base, uint32_t *pdest
 #endif // USE_SINGLE_READ
 
 #ifdef USE_BLT_READ_1
-  CAEN caen;
+  
   int i;
   uint32_t hdata, data[V1785_MAX_CHANNELS+2], data;
   int count;
@@ -529,7 +529,7 @@ int Module_v1785::V1785_EventRead(int32_t handle, uint32_t base, uint32_t *pdest
   if (V1785_DataReady(handle, base, AM)) {
     do {
       error_code_1 = CAENVME_ReadCycle(handle, base, &hdata, AM, cvD32);
-      //  error_status_1 = caen.ErrorDecode(error_code_1);
+      //  error_status_1 = CAEN::ErrorDecode(error_code_1);
     } while (!(hdata & 0x02000000)); // skip up to the header
 
     AM = cvA32_S_BLT;
@@ -537,7 +537,7 @@ int Module_v1785::V1785_EventRead(int32_t handle, uint32_t base, uint32_t *pdest
 
     //mvme_read(mvme, data, base, (cnt+1)*4);
     error_code_2 = CAENVME_BLTReadCycle(handle, base, data, (count+1)*4, AM, cvD32, &count);
-    //  error_status_2 = caen.ErrorDecode(error_code_2);
+    //  error_status_2 = CAEN::ErrorDecode(error_code_2);
 
     pdest[0] = hdata;
     for (i=1 ;i<=count+1 ;i++)
@@ -549,7 +549,7 @@ int Module_v1785::V1785_EventRead(int32_t handle, uint32_t base, uint32_t *pdest
 #endif // USE_BLT_READ_1
 
 #ifdef USE_BLT_READ_2
-  CAEN caen;
+  
   int count;
   CVErrorCodes error_code;
   int error_status;
@@ -560,7 +560,7 @@ int Module_v1785::V1785_EventRead(int32_t handle, uint32_t base, uint32_t *pdest
 
     //  mvme_read(mvme, pdest, base, (V1785_MAX_CHANNELS+2)*4); //handle, data_pointer, base_address, number of entries
     error_code = CAENVME_BLTReadCycle(handle, base, pdest, (V1785_MAX_CHANNELS+2)*4, AM, cvD32, &count);
-    error_status = caen.ErrorDecode(error_code);
+    error_status = CAEN::ErrorDecode(error_code);
     count = (pdest[0] >> 8) & 0x3F;
     *nentry = count + 2;
 //  }
@@ -593,13 +593,13 @@ void Module_v1785::V1785_DataClear(int32_t handle, uint32_t base, CVAddressModif
 	CVErrorCodes error_code_1, error_code_2;
 	int error_status_1, error_status_2;
 	uint16_t write = 0x4;
-	CAEN caen;
+	
 
 	error_code_1 = CAENVME_WriteCycle(handle, base+V1785_BIT_SET2_RW, &write, AM, cvD16);
-	error_status_1 = caen.ErrorDecode(error_code_1);
+	error_status_1 = CAEN::ErrorDecode(error_code_1);
 
 	error_code_2 = CAENVME_WriteCycle(handle, base+V1785_BIT_CLEAR2_WO, &write, AM, cvD16);
-	error_status_2 = caen.ErrorDecode(error_code_2);
+	error_status_2 = CAEN::ErrorDecode(error_code_2);
 
 	if ( (error_status_1 == 1) && (error_status_2 == 1) ){  //success
 		//do nothing
@@ -611,18 +611,18 @@ void Module_v1785::V1785_DataClear(int32_t handle, uint32_t base, CVAddressModif
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785::V1785_EvtCntRead(int32_t handle, uint32_t base, uint32_t *evtcnt, CVAddressModifier AM){
-	CAEN caen;
+	
 	CVErrorCodes error_code_1, error_code_2;  //Error code if any
 	int read_1, read_2;
 	int error_status_1, error_status_2;
 
 	error_code_1 = CAENVME_ReadCycle(handle, base+V1785_EVT_CNT_L_RO, &read_1, AM, cvD16);
 	*evtcnt = read_1;
-	error_status_1 = caen.ErrorDecode(error_code_1);
+	error_status_1 = CAEN::ErrorDecode(error_code_1);
 
 	error_code_2 = CAENVME_ReadCycle(handle, base+V1785_EVT_CNT_H_RO, &read_2, AM, cvD16);
 	*evtcnt += (read_2 << 16);
-	error_status_2 = caen.ErrorDecode(error_code_2);
+	error_status_2 = CAEN::ErrorDecode(error_code_2);
 
 	if ( (error_status_1 == 1) == (error_status_2 == 1) ){  //success
         //do nothing
@@ -638,10 +638,10 @@ void Module_v1785::V1785_EvtCntReset(int32_t handle, uint32_t base, CVAddressMod
 	CVErrorCodes error_code;
     int error_status;
     uint16_t write = 1;
-    CAEN caen;
+    
 
     error_code = CAENVME_WriteCycle(handle, base+V1785_EVT_CNT_RST_WO, &write, AM, cvD16);
-    error_status = caen.ErrorDecode(error_code);
+    error_status = CAEN::ErrorDecode(error_code);
 
     if (error_status == 1){
     	//do nothing
@@ -656,10 +656,10 @@ void Module_v1785::V1785_IntSet(int32_t handle, uint32_t base, int level, int ve
 	CVErrorCodes error_code;
     int error_status;
     uint16_t write = vector & 0xFF;
-    CAEN caen;
+    
 
     error_code = CAENVME_WriteCycle(handle, base+V1785_INT_VECTOR_RW, &write, AM, cvD16);
-    error_status = caen.ErrorDecode(error_code);
+    error_status = CAEN::ErrorDecode(error_code);
 
     if (error_status == 1){
     	//do nothing
@@ -674,10 +674,10 @@ void Module_v1785::V1785_IntEnable(int32_t handle, uint32_t base, int level, CVA
 	CVErrorCodes error_code;
     int error_status;
     uint16_t write = level & 0x1F;
-    CAEN caen;
+    
 
     error_code = CAENVME_WriteCycle(handle, base+V1785_EVTRIG_REG_RW, &write, AM, cvD16);
-    error_status = caen.ErrorDecode(error_code);
+    error_status = CAEN::ErrorDecode(error_code);
 
     if (error_status == 1){
     	//do nothing
@@ -692,10 +692,10 @@ void Module_v1785::V1785_IntDisable(int32_t handle, uint32_t base, CVAddressModi
 	CVErrorCodes error_code;
     int error_status;
     uint16_t write = 0;
-    CAEN caen;
+    
 
     error_code = CAENVME_WriteCycle(handle, base+V1785_EVTRIG_REG_RW, &write, AM, cvD16);
-    error_status = caen.ErrorDecode(error_code);
+    error_status = CAEN::ErrorDecode(error_code);
 
     if (error_status == 1){
     	//do nothing
@@ -710,10 +710,10 @@ void Module_v1785::V1785_EvtTriggerSet(int32_t handle, uint32_t base, int count,
 	CVErrorCodes error_code;
     int error_status;
     uint16_t write = count & 0x1F;
-    CAEN caen;
+    
 
     error_code = CAENVME_WriteCycle(handle, base+V1785_EVTRIG_REG_RW, &write, AM, cvD16);
-    error_status = caen.ErrorDecode(error_code);
+    error_status = CAEN::ErrorDecode(error_code);
 
     if (error_status == 1){
     	//do nothing
@@ -728,10 +728,10 @@ void Module_v1785::V1785_SingleShotReset(int32_t handle, uint32_t base, CVAddres
 	CVErrorCodes error_code;
     int error_status;
     uint16_t write = 1;
-    CAEN caen;
+    
 
     error_code = CAENVME_WriteCycle(handle, base+V1785_SINGLE_RST_WO, &write, AM, cvD16);
-    error_status = caen.ErrorDecode(error_code);
+    error_status = CAEN::ErrorDecode(error_code);
 
     if (error_status == 1){
     	//do nothing
@@ -746,13 +746,13 @@ void Module_v1785::V1785_SoftReset(int32_t handle, uint32_t base, CVAddressModif
 	CVErrorCodes error_code_1, error_code_2;
     int error_status_1, error_status_2;
     uint16_t write = V1785_SOFT_RESET;
-    CAEN caen;
+    
 
     error_code_1 = CAENVME_WriteCycle(handle, base+V1785_BIT_SET1_RW, &write, AM, cvD16);
-    error_status_1 = caen.ErrorDecode(error_code_1);
+    error_status_1 = CAEN::ErrorDecode(error_code_1);
 
     error_code_2 = CAENVME_WriteCycle(handle, base+V1785_BIT_CLEAR1_RW, &write, AM, cvD16);
-    error_status_2 = caen.ErrorDecode(error_code_2);
+    error_status_2 = CAEN::ErrorDecode(error_code_2);
 
     if ( (error_status_1 == 1) && (error_status_2 == 1) ){
     	//do nothing
@@ -767,10 +767,10 @@ void Module_v1785::V1785_Trigger(int32_t handle, uint32_t base, CVAddressModifie
 	CVErrorCodes error_code;
     int error_status;
     uint16_t write = 0;
-    CAEN caen;
+    
 
     error_code = CAENVME_WriteCycle(handle, base+V1785_SWCOMM_WO, &write, AM, cvD16);
-    error_status = caen.ErrorDecode(error_code);
+    error_status = CAEN::ErrorDecode(error_code);
 
     if (error_status == 1){
     	//do nothing
@@ -786,12 +786,12 @@ int Module_v1785::V1785_ThresholdRead(int32_t handle, uint32_t base, uint16_t *t
     uint16_t read;
     CVErrorCodes error_code;
     //int error_status;
-    //CAEN caen;
+    //
 
 	for (k=0; k < V1785_MAX_CHANNELS*2; k++){
         error_code = CAENVME_ReadCycle(handle, base+V1785_THRES_BASE + 2*k, &read, AM, cvD16);
         threshold[k] = read & 0x1FF;
-        //error_status = caen.ErrorDecode(error_code);
+        //error_status = CAEN::ErrorDecode(error_code);
 	}
 
 	return V1785_MAX_CHANNELS;
@@ -804,12 +804,12 @@ int Module_v1785::V1785_ThresholdWrite(int32_t handle, uint32_t base, uint16_t *
 	uint16_t read;
 	CVErrorCodes error_code_1, error_code_2;
     //int error_status_1, error_status_2;
-    //CAEN caen;
+    //
 
 	for (k=0; k < V1785_MAX_CHANNELS*2; k++){
 		write = threshold[k] & 0x1FF;
 		error_code_1 = CAENVME_WriteCycle(handle, base+V1785_THRES_BASE + 4*k, &write, AM, cvD16);
-		//error_status_1 = caen.ErrorDecode(error_code_1);
+		//error_status_1 = CAEN::ErrorDecode(error_code_1);
 	}
 
 	for (k=0; k < V1785_MAX_CHANNELS*2; k++){

@@ -2,9 +2,6 @@
 #include "CAENVMElib.h"
 #include "CAENDigitizer.h"
 
-
-using namespace std;
-
 #ifndef CAEN_VME_DEF_H_
 #define CAEN_VME_DEF_H_
 

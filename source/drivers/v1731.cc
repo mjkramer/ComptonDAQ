@@ -20,7 +20,6 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	AM = v1731.am;
     base = v1731.base;
 	
-	CAEN caen;
 	
 	
 	printf("-------------------Setting-------------------------\n\n");
@@ -137,11 +136,11 @@ uint32_t Module_v1731::v1731_RegisterRead(int32_t handle, uint32_t base, int off
 	uint32_t read;
 	CVErrorCodes error_code;
 	int error_status;
-	CAEN caen;
+
 	
 	
 	error_code = CAENVME_ReadCycle(handle, base+offset, &read, AM, cvD32);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	return read;
 }
@@ -235,10 +234,9 @@ void     Module_v1731::v1731_RegisterWrite(int32_t handle, uint32_t base, int of
 	uint32_t write = value;
 	CVErrorCodes error_code;
 	int error_status;
-	CAEN caen;
 	
 	error_code = CAENVME_WriteCycle(handle, base+offset, &write, AM, cvD32);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -367,11 +365,11 @@ uint32_t Module_v1731::v1731_DataBlockRead(int32_t handle, uint32_t base, uint32
 	AM = cvA32_S_DATA;
 	int n = 0;
 	int error_status;
-	CAEN caen;
+
 	
 	
 	error_code = CAENVME_MBLTReadCycle(handle, base, pdest, *nentry<<2, AM, &n);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	return n;
 }
@@ -479,7 +477,6 @@ void     Module_v1731::v1731_Align64Set(int32_t handle, uint32_t base, CVAddress
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, int *CH0, int *CH2){
-	CAEN caen;
 	V1731 v1731;
 	CVErrorCodes error_code;
 	int memory_location = nsample / 16;  //for double sampling rate. Dividied by 8 for 500MS/s
@@ -517,7 +514,7 @@ int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base
     usleep(75000);  //Wait for buffer. Delay time depends on the size of the data block.
                     // If there is a VME Bus Error, try to increase the delay time.
 	error_code = CAENVME_MultiRead(handle, BASE, rawdata, nr_elem, am, datawidth, err_code);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	if (error_status == 1){
 		

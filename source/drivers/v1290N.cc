@@ -12,11 +12,11 @@ int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
 	Handle = vme->handle;
 	
 	V1290N v1290N;  //struct V1290N stores the base addr and AM
-	CAEN caen; //for ErrorDecode and AM_Decode
+	 //for ErrorDecode and AM_Decode
 	
 	CVErrorCodes error_code;
 	printf("Base Address of this CAEN V1290N: 0x%x\n", v1290N.base);
-	caen.print_AM_Decode(v1290N.am);  //print the address modifier mode
+	CAEN::print_AM_Decode(v1290N.am);  //print the address modifier mode
 	
     if(v1290N_isPresent(Handle, v1290N.base, v1290N.am) != 0){
     	printf("\n");
@@ -80,7 +80,7 @@ double Module_v1290N::GetModuleBuffer(VME_INTERFACE *vme){
 	Handle = vme->handle;
 	
 	V1290N v1290N;
-	CAEN caen;
+	
 	
 	FILE *pfile;
 	pfile = fopen("v1290N_data.dat", "w");
@@ -143,10 +143,10 @@ int  Module_v1290N::v1290N_DataRead(int32_t handle, uint32_t base, uint32_t *pde
 	CVErrorCodes error_code;
 	int error_status;
 	int n = 0;
-	CAEN caen;
+	
 	
 	error_code = CAENVME_BLTReadCycle(handle, base, pdest, sizeof(uint32_t)*nentry, AM, cvD32, &n);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	if(error_status == 1){  //success
 		return nentry;
@@ -166,14 +166,14 @@ int  Module_v1290N::v1290N_GeoWrite(int32_t handle, uint32_t base, int geo, CVAd
 	int error_status_1, error_status_2;
 	int read;
 	uint16_t write;
-	CAEN caen;
+	
 	
 	write = geo & 0x1F;
 	error_code_1 = CAENVME_WriteCycle(handle, base+V1290N_GEO_REG_RW, &write, AM, cvD16);
-	error_status_1 = caen.ErrorDecode(error_code_1);
+	error_status_1 = CAEN::ErrorDecode(error_code_1);
 	
 	error_code_2 = CAENVME_ReadCycle(handle, base+V1290N_GEO_REG_RW, &read, AM, cvD16);
-	error_status_2 = caen.ErrorDecode(error_code_2);
+	error_status_2 = CAEN::ErrorDecode(error_code_2);
 	
 	if ( (error_status_1 == 1)&&(error_status_2 == 1) ){  //success
 		return (int) (read & 0x1F);
@@ -191,10 +191,10 @@ void Module_v1290N::v1290N_SoftReset(int32_t handle, uint32_t base, CVAddressMod
 	CVErrorCodes error_code;
 	int error_status;
 	uint16_t write = 0;
-	CAEN caen;
+	
 	
 	error_code = CAENVME_WriteCycle(handle, base+V1290N_MODULE_RESET_WO, &write, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	if(error_status == 1){  //success
 		//do nothing
@@ -211,10 +211,10 @@ void Module_v1290N::v1290N_SoftClear(int32_t handle, uint32_t base, CVAddressMod
 	CVErrorCodes error_code;
 	int error_status;
 	uint16_t write = 0;
-	CAEN caen;
+	
 	
 	error_code = CAENVME_WriteCycle(handle, base+V1290N_SOFT_CLEAR_WO, &write, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	if(error_status == 1){  //success
 		//do nothing
@@ -231,10 +231,10 @@ void Module_v1290N::v1290N_SoftTrigger(int32_t handle, uint32_t base, CVAddressM
 	CVErrorCodes error_code;
 	int error_status;
 	uint16_t write = 0;
-	CAEN caen;
+	
 	
 	error_code = CAENVME_WriteCycle(handle, base+V1290N_SOFT_TRIGGER_WO, &write, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	if(error_status == 1){  //success
 		//do nothing
@@ -250,10 +250,10 @@ int  Module_v1290N::v1290N_DataReady(int32_t handle, uint32_t base, CVAddressMod
 	int read;
 	CVErrorCodes error_code;
 	int error_status;
-	CAEN caen;
+	
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1290N_SR_RO, &read, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	return (read & V1290N_DATA_READY);
 }
@@ -265,10 +265,10 @@ int  Module_v1290N::v1290N_EvtCounter(int32_t handle, uint32_t base, CVAddressMo
 	int read;
 	CVErrorCodes error_code;
 	int error_status;
-	CAEN caen;
+	
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1290N_EVT_CNT_RO, &read, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	return read;
 }
@@ -280,10 +280,10 @@ int  Module_v1290N::v1290N_EvtStored(int32_t handle, uint32_t base, CVAddressMod
 	int read;
 	CVErrorCodes error_code;
 	int error_status;
-	CAEN caen;
+	
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1290N_EVT_STORED_RO, &read, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	return read;
 }
@@ -643,10 +643,10 @@ int  Module_v1290N::v1290N_isPresent(int32_t handle, uint32_t base, CVAddressMod
 	int status;
 	CVErrorCodes error_code;
 	int error_status;
-	CAEN caen;
+	
 	
 	error_code = CAENVME_ReadCycle(handle, base+V1290N_FIRM_REV_RO, &status, AM, cvD16);
-	error_status = caen.ErrorDecode(error_code);
+	error_status = CAEN::ErrorDecode(error_code);
 	
 	if (status == 0xFFFF)
 	    return 0;
