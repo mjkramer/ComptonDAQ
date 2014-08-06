@@ -49,8 +49,6 @@ int DataAcquisition::Initialize(){
     	(*i)->InitializeVMEModule(&caen);
     }
 
-
-
     return 0;
 
 
@@ -61,6 +59,29 @@ int DataAcquisition::Initialize(){
 
 int DataAcquisition::StartRun(){
 	fConfigFileManager->IncrementRunNumber();
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 
 

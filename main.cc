@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdint>
+#include "keyhit.h"
 
 //daq includes
 #include "DataAcquisition.hh"
@@ -21,11 +22,12 @@ int main()
     DataAcquisition *daq = new DataAcquisition(config, histo, vis);
       daq->Initialize();
 
-      //if(key pressed):
-      daq->StartRun();
+      std::cout << "Please press a key to start the DAQ" << std::endl;
+      if(kbhit()):
+        daq->StartRun();
 
       //if(key pressed):
-      daq->StopRun();
+      //daq->StopRun();
 
   delete daq; 
   daq = 0;
