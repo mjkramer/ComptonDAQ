@@ -43,7 +43,7 @@ main: $(OBJS)
 	@echo
 
 $(TEMP)/main.o: main.cc
-	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
+	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS) $(ROOTCFLAGS)
 	@echo Compiling $<...
 
 $(TEMP)/ConfigFileManager.o: $(SRC_DIR)/ConfigFileManager.cc

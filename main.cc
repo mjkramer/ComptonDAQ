@@ -13,7 +13,7 @@ int main()
 {
     ConfigFileManager *config = new ConfigFileManager();
     HistoManager *histo = new HistoManager();
-    UiManager *vis = new UiManager();
+    UiManager *vis = new UiManager(histo);
 
     //pass some information to the run here..
 
