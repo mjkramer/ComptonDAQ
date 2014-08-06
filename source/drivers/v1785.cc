@@ -58,7 +58,7 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-double Module_v1755::GetModuleBuffer(VME_INTERFACE *vme){
+double Module_v1785::GetModuleBuffer(VME_INTERFACE *vme){
 	
 	int32_t Handle = vme->handle;
 	V1785 v1785;
@@ -76,7 +76,7 @@ double Module_v1755::GetModuleBuffer(VME_INTERFACE *vme){
 	        channel = (w >> 17) & 0xF;
 	        value = (w & 0x3FFF);}
 	
-	return value
+	return value;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
