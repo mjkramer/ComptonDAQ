@@ -51,7 +51,7 @@ $(TEMP)/ConfigFileManager.o: $(SRC_DIR)/ConfigFileManager.cc
 	@echo Compiling $<...
 
 $(TEMP)/DataAcquisition.o: $(SRC_DIR)/DataAcquisition.cc
-	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
+	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS) $(ROOTCFLAGS)
 	@echo Compiling $<...
 
 $(TEMP)/HistoManager.o: $(SRC_DIR)/HistoManager.cc
