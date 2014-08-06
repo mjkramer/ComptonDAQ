@@ -8,6 +8,10 @@
 #include "v1290N.hh"
 #include "v1731.hh"
 
+extern "C" {
+#include "keyhit.h"
+}
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataAcquisition::DataAcquisition(ConfigFileManager* fConfig, HistoManager* fHisto, UiManager* fUi):fConfigFileManager(fConfig), fHistoManager(fHisto), fUiManager(fUi){ 
@@ -60,7 +64,29 @@ int DataAcquisition::Initialize(){
 int DataAcquisition::StartRun(){
 	fConfigFileManager->IncrementRunNumber();
 
-	std::cout << "Hello world, !" << std::endl;
+	while(true){
+		if(kbhit()){
+			std::cout<< "To quit the run press [q], to resume press any other key."
+			int c = 0;
+			c = getch()
+			if(c == q){
+				break;
+			}
+		}//end kbhit
+
+
+
+
+
+
+
+
+
+
+
+		std::cout << "Hello" << std::endl;
+
+	}
 
 
 

@@ -33,6 +33,5 @@ int main()
   delete daq; 
   daq = 0;
   
-
   return 0;
 }
