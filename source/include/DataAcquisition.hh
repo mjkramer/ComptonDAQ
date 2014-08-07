@@ -32,7 +32,6 @@ class DataAcquisition{
 
   	int run_number;
 	bool state;
-  	VME_INTERFACE caen;
   	std::vector<ModuleManager*>modules;
  
   	

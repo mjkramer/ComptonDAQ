@@ -54,8 +54,8 @@ using namespace std;
 class Module_v1785: public ModuleManager{
 
   public:
-	int InitializeVMEModule(VME_INTERFACE *vme);
-	double GetModuleBuffer(VME_INTERFACE *vme);
+	int InitializeVMEModule();
+	double GetModuleBuffer();
 	
 	int V1785_CSR1Read(int32_t handle, uint32_t base, CVAddressModifier AM);
 	int V1785_CSR2Read(int32_t handle, uint32_t base, CVAddressModifier AM);

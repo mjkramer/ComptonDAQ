@@ -1,6 +1,8 @@
+
 #include "v1290N.hh"
 
-int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
+
+int  Module_v1290N::InitializeVMEModule(){
 	
 	printf("\n\n\n");
 	
@@ -9,7 +11,7 @@ int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
 	printf("***************************************************\n\n\n");
 
 	int32_t Handle;
-	Handle = vme->handle;
+	Handle = ModuleManager::GetHandle();
 	
 	  //struct V1290N stores the base addr and AM
 	 //for ErrorDecode and AM_Decode
@@ -60,7 +62,7 @@ int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-double Module_v1290N::GetModuleBuffer(VME_INTERFACE *vme){
+double Module_v1290N::GetModuleBuffer(){
 	
 	int nentry = 0;
 	uint32_t rawdata[100]; //arbitary dimension
@@ -77,7 +79,7 @@ double Module_v1290N::GetModuleBuffer(VME_INTERFACE *vme){
 	double time_diff;
 	int32_t Handle;
 	
-	Handle = vme->handle;
+	Handle = ModuleManager::GetHandle();
 	
 	
 	

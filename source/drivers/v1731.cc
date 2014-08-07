@@ -4,14 +4,15 @@
 
 
 
-int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
+int Module_v1731::InitializeVMEModule(){
 	
 	printf("\n\n\n");
 	printf("***************************************************\n");
 	printf("*    Initializing CAEN V1731 Digitizer            *\n");
 	printf("***************************************************\n\n\n");
 	
-	int32_t Handle = vme->handle;
+	int32_t Handle;
+	Handle = ModuleManager::GetHandle();
 	
 	
 	CVAddressModifier AM;
@@ -66,9 +67,10 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
+double Module_v1731::GetModuleBuffer(){  //testing
 	
-	int32_t Handle = vme->handle;
+	int32_t Handle;
+	Handle = ModuleManager::GetHandle();
 	int status;
 	int nsample = 60000;
     int CH0[nsample];

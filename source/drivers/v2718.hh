@@ -39,12 +39,12 @@
 #define  V2718_LM_ADL_RW          (uint32_t) (0x0028)
 #define  V2718_LM_ADH_RW          (uint32_t) (0x0029)
 #define  V2718_LM_C_RW            (uint32_t) (0x002C)
-#define	 LINK					  (short)	 3
+
 
 class Module_v2718: public ModuleManager{
 
   public:
-	int InitializeVMEModule(VME_INTERFACE *vme); 
+	int InitializeVMEModule(); 
 
 	// Configuration of the pulsers.
 	// @param pulser:   0=PulserA, 1=PulserB

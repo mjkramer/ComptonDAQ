@@ -3,7 +3,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
+int Module_v1785:: InitializeVMEModule(){
 	
     printf("\n\n\n");
 	printf("***************************************************\n");
@@ -11,8 +11,7 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
 	printf("***************************************************\n\n\n");
 
     int32_t Handle;
-    Handle = vme->handle;  //Obtain the handle, which was generated from v2718 earlier,
-                           //from the struct
+    Handle = ModuleManager::GetHandle();
 
 
     CVErrorCodes error_code;
@@ -55,9 +54,10 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-double Module_v1785::GetModuleBuffer(VME_INTERFACE *vme){
+double Module_v1785::GetModuleBuffer(){
 	
-	int32_t Handle = vme->handle;
+	int32_t Handle;
+	Handle = ModuleManager::GetHandle();
 	
 	
     int i;

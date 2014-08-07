@@ -88,8 +88,8 @@
 
 class Module_v1731: public ModuleManager{
   public:
-	int InitializeVMEModule(VME_INTERFACE *vme);
-	double GetModuleBuffer(VME_INTERFACE *vme);
+	int InitializeVMEModule();
+	double GetModuleBuffer();
 	
 	uint32_t v1731_RegisterRead(int32_t handle, uint32_t base, int offset, CVAddressModifier AM);
 	

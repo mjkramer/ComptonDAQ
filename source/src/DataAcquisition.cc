@@ -50,7 +50,7 @@ int DataAcquisition::Initialize(){
     modules.push_back(new Module_v1731()); //Digitizer
 
     for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-    	(*i)->InitializeVMEModule(&caen);
+    	(*i)->InitializeVMEModule();
     }
 
     return 0;

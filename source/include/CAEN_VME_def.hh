@@ -15,13 +15,14 @@ namespace CAEN{
 
 namespace V2718{
 	 static const uint32_t base                       = 0xA1000000;
-	 static const short board_number					 = 0;
+	 static const short board_number		  = 0;
+	 static const CVBoardTypes board_type		  = cvV2718;
+	 static const short link			  = 3;
 }
 
 namespace V1785{  
 	 static const uint32_t base                       = 0xC1000000;
-	 static const CVAddressModifier am                = cvA32_S_DATA;  // A32 supervisory data access.
-                                                                     // Check the compatibility before changing it!
+	 static const CVAddressModifier am                = cvA32_S_DATA;
 }
 
 namespace V1290N{

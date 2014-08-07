@@ -2,26 +2,22 @@
 #include "CAEN_VME_def.hh"
 
 
-int Module_v2718::InitializeVMEModule(VME_INTERFACE *vme){
-	printf("\n****Initializing CAEN V2718****\n");
-	
-	int32_t Handle = 5000;
-    CVErrorCodes error_code = CAENVME_Init(cvV2718, LINK, V2718::board_number, &Handle);
+int Module_v2718::InitializeVMEModule(){
+	printf("****Initializing CAEN V2718****");
+
+	int32_t Handle = 0;
+    	CVErrorCodes error_code = CAENVME_Init(V2718::board_type, V2718::link, V2718::board_number, &Handle);
 
 	if(CAEN::ErrorDecode(error_code)){
 		printf("Failed to initialize the V2718 controller!\n");
 		return 1;
 	}
 
-	vme->handle = Handle;  //passing the handle to struct in ModuleManager.hh
+	ModuleManager::SetHandle(Handle);
+	printf("  --  OK\n");
+	return 0;	
 }
 
-
-
-
-
-// The following functions must be execueted after initialization (i.e. after obtaining
-// the handle).
 
 void Module_v2718:: V2718_PulserConfSet(int32_t handle, int pulser, uint32_t period, uint32_t width, int pulseNo){
     CVPulserSelect pulSel;  // 0 for pulser A, 1 for pulser B
@@ -105,15 +101,3 @@ void Module_v2718:: V2718_PulserStop(int32_t handle, int pulser){
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-
-
-
-
-
-
-
-
-
-
-

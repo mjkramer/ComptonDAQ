@@ -5,18 +5,13 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <cstdint>  //c++11 standard
+#include <cstdint>
 
 
 using namespace std;
 
 #ifndef SOURCE_INCLUDE_MODULEMANAGER_H_
 #define SOURCE_INCLUDE_MODULEMANAGER_H_
-
-typedef struct{
-	int32_t handle;
-
-} VME_INTERFACE;
 
 class ModuleManager{
   
@@ -25,21 +20,23 @@ class ModuleManager{
     ~ModuleManager();
 
 
-    //return 1 on success and 0 on failure
-    virtual int InitializeVMEModule(VME_INTERFACE *vme);
+    //return 0 on success and 1 on failure
+    virtual int InitializeVMEModule();
     virtual int SetOnline();
     virtual int SetOffline();
     virtual int DataReady();
-  	virtual int DeleteBuffer();
-  	virtual int ResetModule();
+    virtual int DeleteBuffer();
+    virtual int ResetModule();
     virtual int CloseConnection();
-    virtual double GetModuleBuffer(VME_INTERFACE *vme);
+    virtual double GetModuleBuffer();
 
-   	//GetAddress()
+    void SetHandle(int32_t h){handle = h;}
+    int32_t GetHandle(){return handle;}
+
 
   protected:
-   	};
+    static int32_t handle;
 
-
+};
 
 #endif //SOURCE_INCLUDE_MODULEMANAGER_H_

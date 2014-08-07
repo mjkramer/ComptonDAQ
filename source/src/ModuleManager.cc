@@ -1,6 +1,7 @@
 
 #include "ModuleManager.hh"
 
+int32_t ModuleManager::handle = 0;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -17,7 +18,7 @@ ModuleManager::~ModuleManager(){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
-int ModuleManager::InitializeVMEModule(VME_INTERFACE *vme){
+int ModuleManager::InitializeVMEModule(){
 	return 1;
 }
 
@@ -41,7 +42,7 @@ int ModuleManager::ResetModule(){
 	return 1;
 }
 
-double ModuleManager::GetModuleBuffer(VME_INTERFACE *vme){
+double ModuleManager::GetModuleBuffer(){
 	return 1.0;
 }
 
