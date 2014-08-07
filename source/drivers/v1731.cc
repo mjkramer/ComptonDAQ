@@ -13,12 +13,12 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	
 	int32_t Handle = vme->handle;
 	
-	V1731 v1731;
+	
 	CVAddressModifier AM;
 	uint32_t base;
 	
-	AM = v1731.am;
-    base = v1731.base;
+	AM = V1731::am;
+    	base = V1731::base;
 	
 	
 	
@@ -26,7 +26,7 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 	
 	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //Reset acquisition
 	v1731_RegisterWrite(Handle, base, V1731_SW_RESET, 1, AM);  
-	v1731_RegisterWrite(Handle, base, V1731_SW_CLEAR, 0x2, v1731.am);
+	v1731_RegisterWrite(Handle, base, V1731_SW_CLEAR, 0x2, AM);
 	
 	
 	v1731_RegisterWrite(Handle, base, V1731_ZS_NSAMP, 0,AM);
@@ -67,7 +67,7 @@ int Module_v1731::InitializeVMEModule(VME_INTERFACE *vme){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
-	V1731 v1731;
+	
 	int32_t Handle = vme->handle;
 	int status;
 	int nsample = 60000;
@@ -79,7 +79,7 @@ double Module_v1731::GetModuleBuffer(VME_INTERFACE *vme){  //testing
     	CH2[i] = 0;
     }
 		
-	status = v1731_ReadBuffer_and_Output(Handle, v1731.base, nsample, v1731.am, CH0, CH2);
+	status = v1731_ReadBuffer_and_Output(Handle, V1731::base, nsample, V1731::am, CH0, CH2);
 	
 	/* For testing only
 	FILE *pfile0 = fopen("data.dat", "w");
@@ -477,7 +477,7 @@ void     Module_v1731::v1731_Align64Set(int32_t handle, uint32_t base, CVAddress
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, int *CH0, int *CH2){
-	V1731 v1731;
+	
 	CVErrorCodes error_code;
 	int memory_location = nsample / 16;  //for double sampling rate. Dividied by 8 for 500MS/s
 	
@@ -497,14 +497,14 @@ int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base
     for(int i=0; i<nr_elem; i++){
     	rawdata[i]       = 0;  //initialize the array
     	datawidth[i]     = cvD32;
-    	am[i]            = v1731.am;
-    	BASE[i]          = v1731.base;
+    	am[i]            = V1731::am;
+    	BASE[i]          = V1731::base;
     	err_code[i]      = cvSuccess;
     }
     
     printf("Memory cleared...\n");
     
-    v1731_RegisterWrite(handle, v1731.base, V1731_SW_CLEAR, 0x2, v1731.am);
+    v1731_RegisterWrite(handle, V1731::base, V1731_SW_CLEAR, 0x2, V1731::am);
     
     printf("Data acquisition starts...\n");
     

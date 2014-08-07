@@ -15,14 +15,11 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
                            //from the struct
 
 
-    V1785 v1785;  // The struct contains the base addr and the addr modifier (in "include/CAEN_VME_def.hh")
-          // The class that contains error decoding and AM decoding function (in "include/CAEN_VME_def.hh")
-
     CVErrorCodes error_code;
-    printf("Base Address of this CAEN V1785: 0x%x\n", v1785.base);
-    CAEN::print_AM_Decode(v1785.am);  //print the address modifier mode
+    printf("Base Address of this CAEN V1785: 0x%x\n", V1785::base);
+    CAEN::print_AM_Decode(V1785::am);  //print the address modifier mode
 
-    if(V1785_isPresent(Handle, v1785.base, v1785.am) != 0){
+    if(V1785_isPresent(Handle, V1785::base, V1785::am) != 0){
     	printf("\n");
     	printf("V1785 found!\n");
 
@@ -33,7 +30,7 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
 
     //clears all the data, event counter, bit set, bit clear..
     printf("Sending reset signal to V1785..\n");
-    V1785_SoftReset(Handle, v1785.base, v1785.am);
+    V1785_SoftReset(Handle, V1785::base, V1785::am);
 
     //disable 7 out of 8 channels (only ch0-high is used) - each channel has a high&low
     printf("Starting do disable channels 0-7..\n\n");
@@ -44,14 +41,14 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
     			 0x100,0x100,0x100,0x100,
     			 0x100,0x100,0x100};
 
-    if(V1785_ThresholdWrite(Handle, v1785.base, V1785_threshold, v1785.am) != 8){
+    if(V1785_ThresholdWrite(Handle, V1785::base, V1785_threshold, V1785::am) != 8){
     	printf("Error: Disabling channels not successful!\n");
     	return 0;
     }
     printf("Disabling channels successfully.\n");
 
     printf("---------------CAEN V1785 status-------------------\n\n\n");
-    V1785_Status(Handle, v1785.base, v1785.am);
+    V1785_Status(Handle, V1785::base, V1785::am);
 
     return 1;
 }
@@ -61,14 +58,14 @@ int Module_v1785:: InitializeVMEModule(VME_INTERFACE *vme){
 double Module_v1785::GetModuleBuffer(VME_INTERFACE *vme){
 	
 	int32_t Handle = vme->handle;
-	V1785 v1785;
+	
 	
     int i;
 	int nentry = 0;
 	int value =0;
 	int channel =0;
 	uint32_t data[V1785_MAX_CHANNELS+2];
-	V1785_EventRead(Handle, v1785.base, data, &nentry, v1785.am);
+	V1785_EventRead(Handle, V1785::base, data, &nentry, V1785::am);
 
 	for (i = 0; i < nentry; i++) {
 	    uint32_t w = data[i];

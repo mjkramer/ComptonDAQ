@@ -80,7 +80,7 @@ $(TEMP)/keyhit.o: $(SRC_DIR)/keyhit.c
 	@echo Compiling $<...
 
 $(TEMP)/CAEN_VME_def.o: $(SRC_DIR)/CAEN_VME_def.cc
-	$(CC) -c $< -o $@ $(INCLUDES)
+	$(CXX) -c $< -o $@ $(INCLUDES) $(CXX_FLAGS)
 	@echo Compiling $<...
 
 

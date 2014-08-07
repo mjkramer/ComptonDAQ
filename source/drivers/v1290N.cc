@@ -11,14 +11,14 @@ int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
 	int32_t Handle;
 	Handle = vme->handle;
 	
-	V1290N v1290N;  //struct V1290N stores the base addr and AM
+	  //struct V1290N stores the base addr and AM
 	 //for ErrorDecode and AM_Decode
 	
 	CVErrorCodes error_code;
-	printf("Base Address of this CAEN V1290N: 0x%x\n", v1290N.base);
-	CAEN::print_AM_Decode(v1290N.am);  //print the address modifier mode
+	printf("Base Address of this CAEN V1290N: 0x%x\n", V1290N::base);
+	CAEN::print_AM_Decode(V1290N::am);  //print the address modifier mode
 	
-    if(v1290N_isPresent(Handle, v1290N.base, v1290N.am) != 0){
+    if(v1290N_isPresent(Handle, V1290N::base, V1290N::am) != 0){
     	printf("\n");
     	printf("V1290N found!\n");
 
@@ -29,31 +29,31 @@ int  Module_v1290N::InitializeVMEModule(VME_INTERFACE *vme){
     printf("-----------------------------------------\n\n");
     
     printf("Setting to Trigger Matching Mode...\n");
-    v1290N_TriggerMatchingSet(Handle, v1290N.base, v1290N.am);
+    v1290N_TriggerMatchingSet(Handle, V1290N::base, V1290N::am);
     
     printf("Setting to detect the leading edge of the hot signal...\n");
     int eLeading = 1;
     int eTrailing = 0;
-    v1290N_SetEdgeDetection(Handle, v1290N.base, eLeading, eTrailing, v1290N.am);
+    v1290N_SetEdgeDetection(Handle, V1290N::base, eLeading, eTrailing, V1290N::am);
     
     printf("Setting the the search window width to be 400 ns (0x10)...\n");
-    v1290N_WidthSet(Handle, v1290N.base, 0x10, v1290N.am);
+    v1290N_WidthSet(Handle, V1290N::base, 0x10, V1290N::am);
     
     printf("Setting the window offset to be -425 ns (0xFFEE)...\n");
-    v1290N_OffsetSet(Handle, v1290N.base, 0xFFEE, v1290N.am);
+    v1290N_OffsetSet(Handle, V1290N::base, 0xFFEE, V1290N::am);
     
     printf("Setting the reject margin to be 25 ns (0x1)...\n");
-    v1290N_RejectSet(Handle, v1290N.base, 0x1, v1290N.am);
+    v1290N_RejectSet(Handle, V1290N::base, 0x1, V1290N::am);
     
-    v1290N_ExtraSet(Handle, v1290N.base, 0, v1290N.am);  //no extra search margin
+    v1290N_ExtraSet(Handle, V1290N::base, 0, V1290N::am);  //no extra search margin
     
     printf("Disable TDC Headers and Trailers\n");
-    v1290N_Disable_Header_Trailer(Handle, v1290N.base, v1290N.am);
+    v1290N_Disable_Header_Trailer(Handle, V1290N::base, V1290N::am);
     
     printf("Settings of v1290N completed\n");
     printf("-----------------------------------------\n\n");
     
-    v1290N_Status(Handle, v1290N.base, v1290N.am);
+    v1290N_Status(Handle, V1290N::base, V1290N::am);
     
     return 1;
 }
@@ -79,15 +79,15 @@ double Module_v1290N::GetModuleBuffer(VME_INTERFACE *vme){
 	
 	Handle = vme->handle;
 	
-	V1290N v1290N;
+	
 	
 	
 	FILE *pfile;
 	pfile = fopen("v1290N_data.dat", "w");
 	
-	v1290N_SoftClear(Handle, v1290N.base, v1290N.am);
+	v1290N_SoftClear(Handle, V1290N::base, V1290N::am);
 	
-	v1290N_EventRead(Handle, v1290N.base, rawdata, &nentry, v1290N.am);
+	v1290N_EventRead(Handle, V1290N::base, rawdata, &nentry, V1290N::am);
 	
 	for (int i=0; i<(nentry - 1); i++){
 		header[i] = (rawdata[i] >> 27);  //Bits [31,27] identify the type

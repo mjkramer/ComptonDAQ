@@ -1,5 +1,4 @@
-#include "CAEN_VME_def.cc"
-
+#include "CAEN_VME_def.hh"
 
 namespace CAEN{
 	

@@ -2,14 +2,14 @@
 #include "CAENVMElib.h"
 #include "CAENDigitizer.h"
 
-#ifndef CAEN_VME_DEF_H_
-#define CAEN_VME_DEF_H_
+#ifndef SOURCE_INCLUDE_CAEN_VME_DEF_H_
+#define SOURCE_INCLUDE_CAEN_VME_DEF_H_
 
 
 namespace CAEN{
-	 int ErrorDecode(CVErrorCodes error_code);
-	 void print_AM_Decode(CVAddressModifier AM);
-	 int ErrorDecode_DGTZ(CAEN_DGTZ_ErrorCode error_code);
+	 extern int ErrorDecode(CVErrorCodes error_code);
+	 extern void print_AM_Decode(CVAddressModifier AM);
+	 extern int ErrorDecode_DGTZ(CAEN_DGTZ_ErrorCode error_code);
 }//end namespace CAEN
 
 
@@ -38,4 +38,4 @@ namespace V1731{
 }
 
 
-#endif  //CAEN_VME_DEF_H_
+#endif  //SOURCE_INCLUDE_CAEN_VME_DEF_H_
