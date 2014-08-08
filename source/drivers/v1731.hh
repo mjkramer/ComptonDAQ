@@ -1,6 +1,7 @@
 #include "ModuleManager.hh"
 #include "CAEN_VME_def.hh"
 
+class DataBlock;
 
 #ifndef SOURCE_DRIVERS_V1731_H_
 #define SOURCE_DRIVERS_V1731_H_
@@ -89,7 +90,7 @@
 class Module_v1731: public ModuleManager{
   public:
 	int InitializeVMEModule();
-	double GetModuleBuffer();
+	DataBlock* GetModuleBuffer();
 	
 	uint32_t v1731_RegisterRead(int32_t handle, uint32_t base, int offset, CVAddressModifier AM);
 	

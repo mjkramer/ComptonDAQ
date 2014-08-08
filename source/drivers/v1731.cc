@@ -67,7 +67,7 @@ int Module_v1731::InitializeVMEModule(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-double Module_v1731::GetModuleBuffer(){  //testing
+DataBlock* Module_v1731::GetModuleBuffer(){  //testing
 	
 	int32_t Handle;
 	Handle = ModuleManager::GetHandle();
@@ -93,7 +93,7 @@ double Module_v1731::GetModuleBuffer(){  //testing
 	fclose(pfile0);
 	*/
 	
-	return status;
+	return NULL;
 }
 
 

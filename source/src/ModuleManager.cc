@@ -1,5 +1,5 @@
-
 #include "ModuleManager.hh"
+#include "DataBlock.hh"
 
 int32_t ModuleManager::handle = 0;
 
@@ -42,8 +42,8 @@ int ModuleManager::ResetModule(){
 	return 1;
 }
 
-double ModuleManager::GetModuleBuffer(){
-	return 1.0;
+DataBlock* ModuleManager::GetModuleBuffer(){
+	return NULL;
 }
 
 int ModuleManager::CloseConnection(){

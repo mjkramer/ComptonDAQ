@@ -7,8 +7,7 @@
 #include <cstdlib>
 #include <cstdint>
 
-
-using namespace std;
+class DataBlock;
 
 #ifndef SOURCE_INCLUDE_MODULEMANAGER_H_
 #define SOURCE_INCLUDE_MODULEMANAGER_H_
@@ -28,7 +27,7 @@ class ModuleManager{
     virtual int DeleteBuffer();
     virtual int ResetModule();
     virtual int CloseConnection();
-    virtual double GetModuleBuffer();
+    virtual DataBlock* GetModuleBuffer();
 
     void SetHandle(int32_t h){handle = h;}
     int32_t GetHandle(){return handle;}

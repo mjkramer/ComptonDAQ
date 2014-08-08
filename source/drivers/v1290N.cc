@@ -1,6 +1,5 @@
-
 #include "v1290N.hh"
-
+#include "DataBlock.hh"
 
 int  Module_v1290N::InitializeVMEModule(){
 	
@@ -62,7 +61,7 @@ int  Module_v1290N::InitializeVMEModule(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-double Module_v1290N::GetModuleBuffer(){
+DataBlock* Module_v1290N::GetModuleBuffer(){
 	
 	int nentry = 0;
 	uint32_t rawdata[100]; //arbitary dimension
@@ -110,7 +109,7 @@ double Module_v1290N::GetModuleBuffer(){
 	}
     
 	fclose(pfile);
-	return 1.0;
+	return NULL;
 
 }
 

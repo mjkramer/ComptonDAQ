@@ -29,7 +29,7 @@ endif
 #names of the targets
 OBJS =  $(TEMP)/main.o $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/UiManager.o $(TEMP)/RootDict.o
 OBJS += $(TEMP)/ModuleManager.o $(TEMP)/ConfigFileManager.o $(TEMP)/DataBlock.o $(TEMP)/CAEN_VME_def.o $(TEMP)/keyhit.o
-OBJS += $(TEMP)/v1290N.o $(TEMP)/v1785.o $(TEMP)/v2718.o $(TEMP)/v1731.o 
+OBJS += $(TEMP)/v1785.o $(TEMP)/v1290N.o $(TEMP)/v2718.o $(TEMP)/v1731.o 
 
 LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lCAENComm -lCAENDigitizer -lconfig++
 
