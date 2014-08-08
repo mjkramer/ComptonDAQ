@@ -73,12 +73,12 @@ int DataAcquisition::StartRun(){
 			//for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
     			//	DataBlockVector XXX = (*i)->GetModuleBuffer();
 			//	pass it to histomanager
-    }
+    //}
 			
 
 
 		
-}//end DataReady
+//}//end DataReady
 
 	}//end while
 
