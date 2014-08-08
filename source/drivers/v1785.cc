@@ -4,35 +4,22 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785:: InitializeVMEModule(){
-	
-    printf("\n\n\n");
-	printf("***************************************************\n");
-	printf("*    Initializing CAEN V1785 Peak ADC...          *\n");
-	printf("***************************************************\n\n\n");
+	printf("****    Initializing CAEN V1785 Peak ADC...          ****");
 
-    int32_t Handle;
-    Handle = ModuleManager::GetHandle();
+   	int32_t Handle;
+    	Handle = ModuleManager::GetHandle();
+        CVErrorCodes error_code;
 
 
-    CVErrorCodes error_code;
-    printf("Base Address of this CAEN V1785: 0x%x\n", V1785::base);
-    CAEN::print_AM_Decode(V1785::am);  //print the address modifier mode
-
-    if(V1785_isPresent(Handle, V1785::base, V1785::am) != 0){
-    	printf("\n");
-    	printf("V1785 found!\n");
-
-    }else{
+    if(V1785_isPresent(Handle, V1785::base, V1785::am) == 0){
     	printf("Error: V1785 not found!\n");
-        return 0;
+        return 1;
     }
 
     //clears all the data, event counter, bit set, bit clear..
-    printf("Sending reset signal to V1785..\n");
     V1785_SoftReset(Handle, V1785::base, V1785::am);
 
     //disable 7 out of 8 channels (only ch0-high is used) - each channel has a high&low
-    printf("Starting do disable channels 0-7..\n\n");
     uint16_t V1785_threshold[16] = {0x000, //ch0-high
     			    0x100, //ch1-low
     			 0x100,0x100,0x100,
@@ -44,12 +31,9 @@ int Module_v1785:: InitializeVMEModule(){
     	printf("Error: Disabling channels not successful!\n");
     	return 0;
     }
-    printf("Disabling channels successfully.\n");
 
-    printf("---------------CAEN V1785 status-------------------\n\n\n");
-    V1785_Status(Handle, V1785::base, V1785::am);
-
-    return 1;
+    printf(" --  OK\n");
+    return 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -219,20 +203,24 @@ void Module_v1785:: V1785_ControlRegister1Write(int32_t handle, uint32_t base, u
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void Module_v1785:: V1785_OnlineSet(int32_t handle, uint32_t base, CVAddressModifier AM){
+int Module_v1785::SetOnline(){
+
+	int32_t Handle;
+    	Handle = ModuleManager::GetHandle();
 	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t write_online = 0x2;
 	int error_status;
 	
-	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_CLEAR2_WO, &write_online, AM, cvD16);
+	error_code = CAENVME_WriteCycle(Handle, V1785::base+V1785_BIT_CLEAR2_WO, &write_online, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
-		//do nothing
+		return 0;
 
 	}else{  //failure
-		printf("V1785_V1785_OnlineSet could not be executed!\n");
+		printf("V1785_OnlineSet could not be executed successfully!\n");
+		return 1;
 
 	}
 	
@@ -240,20 +228,24 @@ void Module_v1785:: V1785_OnlineSet(int32_t handle, uint32_t base, CVAddressModi
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void Module_v1785:: V1785_OfflineSet(int32_t handle, uint32_t base, CVAddressModifier AM){
+int Module_v1785::SetOffline(){
+
+	int32_t Handle;
+    	Handle = ModuleManager::GetHandle();
 	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t write_offline = 0x2;
 	int error_status;
 	
-	error_code = CAENVME_WriteCycle(handle, base+V1785_BIT_SET2_RW, &write_offline, AM, cvD16);
+	error_code = CAENVME_WriteCycle(Handle, V1785::base+V1785_BIT_SET2_RW, &write_offline, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
-		//do nothing
+		return 0;
 
 	}else{  //failure
-		printf("V1785_OfflineSet could not be executed!\n");
+		printf("V1785_OfflineSet could not be executed successfully.\n");
+		return 1;;
 
 	}
 }
@@ -395,22 +387,26 @@ void Module_v1785::V1785_EmptyEnable(int32_t handle, uint32_t base, CVAddressMod
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int Module_v1785:: V1785_DataReady(int32_t handle, uint32_t base, CVAddressModifier AM){
+int Module_v1785::DataReady(){
 	
+	int32_t Handle;
+    	Handle = ModuleManager::GetHandle();
+
+
 	CVErrorCodes error_code;  //Error code if any
 	int read; //read from CAENVME_Readcycle
 	int data_ready;
 	int error_status;
 	
-	error_code = CAENVME_ReadCycle(handle, base+V1785_CSR1_RO, &read, AM, cvD16);
+	error_code = CAENVME_ReadCycle(Handle, V1785::base+V1785_CSR1_RO, &read, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
-    data_ready = read & 0x1;
+    	data_ready = read & 0x1;
 
     if (error_status == 1){  //success
     	return data_ready;  //1 for data being ready, 0 for data not being ready
     }else{  //failure
-    	printf("V1785_DataReady could not be executed!\n");
-    	return 0;  //don't know if data is ready, so assume it not be ready
+    	printf("V1785_DataReady could not be executed successfully!\n");
+    	return 0; 
     }
 
 }
