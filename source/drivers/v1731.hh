@@ -1,10 +1,9 @@
 #include "ModuleManager.hh"
 #include "CAEN_VME_def.hh"
 
-class DataBlock;
+#include "DataBlock.hh"
 
-#ifndef SOURCE_DRIVERS_V1731_H_
-#define SOURCE_DRIVERS_V1731_H_
+class DataBlock;
 
 #define V1731_EVENT_READOUT_BUFFER            0x0000
 
@@ -126,10 +125,16 @@ class Module_v1731: public ModuleManager{
 	
     // CH0[]: Array for ADC counts from CH0; CH2[]: Array for ADC counts from CH2.
 	// Return 1 for success and 0 for failure.
-	int      v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, int *CH0, int *CH2);
+	int      v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, uint32_t *rawdata);
+	
+	int      SetOnline();  // start data acquistion
+	int      SetOffline();  //stop data acquistion
+	int      DataReady();  //Return 0 for ready
+	
+  private:
+	static int nsample;
 
 
 };
 
 
-#endif //SOURCE_DRIVERS_V1731_H_

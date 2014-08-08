@@ -1,7 +1,7 @@
 #include <cstdio>
 #include "v1731.hh"
 #include <unistd.h>
-
+#include "DataBlock.hh"
 
 
 int Module_v1731::InitializeVMEModule(){
@@ -11,89 +11,76 @@ int Module_v1731::InitializeVMEModule(){
 	printf("*    Initializing CAEN V1731 Digitizer            *\n");
 	printf("***************************************************\n\n\n");
 	
-	int32_t Handle;
-	Handle = ModuleManager::GetHandle();
-	
-	
-	CVAddressModifier AM;
-	uint32_t base;
-	
-	AM = V1731::am;
-    	base = V1731::base;
-	
-	
+	int32_t Handle = ModuleManager::GetHandle();
 	
 	printf("-------------------Setting-------------------------\n\n");
 	
-	v1731_RegisterWrite(Handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //Reset acquisition
-	v1731_RegisterWrite(Handle, base, V1731_SW_RESET, 1, AM);  
-	v1731_RegisterWrite(Handle, base, V1731_SW_CLEAR, 0x2, AM);
+	v1731_RegisterWrite(Handle, V1731::base, V1731_ACQUISITION_CONTROL, 0x0, V1731::am);  //Reset acquisition
+	v1731_RegisterWrite(Handle, V1731::base, V1731_SW_RESET, 1, V1731::am);  
+	v1731_RegisterWrite(Handle, V1731::base, V1731_SW_CLEAR, 0x2, V1731::am);
 	
 	
-	v1731_RegisterWrite(Handle, base, V1731_ZS_NSAMP, 0,AM);
-	v1731_RegisterWrite(Handle, base, V1731_ZS_NSAMP_CH2, 0, AM);
+	v1731_RegisterWrite(Handle, V1731::base, V1731_ZS_NSAMP, 0,V1731::am);
+	v1731_RegisterWrite(Handle, V1731::base, V1731_ZS_NSAMP_CH2, 0, V1731::am);
 	
 	printf("Enable ONLY CH0 and 2.\n");
 	// 0x8120
-	v1731_RegisterWrite(Handle, base, V1731_CHANNEL_EN_MASK, 5, AM); // Bit[2] and Bit[0] = 1
+	v1731_RegisterWrite(Handle, V1731::base, V1731_CHANNEL_EN_MASK, 5, V1731::am); // Bit[2] and Bit[0] = 1
 	
 	printf("Enable external trigger.\n");
 	// 0x810C
-	v1731_RegisterWrite(Handle, base, V1731_TRIG_SRCE_EN_MASK, 0x40000000, AM);  //Bit[30] = 1
+	v1731_RegisterWrite(Handle, V1731::base, V1731_TRIG_SRCE_EN_MASK, 0x40000000, V1731::am);  //Bit[30] = 1
 	
 	printf("Setting post trigger sample number to be 0...\n");
 	// 0x8114
-	v1731_RegisterWrite(Handle, base, V1731_POST_TRIGGER_SETTING, 0, AM);  //All pre trigger samples
+	v1731_RegisterWrite(Handle, V1731::base, V1731_POST_TRIGGER_SETTING, 0, V1731::am);  //All pre trigger samples
 	
 	// 0x8000
 	printf("Setting sampling rate to be 1GS/s...\n");
-	v1731_RegisterWrite(Handle, base, V1731_CHANNEL_CONFIG, 0x1010, AM);  // Bit[12] = 1 for 1GS/s sampling rate,
+	v1731_RegisterWrite(Handle, V1731::base, V1731_CHANNEL_CONFIG, 0x1010, V1731::am);  // Bit[12] = 1 for 1GS/s sampling rate,
 	                                                                      // Bit[4]  = 1 for Memory sequential access
 	// 0x800C
 	printf("Setting number of buffer block(s) = 1\n");
-	v1731_RegisterWrite(Handle, base, V1731_BUFFER_ORGANIZATION,  0, AM);  //Setting 1 buffer block
+	v1731_RegisterWrite(Handle, V1731::base, V1731_BUFFER_ORGANIZATION,  0, V1731::am);  //Setting 1 buffer block
+	
+	int nsample = 1024;
+	int memory_location = nsample / 16;  //for double sampling rate. Dividied by 8 for 500MS/s
+	printf("Setting for recording %d samples only...\n", nsample);
+	v1731_RegisterWrite(Handle, V1731::base, V1731_CUSTOM_SIZE, memory_location, V1731::am);  //Setting designated number of samples per channel
 	
 
 	
 	printf("\n");
 	printf("---------------------------------------------------\n\n");
 	
-	v1731_Status(Handle, base, AM);
+	v1731_Status(Handle, V1731::base, V1731::am);
 	
 	
-	return 1;
+	return 0;
 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DataBlock* Module_v1731::GetModuleBuffer(){  //testing
+DataBlock* Module_v1731::GetModuleBuffer(){  
 	
-	int32_t Handle;
-	Handle = ModuleManager::GetHandle();
+	int32_t Handle = ModuleManager::GetHandle();
+	
 	int status;
-	int nsample = 60000;
-    int CH0[nsample];
-    int CH2[nsample];
+	int version = 1; //temp
+	int nsample = 1024;
+	
+	int nr_elem = (nsample / 4) * 2 + 4;  // 1/4 samples per DWORD, there are 2 CHs and 4 DWORDs for the header
+	
+        uint32_t* rawdata = new uint32_t[nr_elem];
     
-    for(int i=0; i<nsample; i++){
-    	CH0[i] = 0;
-    	CH2[i] = 0;
-    }
-		
-	status = v1731_ReadBuffer_and_Output(Handle, V1731::base, nsample, V1731::am, CH0, CH2);
+	status = v1731_ReadBuffer_and_Output(Handle, V1731::base, nsample, V1731::am, rawdata);
 	
-	/* For testing only
-	FILE *pfile0 = fopen("data.dat", "w");
+	DataBlock_v1731* datablock = new DataBlock_v1731(version, rawdata);
 	
-	for(int i=0; i<nsample; i++){
-		fprintf(pfile0, "%d      %d\n", CH0[i], CH2[i]);
-	}
+	datablock->Set_nr_sample(nsample);
 	
-	fclose(pfile0);
-	*/
-	
-	return NULL;
+	return datablock;
 }
 
 
@@ -139,7 +126,6 @@ uint32_t Module_v1731::v1731_RegisterRead(int32_t handle, uint32_t base, int off
 	CVErrorCodes error_code;
 	int error_status;
 
-	
 	
 	error_code = CAENVME_ReadCycle(handle, base+offset, &read, AM, cvD32);
 	error_status = CAEN::ErrorDecode(error_code);
@@ -367,7 +353,6 @@ uint32_t Module_v1731::v1731_DataBlockRead(int32_t handle, uint32_t base, uint32
 	AM = cvA32_S_DATA;
 	int n = 0;
 	int error_status;
-
 	
 	
 	error_code = CAENVME_MBLTReadCycle(handle, base, pdest, *nentry<<2, AM, &n);
@@ -478,82 +463,61 @@ void     Module_v1731::v1731_Align64Set(int32_t handle, uint32_t base, CVAddress
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, int *CH0, int *CH2){
-	
+int      Module_v1731::v1731_ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, uint32_t *rawdata){
+
 	CVErrorCodes error_code;
-	int memory_location = nsample / 16;  //for double sampling rate. Dividied by 8 for 500MS/s
-	
-	printf("Setting for recording %d samples only...\n", nsample);
-	v1731_RegisterWrite(handle, base, V1731_CUSTOM_SIZE, memory_location, AM);  //Setting designated number of samples per channel
-	
 	
 	int nr_elem = (nsample / 4) * 2 + 4;  // 1/4 samples per DWORD, there are 2 CHs and 4 DWORDs for the header
-	int error_status;
-	
-    uint32_t              rawdata[nr_elem];
-    CVDataWidth           datawidth[nr_elem];
-    CVAddressModifier     am[nr_elem];
-    uint32_t              BASE[nr_elem];
-    CVErrorCodes          err_code[nr_elem];
+	int error_status = 0;
+	int size = nr_elem * 32 / 8;  // 32 bits per datum => 4 bytes per datum
+	int count;
     
-    for(int i=0; i<nr_elem; i++){
-    	rawdata[i]       = 0;  //initialize the array
-    	datawidth[i]     = cvD32;
-    	am[i]            = V1731::am;
-    	BASE[i]          = V1731::base;
-    	err_code[i]      = cvSuccess;
-    }
+    error_code = CAENVME_MBLTReadCycle(handle, base, rawdata, size, cvA32_S_MBLT, &count);
+    error_status = CAEN::ErrorDecode(error_code);
     
-    printf("Memory cleared...\n");
+
     
-    v1731_RegisterWrite(handle, V1731::base, V1731_SW_CLEAR, 0x2, V1731::am);
-    
+	if (error_status == 0){
+	    return 0;
+	}else{
+		return 1;
+	}
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+int      Module_v1731::SetOnline(){
+	int32_t Handle = ModuleManager::GetHandle();
     printf("Data acquisition starts...\n");
     
     // 0x8100
-	v1731_RegisterWrite(handle, base, V1731_ACQUISITION_CONTROL, 0x4, AM);  //Bit[2] = 1 for acquisition run
+	v1731_RegisterWrite(Handle, V1731::base, V1731_ACQUISITION_CONTROL, 0x4, V1731::am);  //Bit[2] = 1 for acquisition run
 	
-    usleep(75000);  //Wait for buffer. Delay time depends on the size of the data block.
-                    // If there is a VME Bus Error, try to increase the delay time.
-	error_code = CAENVME_MultiRead(handle, BASE, rawdata, nr_elem, am, datawidth, err_code);
-	error_status = CAEN::ErrorDecode(error_code);
-	
-	if (error_status == 1){
-		
-	    /*
-        FILE *pfile0;
-	    pfile0 = fopen("rawoutput.dat","w");
-	
-	    for(int i=0; i<nr_elem; i++){  
-		    fprintf(pfile0, "%u\n", (rawdata[i]) );
-	    }
-	
-	    fclose(pfile0);
-	    */
-	
-	
-	    v1731_RegisterWrite(handle, base, V1731_ACQUISITION_CONTROL, 0x0, AM);  //stop
-	    printf("Acquisition stops.\n");
-	
-	    for (int i=4 ; i<((nr_elem-4)/2 + 4) ;i++){  //CH0
-	    	CH0[(4*i-16)] = (int) (((rawdata[i]) <<24 )>>24);
-	    	CH0[(4*i-15)] = (int) (((rawdata[i]) <<16 )>>24);
-	    	CH0[(4*i-14)] = (int) (((rawdata[i]) <<8  )>>24);
-	    	CH0[(4*i-13)] = (int)  ((rawdata[i]) >>24);
-	    }
-	
-	    for(int i=((nr_elem-4)/2 + 4); i<nr_elem; i++){  //CH2  
-	    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) )]    = (int) (((rawdata[i]) <<24 )>>24);
-	    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 1)] = (int) (((rawdata[i]) <<16 )>>24);
-	    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 2)] = (int) (((rawdata[i]) <<8  )>>24);
-	    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 3)] = (int)  ((rawdata[i]) >>24);
-	    }
+	return 0;
+}
 
-	    printf("Data written\n");
-	    
-	    return 1;
-	}else{
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+int      Module_v1731::SetOffline(){
+	int32_t Handle = ModuleManager::GetHandle();
+    v1731_RegisterWrite(Handle, V1731::base, V1731_ACQUISITION_CONTROL, 0x0, V1731::am);  //stop
+    printf("Acquisition stops.\n");
+    
+    return 0;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+int      Module_v1731::DataReady(){
+	int32_t Handle = ModuleManager::GetHandle();
+	uint32_t status = 0;
+	status = v1731_RegisterRead(Handle, V1731::base, V1731_ACQUISITION_STATUS, V1731::am);
+	status = ((status << 28) >> 31);
+	
+	if (status == 1){  //ready
 		return 0;
+	}else{
+		return 1;
 	}
 }
 

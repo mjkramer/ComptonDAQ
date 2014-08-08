@@ -5,11 +5,13 @@
 #include "CAENVMElib.h"
 #include "CAEN_VME_def.hh"
 #include "ModuleManager.hh"
+#include "DataBlock.hh"
 
-class DataBlock;
 
 #ifndef SOURCE_DRIVERS_V1290_H_
 #define SOURCE_DRIVERS_V1290_H_
+
+class DataBlock;
 
 #define  V1290N_MAX_CHANNELS      (uint32_t) 16      
 #define  V1290N_REG_BASE          (uint32_t) (0x1000)
@@ -83,9 +85,9 @@ class Module_v1290N: public ModuleManager{
 	 *                             v1290N_WidthSet                                   *
 	 * Set the width of the matching Window. The width parameter should be           *
 	 * in the range of 1 to 4095 (0xFFF). Example 0x14 == 500ns.                     *
-	 * @param *mvme VME structure                                                    *
-	 * @param  base Module base address                                              *
-	 * @param width window width in ns units                                         *
+	 *                                                                               *
+	 * @param   base Module base address                                             *
+	 * @param   width window width in ns units                                       *
 	 * @return                                                                       *
 	 *********************************************************************************/
 	void v1290N_WidthSet(int32_t handle, uint32_t base, uint16_t width, CVAddressModifier AM);
@@ -96,9 +98,9 @@ class Module_v1290N: public ModuleManager{
 	 * Set the offset of the matching window with respect to the trigger.            *
 	 * The offset parameter should be in 25ns units. The range is                    *
 	 * from -2048(0xF800) to +40(0x28). Example 0xFFD8 == -1 micro sec.              *
-	 * @param *mvme VME structure                                                    *
-	 * @param  base Module base address                                              *
-	 * @param  offset offset in ns units                                             *
+	 *                                                                               *
+	 * @param    base Module base address                                            *
+	 * @param    offset offset in ns units                                           *
 	 *********************************************************************************/
 	void v1290N_OffsetSet(int32_t handle, uint32_t base, uint16_t offset, CVAddressModifier AM);
 	
@@ -113,6 +115,7 @@ class Module_v1290N: public ModuleManager{
 	int  v1290N_Status(int32_t handle, uint32_t base, CVAddressModifier AM);
 	void v1290N_SetEdgeDetection(int32_t handle, uint32_t base, int eLeading, int eTrailing, CVAddressModifier AM);
 	int  v1290N_isPresent(int32_t handle, uint32_t base, CVAddressModifier AM);
+	int  v1290N_isDataReady(int32_t handle, uint32_t base, CVAddressModifier AM);
     
 
 

@@ -1,5 +1,6 @@
+
 #include "v1290N.hh"
-#include "DataBlock.hh"
+
 
 int  Module_v1290N::InitializeVMEModule(){
 	
@@ -19,7 +20,7 @@ int  Module_v1290N::InitializeVMEModule(){
 	printf("Base Address of this CAEN V1290N: 0x%x\n", V1290N::base);
 	CAEN::print_AM_Decode(V1290N::am);  //print the address modifier mode
 	
-    if(v1290N_isPresent(Handle, V1290N::base, V1290N::am) != 0){
+    if(v1290N_isPresent(Handle, V1290N::base, V1290N::am) == 0){
     	printf("\n");
     	printf("V1290N found!\n");
 
@@ -56,60 +57,34 @@ int  Module_v1290N::InitializeVMEModule(){
     
     v1290N_Status(Handle, V1290N::base, V1290N::am);
     
-    return 1;
+    return 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataBlock* Module_v1290N::GetModuleBuffer(){
 	
-	int nentry = 0;
-	uint32_t rawdata[100]; //arbitary dimension
+	int version = 1;  //temp
 	
-	for(int i=0; i<100; i++){
+	int nentry = 0;
+	uint32_t* rawdata = new uint32_t[512]; //arbitary dimension
+	
+	for(int i=0; i<512; i++){
 		rawdata[i] = 0;
 	}
 	
-	int32_t header[100];
-	int32_t channel[100]; //channel number
-	int32_t time[100];
-	
-	int t1, t2;
-	double time_diff;
 	int32_t Handle;
 	
 	Handle = ModuleManager::GetHandle();
 	
 	
-	
-	
-	FILE *pfile;
-	pfile = fopen("v1290N_data.dat", "w");
-	
 	v1290N_SoftClear(Handle, V1290N::base, V1290N::am);
-	
 	v1290N_EventRead(Handle, V1290N::base, rawdata, &nentry, V1290N::am);
 	
-	for (int i=0; i<(nentry - 1); i++){
-		header[i] = (rawdata[i] >> 27);  //Bits [31,27] identify the type
-	}
-	
-	int i = 0;
-	while (header[i] != 0){  //locate the first TDC measurement
-		i = i + 1;
-	}
-	
-	while (header[i] == 0){  //record until reaching the trailer
-		channel[i] = ((rawdata[i] << 6) >> 27);
-		time[i]    = ((rawdata[i] << 11) >> 11);
-		if (time[i] != 0){
-		    fprintf(pfile, "%d  %d\n", channel[i], time[i]);
-		}
-	    i = i + 1;
-	}
+	DataBlock_v1290* datablock = new DataBlock_v1290(version, rawdata);
+	datablock->Set_nr_entry(nentry);
     
-	fclose(pfile);
-	return NULL;
+	return datablock;
 
 }
 
@@ -197,7 +172,7 @@ void Module_v1290N::v1290N_SoftReset(int32_t handle, uint32_t base, CVAddressMod
 	error_code = CAENVME_WriteCycle(handle, base+V1290N_MODULE_RESET_WO, &write, AM, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 	
-	if(error_status == 1){  //success
+	if(error_status == 0){  //success
 		//do nothing
 	}else{
 		printf("v1290N_SoftReset could not be executed!\n");
@@ -217,7 +192,7 @@ void Module_v1290N::v1290N_SoftClear(int32_t handle, uint32_t base, CVAddressMod
 	error_code = CAENVME_WriteCycle(handle, base+V1290N_SOFT_CLEAR_WO, &write, AM, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 	
-	if(error_status == 1){  //success
+	if(error_status == 0){  //success
 		//do nothing
 	}else{
 		printf("v1290N_SoftReset could not be executed!\n");
@@ -237,7 +212,7 @@ void Module_v1290N::v1290N_SoftTrigger(int32_t handle, uint32_t base, CVAddressM
 	error_code = CAENVME_WriteCycle(handle, base+V1290N_SOFT_TRIGGER_WO, &write, AM, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 	
-	if(error_status == 1){  //success
+	if(error_status == 0){  //success
 		//do nothing
 	}else{
 		printf("v1290N_SoftTrigger could not be executed!\n");
@@ -650,11 +625,29 @@ int  Module_v1290N::v1290N_isPresent(int32_t handle, uint32_t base, CVAddressMod
 	error_status = CAEN::ErrorDecode(error_code);
 	
 	if (status == 0xFFFF)
-	    return 0;
-	else
 	    return 1;
+	else
+	    return 0;
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+int Module_v1290N::v1290N_isDataReady(int32_t handle, uint32_t base, CVAddressModifier AM){
+	CVErrorCodes error_code;
+	int error_status;
+	uint16_t status;
+	
+	error_code = CAENVME_ReadCycle(handle, base+V1290N_SR_RO, &status, AM, cvD16);
+	error_status = CAEN::ErrorDecode(error_code);
+	
+	status = (status << 15) >> 15;
+	
+	if (status == 1){  //data ready
+		return 0;
+	}else{
+		return 1;
+	}
+}
 
 
 
