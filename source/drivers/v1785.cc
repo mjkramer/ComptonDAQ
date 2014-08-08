@@ -8,16 +8,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-<<<<<<< HEAD
+
 int Module_v1785::InitializeVMEModule(){
-	printf("****    Initializing CAEN V1785 Peak ADC...          ****");
-
-    int32_t Handle;
-    Handle = ModuleManager::GetHandle();
-
-    if(IsPresent(Handle, V1785::base,V1785::am) == 0){
-=======
-int Module_v1785:: InitializeVMEModule(){
 	printf("****    Initializing CAEN V1785 Peak ADC...          ****");
 
    	int32_t Handle;
@@ -26,23 +18,15 @@ int Module_v1785:: InitializeVMEModule(){
 
 
     if(V1785_isPresent(Handle, V1785::base, V1785::am) == 0){
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
     	printf("Error: V1785 not found!\n");
         return 1;
     }
 
     //clears all the data, event counter, bit set, bit clear..
-<<<<<<< HEAD
-    SoftReset(Handle, V1785::base,V1785::am);
-
-    //disable 7 out of 8 channels (only ch0-high is used) - each channel has a high&low
-    uint16_t threshold[16] = {0x000, //ch0-high
-=======
     V1785_SoftReset(Handle, V1785::base, V1785::am);
 
     //disable 7 out of 8 channels (only ch0-high is used) - each channel has a high&low
     uint16_t V1785_threshold[16] = {0x000, //ch0-high
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
     			    0x100, //ch1-low
     			 0x100,0x100,0x100,
     			 0x100,0x100,0x100,0x100,
@@ -53,15 +37,8 @@ int Module_v1785:: InitializeVMEModule(){
     	printf("Error: Disabling channels not successful!\n");
     	return 1;
     }
-<<<<<<< HEAD
-
-    Status(Handle, V1785::base,V1785::am);
-    printf("  --  OK\n");
-
-=======
 
     printf(" --  OK\n");
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
     return 0;
 }
 
@@ -247,37 +224,26 @@ void Module_v1785::ControlRegister1Write(uint16_t pat){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-<<<<<<< HEAD
-int Module_v1785::SetOnline(){
-	int32_t Handle;
-	Handle = ModuleManager::GetHandle();
-=======
+
 int Module_v1785::SetOnline(){
 
 	int32_t Handle;
-    	Handle = ModuleManager::GetHandle();
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
+    Handle = ModuleManager::GetHandle();
+
 	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t write_online = 0x2;
 	int error_status;
 	
-<<<<<<< HEAD
-	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_CLEAR2_WO, &write_online, V1785::am, cvD16);
-=======
+
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+V1785_BIT_CLEAR2_WO, &write_online, V1785::am, cvD16);
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
 	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		return 0;
-
 	}else{  //failure
-<<<<<<< HEAD
-		printf("OnlineSet could not be executed!\n");
-=======
+
 		printf("V1785_OnlineSet could not be executed successfully!\n");
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
 		return 1;
 
 	}
@@ -286,40 +252,27 @@ int Module_v1785::SetOnline(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-<<<<<<< HEAD
-int Module_v1785::SetOffline(){
-	int32_t Handle;
-	Handle = ModuleManager::GetHandle();
-=======
+
 int Module_v1785::SetOffline(){
 
 	int32_t Handle;
-    	Handle = ModuleManager::GetHandle();
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
+    Handle = ModuleManager::GetHandle();
+
 	
 	CVErrorCodes error_code;  //Error code if any
 	uint16_t write_offline = 0x2;
 	int error_status;
 	
-<<<<<<< HEAD
-	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_SET2_RW, &write_offline, V1785::am, cvD16);
-=======
+
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+V1785_BIT_SET2_RW, &write_offline, V1785::am, cvD16);
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
 	error_status = CAEN::ErrorDecode(error_code);
 
 	if (error_status == 1){  //success
 		return 0;
 
-<<<<<<< HEAD
-	}else{  //failure
-		printf("OfflineSet could not be executed!\n");
-		return 1;
-=======
 	}else{  //failure
 		printf("V1785_OfflineSet could not be executed successfully.\n");
 		return 1;;
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
 
 	}
 }
@@ -470,40 +423,30 @@ void Module_v1785::EmptyEnable(){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1785::DataReady(){
-<<<<<<< HEAD
-	int32_t Handle;
-	Handle = ModuleManager::GetHandle();
-	
-=======
+
 	
 	int32_t Handle;
     	Handle = ModuleManager::GetHandle();
 
 
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
 	CVErrorCodes error_code;  //Error code if any
 	int read; //read from CAENVME_Readcycle
 	int data_ready;
 	int error_status;
 	
-<<<<<<< HEAD
-	error_code = CAENVME_ReadCycle(Handle, V1785::base+CSR1_RO, &read, V1785::am, cvD16);
-=======
+
 	error_code = CAENVME_ReadCycle(Handle, V1785::base+V1785_CSR1_RO, &read, V1785::am, cvD16);
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
+
 	error_status = CAEN::ErrorDecode(error_code);
     	data_ready = read & 0x1;
 
     if (error_status == 1){  //success
     	return data_ready;  //1 for data being ready, 0 for data not being ready
     }else{  //failure
-<<<<<<< HEAD
-    	printf("DataReady could not be executed!\n");
-    	return 0;  //don't know if data is ready, so assume it not be ready
-=======
+
     	printf("V1785_DataReady could not be executed successfully!\n");
     	return 0; 
->>>>>>> b26e90f4aa3f3a9eff59f1f6a8eea647155fe5ef
+
     }
 
 }
