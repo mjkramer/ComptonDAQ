@@ -63,7 +63,7 @@ DataBlock* Module_v1785::GetModuleBuffer(){
 	        channel = (w >> 17) & 0xF;
 	        value = (w & 0x3FFF);}
 
-	//DataBlock_v1785* datablock = new Datablock_v1785(version, rawdata);
+	DataBlock_v1785* datablock = new DataBlock_v1785(version, rawdata);
 	
 	return NULL;
 }

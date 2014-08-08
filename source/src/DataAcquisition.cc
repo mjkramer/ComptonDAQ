@@ -74,7 +74,7 @@ int DataAcquisition::StartRun(){
     			//	DataBlockVector XXX = (*i)->GetModuleBuffer();
 			//	pass it to histomanager
     //}
-			
+		cout << "DAQ loop" << endl;
 
 
 		

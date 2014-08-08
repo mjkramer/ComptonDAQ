@@ -36,6 +36,12 @@ int DataBlock:: GetVersion(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+DataBlock_v1785::DataBlock_v1785(int version, uint32_t* data):DataBlock::DataBlock(v1785, version, data){
+}
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 DataBlock_v1731::DataBlock_v1731(int version, uint32_t* data):DataBlock::DataBlock(v1731, version, data){
 
 }
