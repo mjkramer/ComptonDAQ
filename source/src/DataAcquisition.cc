@@ -67,9 +67,20 @@ int DataAcquisition::StartRun(){
 	while(state){
 		CheckKeyboardCommands(); //sets "state"
 
-		std::cout << "Hello" << std::endl;
+		//check if PADC has data
+		//if(modules[1]->DataReady()){
+			//cout << "I have data" <<endl;
+			//for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+    			//	DataBlockVector XXX = (*i)->GetModuleBuffer();
+			//	pass it to histomanager
+    }
+			
 
-	}
+
+		
+}//end DataReady
+
+	}//end while
 
 
 

@@ -23,7 +23,7 @@ int Module_v1785::InitializeVMEModule(){
     }
 
     //clears all the data, event counter, bit set, bit clear..
-   // if(ResetModule()){
+    //if(ResetModule()){
 	//return 1;}
 
     //disable 7 out of 8 channels (only ch0-high is used) - each channel has a high&low
@@ -81,7 +81,7 @@ int Module_v1785::CSR1Read(){
 	error_code = CAENVME_ReadCycle(Handle, V1785::base+CSR1_RO, &read, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		return read;
 
 	}else{  //failure
@@ -104,7 +104,7 @@ int Module_v1785::CSR2Read(){
 	error_code = CAENVME_ReadCycle(Handle, V1785::base+CSR2_RO, &read, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		return read;
 
 	}else{  //failure
@@ -127,7 +127,7 @@ int Module_v1785::BitSet2Read(){
 	error_code = CAENVME_ReadCycle(Handle, V1785::base+BIT_SET2_RW, &read, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		return read;
 
 	}else{  //failure
@@ -149,7 +149,7 @@ void Module_v1785::BitSet2Set(uint16_t pat){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_SET2_RW, &pat, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		//do nothing
 
 	}else{  //failure
@@ -170,7 +170,7 @@ void Module_v1785::BitSet2Clear(uint16_t pat){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_CLEAR2_WO, &pat, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		//do nothing
 
 	}else{  //failure
@@ -192,7 +192,7 @@ uint16_t Module_v1785::ControlRegister1Read(){
 	error_code = CAENVME_ReadCycle(Handle, V1785::base+CR1_RW, &pat, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		return pat;
 
 	}else{
@@ -214,7 +214,7 @@ void Module_v1785::ControlRegister1Write(uint16_t pat){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+CR1_RW, &pat, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		//do nothing
 
 	}else{  //failure
@@ -240,7 +240,7 @@ int Module_v1785::SetOnline(){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_CLEAR2_WO, &write_online, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		return 0;
 	}else{  //failure
 
@@ -268,7 +268,7 @@ int Module_v1785::SetOffline(){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_SET2_RW, &write_offline, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		return 0;
 
 	}else{  //failure
@@ -320,7 +320,7 @@ void Module_v1785::OverRangeEnable(){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_CLEAR2_WO, &write, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		//do nothing
 
 	}else{  //failure
@@ -342,7 +342,7 @@ void Module_v1785::OverRangeDisable(){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_SET2_RW, &write, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		//do nothing
 
 	}else{  //failure
@@ -364,7 +364,7 @@ void Module_v1785::LowThEnable(){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_CLEAR2_WO, &write, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		//do nothing
 
 	}else{  //failure
@@ -386,7 +386,7 @@ void Module_v1785::LowThDisable(){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_SET2_RW, &write, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		//do nothing
 
 	}else{  //failure
@@ -408,7 +408,7 @@ void Module_v1785::EmptyEnable(){
 	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_SET2_RW, &write, V1785::am, cvD16);
 	error_status = CAEN::ErrorDecode(error_code);
 
-	if (error_status == 1){  //success
+	if (error_status == 0){  //success
 		//do nothing
 
 	}else{  //failure
@@ -441,10 +441,11 @@ int Module_v1785::DataReady(){
 	error_status = CAEN::ErrorDecode(error_code);
     	data_ready = read & 0x1;
 
-    if (error_status == 1){  //success
+    if (error_status == 0){  //success
     	return data_ready;  //1 for data being ready, 0 for data not being ready
-    }else{  //failure
+    }
 
+else{  //failure
     	printf("DataReady could not be executed successfully!\n");
     	return 0; 
 
@@ -514,7 +515,7 @@ int Module_v1785::isBusy(){
 	   } while (busy || timeout);
 
 	 error_status = CAEN::ErrorDecode(error_code);
-	 if (error_status == 1){  //success
+	 if (error_status == 0){  //success
 	 return (busy != 0 ? 1 : 0);
 
 	 }else{
@@ -694,7 +695,7 @@ void Module_v1785::EvtCntReset(){
     error_code = CAENVME_WriteCycle(Handle, V1785::base+EVT_CNT_RST_WO, &write, V1785::am, cvD16);
     error_status = CAEN::ErrorDecode(error_code);
 
-    if (error_status == 1){
+    if (error_status == 0){
     	//do nothing
     }else{
     	printf("EvtCntRReset could not be executed!\n");
@@ -714,7 +715,7 @@ void Module_v1785::IntSet(int level, int vector){
     error_code = CAENVME_WriteCycle(Handle, V1785::base+INT_VECTOR_RW, &write, V1785::am, cvD16);
     error_status = CAEN::ErrorDecode(error_code);
 
-    if (error_status == 1){
+    if (error_status == 0){
     	//do nothing
     }else{
     	printf("EIntSet could not be executed!\n");
@@ -734,7 +735,7 @@ void Module_v1785::IntEnable(int level){
     error_code = CAENVME_WriteCycle(Handle, V1785::base+EVTRIG_REG_RW, &write, V1785::am, cvD16);
     error_status = CAEN::ErrorDecode(error_code);
 
-    if (error_status == 1){
+    if (error_status == 0){
     	//do nothing
     }else{
     	printf("IntEnable could not be executed!\n");
@@ -754,7 +755,7 @@ void Module_v1785::IntDisable(){
     error_code = CAENVME_WriteCycle(Handle, V1785::base+EVTRIG_REG_RW, &write, V1785::am, cvD16);
     error_status = CAEN::ErrorDecode(error_code);
 
-    if (error_status == 1){
+    if (error_status == 0){
     	//do nothing
     }else{
     	printf("IntDisable could not be executed!\n");
@@ -774,7 +775,7 @@ void Module_v1785::EvtTriggerSet(int count){
     error_code = CAENVME_WriteCycle(Handle, V1785::base+EVTRIG_REG_RW, &write, V1785::am, cvD16);
     error_status = CAEN::ErrorDecode(error_code);
 
-    if (error_status == 1){
+    if (error_status == 0){
     	//do nothing
     }else{
     	printf("EvtTriggerSet could not be executed!\n");
@@ -794,7 +795,7 @@ void Module_v1785::SingleShotReset(){
     error_code = CAENVME_WriteCycle(Handle, V1785::base+SINGLE_RST_WO, &write, V1785::am, cvD16);
     error_status = CAEN::ErrorDecode(error_code);
 
-    if (error_status == 1){
+    if (error_status == 0){
     	//do nothing
     }else{
     	printf("SingleShotReset could not be executed!\n");
@@ -838,7 +839,7 @@ void Module_v1785::Trigger(){
     error_code = CAENVME_WriteCycle(Handle, V1785::base+SWCOMM_WO, &write, V1785::am, cvD16);
     error_status = CAEN::ErrorDecode(error_code);
 
-    if (error_status == 1){
+    if (error_status == 0){
     	//do nothing
     }else{
     	printf("Trigger could not be executed!\n");
