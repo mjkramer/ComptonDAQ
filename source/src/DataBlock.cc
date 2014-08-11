@@ -37,21 +37,20 @@ int DataBlock:: GetVersion(){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataBlock_v1731::DataBlock_v1731(int version, uint32_t* data):DataBlock::DataBlock(v1731, version, data){
-
 }
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int* DataBlock_v1731::GetWaveform_1stChannel(){
-	
+std::vector<int> DataBlock_v1731::GetWaveform_Channel0(){
 	int nr_elem = (nr_sample / 4) * 2 + 4;
-	int* CH0 = new int[nr_sample];  //need to release memory afterwards
+	std::vector<int> CH0(nr_sample);
 	
     for (int i=4 ; i<((nr_elem-4)/2 + 4) ;i++){ 
-    	CH0[(4*i-16)] = (int) (((DataBlock::data[i]) <<24 )>>24);
-    	CH0[(4*i-15)] = (int) (((DataBlock::data[i]) <<16 )>>24);
-    	CH0[(4*i-14)] = (int) (((DataBlock::data[i]) <<8  )>>24);
-    	CH0[(4*i-13)] = (int) ((DataBlock::data[i]) >>24);
+    	CH0.at((4*i-16)) = (int) (((DataBlock::data[i]) <<24 )>>24);
+    	CH0.at((4*i-15)) = (int) (((DataBlock::data[i]) <<16 )>>24);
+    	CH0.at((4*i-14)) = (int) (((DataBlock::data[i]) <<8  )>>24);
+    	CH0.at((4*i-13)) = (int) ((DataBlock::data[i]) >>24);
     }
     
     return CH0;
@@ -60,20 +59,21 @@ int* DataBlock_v1731::GetWaveform_1stChannel(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int* DataBlock_v1731::GetWaveform_2ndChannel(){
+std::vector<int> DataBlock_v1731::GetWaveform_Channel2(){
 	int nr_elem = (nr_sample / 4) * 2 + 4;
-	int* CH2 = new int[nr_sample];  //need to release memory afterwards
+	std::vector<int> CH2(nr_sample);
 	
     for(int i=((nr_elem-4)/2 + 4); i<nr_elem; i++){ 
-    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) )]    = (int) (((DataBlock::data[i]) <<24 )>>24);
-    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 1)] = (int) (((DataBlock::data[i]) <<16 )>>24);
-    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 2)] = (int) (((DataBlock::data[i]) <<8  )>>24);
-    	CH2[( 4*i-4*((nr_elem-4)/2 + 4) + 3)] = (int) ((DataBlock::data[i]) >>24);
+    	CH2.at(( 4*i-4*((nr_elem-4)/2 + 4) ))    = (int) (((DataBlock::data[i]) <<24 )>>24);
+    	CH2.at(( 4*i-4*((nr_elem-4)/2 + 4) + 1)) = (int) (((DataBlock::data[i]) <<16 )>>24);
+    	CH2.at(( 4*i-4*((nr_elem-4)/2 + 4) + 2)) = (int) (((DataBlock::data[i]) <<8  )>>24);
+    	CH2.at(( 4*i-4*((nr_elem-4)/2 + 4) + 3)) = (int) ((DataBlock::data[i]) >>24);
     }
     
     return CH2;
     
 }
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -83,7 +83,7 @@ DataBlock_v1290::DataBlock_v1290(int version, uint32_t* data):DataBlock::DataBlo
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int** DataBlock_v1290::GetTimeDifference(){
+int DataBlock_v1290::GetTimeDifference(int chX, int chY){
 	
 	
 	int header[nr_entry];
@@ -122,7 +122,12 @@ int** DataBlock_v1290::GetTimeDifference(){
 		list[j][1] = time[j];
 	}
 	
-	return list;
+	//int time_diff = list[chX][1] - list[chY][1];
+	int time_diff = 0;
+
+	//delete list;
+	//list = 0;
+	return time_diff;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

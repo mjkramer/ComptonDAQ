@@ -12,6 +12,7 @@
  class TH1F;
  class TH2F;
  class TTree;
+ class DataBlock;
 
   const int maxHisto1D = 4;
   const int maxHisto2D = 1;
@@ -30,6 +31,7 @@ class HistoManager{
     void Fill1DHisto(int id1D, int bin, double weight = 1.0);
     void Fill2DHisto(int id2D, int xbin, int ybin);   
     void FillNtuple(float eLs, float eGe, float aBsT, float rBsT);
+    void ProcessData(std::vector<DataBlock*> *data);
 
     TH1F* Get1DHisto(int id1D);
     TH2F* Get2DHisto(int id2D);

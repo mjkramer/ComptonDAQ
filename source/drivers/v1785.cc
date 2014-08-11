@@ -59,7 +59,7 @@ DataBlock* Module_v1785::GetModuleBuffer(){
 	datablock->Set_nr_entry(nentry);
 	
 
-	return NULL;
+	return datablock;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
