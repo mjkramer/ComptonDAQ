@@ -19,13 +19,25 @@ HistoManager::HistoManager():rootFile(0), outTree(0){
 
   for (int k=0; k<maxHisto1D; k++) histo1D[k] = 0;
   for (int i=0; i<maxHisto2D; i++) histo2D[i] = 0;
+  
+  waveform_adc0 = new int[1100];
+  waveform_adc2 = new int[1100];
+  ge_adc = 0;
+
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 HistoManager::~HistoManager(){ 
+
    if (rootFile) delete rootFile;
    rootFile = 0;
+
+   delete [] waveform_adc0;
+   delete [] waveform_adc2;
+   waveform_adc0 = 0;
+   waveform_adc2 = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -42,17 +54,14 @@ void HistoManager::Book(int run_number){
    return;
  }
 
-histo1D[0] = new TH1F("1", "Liquid Scintillator Energy Deposit [ADC counts]", 4000, 0., 4000);
-histo1D[1] = new TH1F("2", "Germanium Energy Deposit [ADC counts]", 4000, 0., 4000);
-histo1D[2] = new TH1F("3", "Total Energy (Ge+PMT) [ADC counts]", 8000, 0., 8000);
-histo1D[3] = new TH1F("4", "Relative time difference between events [ns]", 2000, 0., 2000);
-   
+
+histo1D[0] = new TH1F("2", "Germanium Energy Deposit [ADC counts]", 4000, 0., 4000);
 
 outTree = new TTree("datatree","");
-outTree->Branch("Els", &Els, "Els/F");
-outTree->Branch("Ege", &Ege, "Ege/F");
-outTree->Branch("absT", &absT, "absT/F");
-outTree->Branch("relT", &relT, "relT/F");
+outTree->Branch("ge_adc", &ge_adc, "ge_adc/i");
+outTree->Branch("waveform_adc0", waveform_adc0, "waveform_adc0[n_samples]/i");
+outTree->Branch("waveform_adc2", waveform_adc2, "waveform_adc2[n_samples]/i");
+
 
 cout << "Histogram file is opened!" << endl;
 }
@@ -84,7 +93,10 @@ void HistoManager::ProcessData(std::vector<DataBlock*> *data){
 	if(p1290_cast){
 		//time_difference = p1290_cast->GetTimeDifference(1,2);
 		cout << "TDC array: "  << endl;
-	}	
+	}
+
+	Fill1DHisto(0, ge_peak); //Fill the Ge-energy to a histogram
+	FillNTuple(ge_peak, waveform1, waveform2); //Save the waveforms	
 	
 }
 
@@ -142,12 +154,14 @@ TH2F* HistoManager::Get2DHisto(int id2D) {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void HistoManager::FillNtuple(float eLs, float eGe, float aBsT, float rElT){
+void HistoManager::FillNTuple(int eGe, std::vector<int> wf0, std::vector<int> wf2){
 
-Els = eLs;
-Ege = eGe;
-absT = aBsT;
-relT = rElT;
+ge_adc = eGe;
+
+for(int i; i<wf0.size(); i++){
+	waveform_adc0[i] = wf0.at(i);
+	waveform_adc2[i] = wf2.at(i);
+}
 
 if (outTree) outTree->Fill();
 }
