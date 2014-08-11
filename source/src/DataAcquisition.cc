@@ -44,20 +44,17 @@ int DataAcquisition::Initialize(){
     run_number = fConfigFileManager->GetRunNumber();
     fHistoManager->Book(run_number + 1);
 
-    modules.push_back(new Module_v2718()); // controller card
+    Module_v2718 *v2718 = new Module_v2718(); // controller card
     modules.push_back(new Module_v1785()); //Peak sensing ADC
-    modules.push_back(new Module_v1290N()); //TDC
     modules.push_back(new Module_v1731()); //Digitizer
+    modules.push_back(new Module_v1290N()); //TDC
 
+    v2718->InitializeVMEModule();
     for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
     	(*i)->InitializeVMEModule();
     }
 
     return 0;
-
-
-
-
 }
 
 
@@ -68,27 +65,34 @@ int DataAcquisition::StartRun(){
 		CheckKeyboardCommands(); //sets "state"
 
 		//check if PADC has data
-		//if(modules[1]->DataReady()){
-			//cout << "I have data" <<endl;
-			//for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-    			//	DataBlockVector XXX = (*i)->GetModuleBuffer();
-			//	pass it to histomanager
-    //}
+		if(modules[0]->DataReady()){
+			cout << "Data ready on PADC" <<endl;
+
+		//create DataBlock vector
+		std::vector<DataBlock*> *data = new std::vector<DataBlock*>;
+
+		//read out all modules
+		for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+    		        data->push_back((*i)->GetModuleBuffer());
+    		}
+
+    		//pass data vector pointer to HistoManager
+    		fHistoManager->ProcessData(data);
+
+    		//delete DataBlock vector
+    		for(std::vector<DataBlock*>::iterator i = data->begin(); i != data->end(); ++i){
+    		    delete (*i);
+		    (*i) = 0;
+    		}
+		delete data;
+		data = 0;
+		
 		cout << "DAQ loop" << endl;
 
-
-		
-//}//end DataReady
-
+		} //end if data ready
 	}//end while
 
-
-
-
-
 	return 0;
-
-
 }
 
 
@@ -96,7 +100,6 @@ int DataAcquisition::StartRun(){
 int DataAcquisition::StopRun(){
 	fConfigFileManager->CloseConfigFile();
 	fHistoManager->Save();
-
 
 	return 0;	
 }

@@ -3,6 +3,7 @@
 //v1290 - VME TDC
 //v1720 - VME digitizer
 #include <cstdint>
+#include <vector>
 
 #ifndef SOURCE_DATABLOCK_H_
 #define SOURCE_DATABLOCK_H_
@@ -15,14 +16,12 @@ class DataBlock{
   	DataBlock();
   	DataBlock(DataBlock::Type_t type, int version, uint32_t* data);
   	virtual ~DataBlock();
-
   	int GetVersion();
 
   protected:
   	DataBlock::Type_t type;
   	int version;
   	uint32_t* data;
-
    	};
 
 
@@ -32,14 +31,12 @@ class DataBlock{
  	DataBlock_v1731(int version, uint32_t* data);
         virtual ~DataBlock_v1731(){;}
  	void Set_nr_sample(int nsample){nr_sample = nsample; };
- 	int* GetWaveform_1stChannel();  //Decode the data array.
+ 	std::vector<int> GetWaveform_Channel0();  //Decode the data array.
  	                                //Need to release memory afterwards.
- 	int* GetWaveform_2ndChannel();  //Decode the SAME data array.
- 	                                //Need to release memory afterwards.
- 	
+ 	std::vector<int> GetWaveform_Channel2();  //Decode the SAME data array.
+ 	                                //Need to release memory afterwards.	
   private:
- 	int nr_sample;
- 	
+ 	int nr_sample; 	
  }; 
 
 
@@ -47,7 +44,7 @@ class DataBlock{
   public:
  	DataBlock_v1290(int version, uint32_t* data);
         virtual ~DataBlock_v1290(){;}  
- 	int** GetTimeDifference();
+ 	int GetTimeDifference(int chX, int chY);
  	void Set_nr_entry(int nentry){nr_entry = nentry; };
  	
   private:
