@@ -60,7 +60,11 @@ class DataBlock{
    public:
  	DataBlock_v1785(int version, uint32_t* data);
         virtual ~DataBlock_v1785(){;}  
- 	int* GetPeak();
+ 	int GetPeak();
+ 	void Set_nr_entry(int nentry){nr_entry = nentry; };
+ 	
+   private:
+ 	int nr_entry;
 
  }; 
 

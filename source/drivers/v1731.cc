@@ -296,7 +296,7 @@ int      Module_v1731::v1731_Setup(int32_t handle, uint32_t base, int mode, CVAd
 	    break;
 	  default:
 	    printf("Unknown setup mode\n");
-	    return -1;
+	    return 1;
 	  }
 	  v1731_Status(handle, base, AM);
 	  return 0;

@@ -36,12 +36,6 @@ int DataBlock:: GetVersion(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DataBlock_v1785::DataBlock_v1785(int version, uint32_t* data):DataBlock::DataBlock(v1785, version, data){
-}
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 DataBlock_v1731::DataBlock_v1731(int version, uint32_t* data):DataBlock::DataBlock(v1731, version, data){
 
 }
@@ -132,6 +126,36 @@ int** DataBlock_v1290::GetTimeDifference(){
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+DataBlock_v1785::DataBlock_v1785(int version, uint32_t* data):DataBlock::DataBlock(v1785, version, data){
+
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+int DataBlock_v1785::GetPeak(){
+	
+	int i;
+	int value = 0;
+	int channel = 0;
+	
+	for (i = 0; i < nr_entry; i++) {
+	    uint32_t w = DataBlock::data[i];
+	    
+	    if (((w >> 24) & 0x7) != 0) continue;
+	        channel = (w >> 17) & 0xF;
+	        value = (w & 0x3FFF);}
+	
+	
+	return value;
+	
+}
+
+
+
+
+
+
 
 
 

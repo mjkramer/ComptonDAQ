@@ -49,22 +49,16 @@ DataBlock* Module_v1785::GetModuleBuffer(){
 	int32_t Handle;
 	Handle = ModuleManager::GetHandle();
 	
-    	int i;
 	int nentry = 0;
-	int value =0;
-	int channel =0;
 	int version = 1;
+	
 	uint32_t* rawdata = new uint32_t[MAX_CHANNELS+2];
 	EventRead(rawdata, &nentry);
 
-	for (i = 0; i < nentry; i++) {
-	    uint32_t w = rawdata[i];
-	    if (((w >> 24) & 0x7) != 0) continue;
-	        channel = (w >> 17) & 0xF;
-	        value = (w & 0x3FFF);}
-
 	DataBlock_v1785* datablock = new DataBlock_v1785(version, rawdata);
+	datablock->Set_nr_entry(nentry);
 	
+
 	return NULL;
 }
 

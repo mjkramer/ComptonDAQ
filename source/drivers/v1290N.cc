@@ -124,7 +124,7 @@ int  Module_v1290N::v1290N_DataRead(int32_t handle, uint32_t base, uint32_t *pde
 	error_code = CAENVME_BLTReadCycle(handle, base, pdest, sizeof(uint32_t)*nentry, AM, cvD32, &n);
 	error_status = CAEN::ErrorDecode(error_code);
 	
-	if(error_status == 1){  //success
+	if(error_status == 0){  //success
 		return nentry;
 		
 	}else{
@@ -151,7 +151,7 @@ int  Module_v1290N::v1290N_GeoWrite(int32_t handle, uint32_t base, int geo, CVAd
 	error_code_2 = CAENVME_ReadCycle(handle, base+V1290N_GEO_REG_RW, &read, AM, cvD16);
 	error_status_2 = CAEN::ErrorDecode(error_code_2);
 	
-	if ( (error_status_1 == 1)&&(error_status_2 == 1) ){  //success
+	if ( (error_status_1 == 0)&&(error_status_2 == 0) ){  //success
 		return (int) (read & 0x1F);
 	}else{
 		printf("v1290N_GeoWrite could not be executed!\n");
@@ -278,13 +278,13 @@ int  Module_v1290N::v1290N_MicroWrite(int32_t handle, uint32_t base, uint16_t da
 		
 		if (microHS & V1290N_MICRO_WR_OK){
 			error_code = CAENVME_WriteCycle(handle, base+V1290N_MICRO_RW, &write, AM, cvD16);
-			return 1;
+			return 0;
 		}
 		usleep(500);
 	}
 	
 	printf("v1290N_MicroWrite: Micro not ready for writing!\n");
-	return -1;
+	return 1;
 	
 }
 
