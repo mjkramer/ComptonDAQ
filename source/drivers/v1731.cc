@@ -5,15 +5,11 @@
 
 
 int Module_v1731::InitializeVMEModule(){
-	
-	printf("\n\n\n");
-	printf("***************************************************\n");
-	printf("*    Initializing CAEN V1731 Digitizer            *\n");
-	printf("***************************************************\n\n\n");
+	printf("****Initializing CAEN V1731 Digitizer****");
 	
 	int32_t Handle = ModuleManager::GetHandle();
 	
-	printf("-------------------Setting-------------------------\n\n");
+	//Settings:
 	
 	v1731_RegisterWrite(Handle, V1731::base, V1731_ACQUISITION_CONTROL, 0x0, V1731::am);  //Reset acquisition
 	v1731_RegisterWrite(Handle, V1731::base, V1731_SW_RESET, 1, V1731::am);  
@@ -23,39 +19,33 @@ int Module_v1731::InitializeVMEModule(){
 	v1731_RegisterWrite(Handle, V1731::base, V1731_ZS_NSAMP, 0,V1731::am);
 	v1731_RegisterWrite(Handle, V1731::base, V1731_ZS_NSAMP_CH2, 0, V1731::am);
 	
-	printf("Enable ONLY CH0 and 2.\n");
+	//enable only channel 0 and 2
 	// 0x8120
 	v1731_RegisterWrite(Handle, V1731::base, V1731_CHANNEL_EN_MASK, 5, V1731::am); // Bit[2] and Bit[0] = 1
 	
-	printf("Enable external trigger.\n");
+	//enable external trigger
 	// 0x810C
 	v1731_RegisterWrite(Handle, V1731::base, V1731_TRIG_SRCE_EN_MASK, 0x40000000, V1731::am);  //Bit[30] = 1
 	
-	printf("Setting post trigger sample number to be 0...\n");
+	//Setting post trigger sample number to be 0
 	// 0x8114
 	v1731_RegisterWrite(Handle, V1731::base, V1731_POST_TRIGGER_SETTING, 0, V1731::am);  //All pre trigger samples
 	
 	// 0x8000
-	printf("Setting sampling rate to be 1GS/s...\n");
+	//Setting sampling rate to be 1GS/s
 	v1731_RegisterWrite(Handle, V1731::base, V1731_CHANNEL_CONFIG, 0x1010, V1731::am);  // Bit[12] = 1 for 1GS/s sampling rate,
 	                                                                      // Bit[4]  = 1 for Memory sequential access
 	// 0x800C
-	printf("Setting number of buffer block(s) = 1\n");
+	//Setting number of buffer block(s) = 1
 	v1731_RegisterWrite(Handle, V1731::base, V1731_BUFFER_ORGANIZATION,  0, V1731::am);  //Setting 1 buffer block
 	
 	int nsample = 1024;
 	int memory_location = nsample / 16;  //for double sampling rate. Dividied by 8 for 500MS/s
-	printf("Setting for recording %d samples only...\n", nsample);
+	//Setting for recording %d samples only...\n", nsample);
 	v1731_RegisterWrite(Handle, V1731::base, V1731_CUSTOM_SIZE, memory_location, V1731::am);  //Setting designated number of samples per channel
 	
-
-	
-	printf("\n");
-	printf("---------------------------------------------------\n\n");
-	
-	v1731_Status(Handle, V1731::base, V1731::am);
-	
-	
+	printf("  --  OK\n");
+	//v1731_Status(Handle, V1731::base, V1731::am);
 	return 0;
 
 }
