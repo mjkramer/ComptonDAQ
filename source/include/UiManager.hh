@@ -33,14 +33,14 @@ private:
   map<string, string> m_data;
   vector<pollfd> m_pollfds;
   TBufferFile m_buf;
-  TClass *m_mapClass;
+  TClass *m_mapClass, *m_vecClass;
 
   friend class MapHandle;
 
   DaqCmd Service(int fd);
-  void SendBuffer(int fd);
-  void SendHist(int fd, int dim, int hist);
+  void SendHist(int fd, int hist);
   void SendInfo(int fd);
+  void SendHistList(int fd);
 
 public:
   // Utility class for automagic updating
