@@ -14,8 +14,8 @@
  class TTree;
  class DataBlock;
 
-  const int maxHisto1D = 4;
-  const int maxHisto2D = 1;
+  const int maxHisto1D = 1;
+  const int maxHisto2D = 0;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -30,7 +30,7 @@ class HistoManager{
 
     void Fill1DHisto(int id1D, int bin, double weight = 1.0);
     void Fill2DHisto(int id2D, int xbin, int ybin);   
-    void FillNtuple(float eLs, float eGe, float aBsT, float rBsT);
+    void FillNTuple(int eGe, std::vector<int> wf0, std::vector<int> wf2);
     void ProcessData(std::vector<DataBlock*> *data);
 
     TH1F* Get1DHisto(int id1D);
@@ -42,7 +42,8 @@ class HistoManager{
     TTree*   outTree;  
     TH1F*    histo1D[maxHisto1D];
     TH2F*    histo2D[maxHisto2D];
-    float Els, Ege, absT, relT;         
+    int ge_adc, n_samples;
+    int *waveform_adc0, *waveform_adc2;        
    	};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -31,6 +31,7 @@ int main()
 	daq->SetRunState(true);
         daq->StartRun();}
 
+    daq->StopRun();
 
   delete daq; 
   daq = 0;
