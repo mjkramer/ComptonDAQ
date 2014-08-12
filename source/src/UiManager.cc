@@ -5,7 +5,10 @@
 #include <poll.h>
 #include <unistd.h>
 #include <sstream>
+
 #include <TROOT.h>
+#include <TH1F.h>
+#include <TH2F.h>
 
 #include "UiManager.hh"
 #include "UiProtocol.hh"
@@ -18,7 +21,8 @@ using namespace std;
 UiManager::UiManager(HistoManager *histoMgr) :
   m_histoMgr(histoMgr),
   m_buf(TBuffer::kWrite), 
-  m_mapClass(gROOT->FindSTLClass("std::map<std::string,std::string>", true))
+  m_mapClass(gROOT->FindSTLClass("std::map<std::string,std::string>", true)),
+  m_vecClass(gROOT->FindSTLClass("std::vector<std::string>", true))
 {}
 
 UiManager::~UiManager()
@@ -119,16 +123,16 @@ UiManager::DaqCmd UiManager::Service(int fd)
     m_buf.Reset();
 
     switch (req.cmd) {
-    case UiProtocol::GetHist1D:
-      SendHist(fd, 1, req.arg);
-      return NoCmd;
-
-    case UiProtocol::GetHist2D:
-      SendHist(fd, 2, req.arg);
-      return NoCmd;
-
     case UiProtocol::GetInfo:
       SendInfo(fd);
+      return NoCmd;
+
+    case UiProtocol::GetHist:
+      SendHist(fd, req.arg);
+      return NoCmd;
+
+    case UiProtocol::GetHistList:
+      SendHistList(fd);
       return NoCmd;
 
     case UiProtocol::SetState:
@@ -140,32 +144,75 @@ UiManager::DaqCmd UiManager::Service(int fd)
   }
 }
 
-void UiManager::SendBuffer(int fd)
+void do_send_response(int fd, void* response, int respSize, TBufferFile& buf)
 {
-  int len = m_buf.Length();
-  send(fd, &len, sizeof(len), 0);
-  if (len) send(fd, m_buf.Buffer(), m_buf.Length(), 0);
+  iovec iov[2];
+  iov[0].iov_base = response;
+  iov[0].iov_len = respSize;
+  iov[1].iov_base = buf.Buffer();
+  iov[1].iov_len = buf.Length();
+
+  writev(fd, iov, buf.Length() ? 2 : 1);
 }
 
-void UiManager::SendHist(int fd, int dim, int histId)
+template <typename R>
+void send_response(int fd, R& response, TBufferFile& buf)
+{
+  response.bufLen = buf.Length();
+  do_send_response(fd, &response, sizeof(R), buf);
+}
+
+// for responses that don't contain a serialized object
+template <typename R>
+void send_response(int fd, R& response)
+{
+  send(fd, &response, sizeof(R), 0);
+}
+
+// send number of 1D hists, followed by one vector of titles for 1D,
+// then 2D, hists
+void UiManager::SendHistList(int fd)
+{
+  vector<string> hists;
+
+  for (int i = 0; i < maxHisto1D; ++i)
+    hists.push_back(m_histoMgr->Get1DHisto(i)->GetTitle());
+
+  for (int i = 0; i < maxHisto2D; ++i)
+    hists.push_back(m_histoMgr->Get2DHisto(i)->GetTitle());
+
+  m_buf.WriteObjectAny(&hists, m_vecClass);
+
+  UiProtocol::Responses::HistList response;
+  response.n1D = maxHisto1D;
+  send_response(fd, response, m_buf);
+}
+
+void UiManager::SendHist(int fd, int histId)
 {
   TObject* hist = NULL;
 
-  if (dim == 1 && histId < maxHisto1D)
+  if (0 <= histId && histId < maxHisto1D)
     hist = (TObject*) m_histoMgr->Get1DHisto(histId);
-  else if (dim == 2 && histId < maxHisto2D)
-    hist = (TObject*) m_histoMgr->Get2DHisto(histId);
+  else if (maxHisto1D <= histId && histId < maxHisto2D)
+    hist = (TObject*) m_histoMgr->Get2DHisto(histId - maxHisto1D);
 
   if (hist) m_buf.WriteObject(hist);
 
-  SendBuffer(fd);
+  UiProtocol::Responses::Hist response;
+  response.dim = histId < maxHisto1D ? 1 : 2;
+  send_response(fd, response, m_buf);
 }
 
 void UiManager::SendInfo(int fd)
 {
   m_buf.WriteObjectAny(&m_data, m_mapClass);
-  SendBuffer(fd);
+
+  UiProtocol::Responses::Info response;
+  send_response(fd, response, m_buf);
 }
+
+// for map-filling magic
 
 template <typename T> string num_to_str(T value)
 {
