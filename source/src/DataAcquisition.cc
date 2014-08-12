@@ -47,7 +47,7 @@ int DataAcquisition::Initialize(){
     Module_v2718 *v2718 = new Module_v2718(); // controller card
     modules.push_back(new Module_v1785()); //Peak sensing ADC
     modules.push_back(new Module_v1731()); //Digitizer
-    modules.push_back(new Module_v1290N()); //TDC
+    //modules.push_back(new Module_v1290N()); //TDC
 
     v2718->InitializeVMEModule();
     for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
@@ -66,7 +66,6 @@ int DataAcquisition::StartRun(){
 
 		//check if PADC has data
 		if(modules[0]->DataReady()){
-			cout << "Data ready on PADC" <<endl;
 
 		//create DataBlock vector
 		std::vector<DataBlock*> *data = new std::vector<DataBlock*>;
@@ -75,11 +74,12 @@ int DataAcquisition::StartRun(){
 		for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
     		        data->push_back((*i)->GetModuleBuffer());
     		}
-
+		
     		//pass data vector pointer to HistoManager
     		fHistoManager->ProcessData(data);
+    		
 
-    		//delete DataBlock vector
+		//delete DataBlock vector
     		for(std::vector<DataBlock*>::iterator i = data->begin(); i != data->end(); ++i){
     		    delete (*i);
 		    (*i) = 0;
@@ -87,7 +87,6 @@ int DataAcquisition::StartRun(){
 		delete data;
 		data = 0;
 		
-		cout << "DAQ loop" << endl;
 
 		} //end if data ready
 	}//end while

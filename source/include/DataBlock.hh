@@ -30,7 +30,7 @@ class DataBlock{
   public:
  	DataBlock_v1731(int version, uint32_t* data);
         virtual ~DataBlock_v1731(){;}
- 	void Set_nr_sample(int nsample){nr_sample = nsample; };
+ 	void Set_nr_sample(int nsample){nr_sample = nsample;};
  	std::vector<int> GetWaveform_Channel0();  //Decode the data array.
  	                                //Need to release memory afterwards.
  	std::vector<int> GetWaveform_Channel2();  //Decode the SAME data array.

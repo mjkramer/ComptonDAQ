@@ -42,7 +42,7 @@ class HistoManager{
     TTree*   outTree;  
     TH1F*    histo1D[maxHisto1D];
     TH2F*    histo2D[maxHisto2D];
-    int ge_adc;
+    int ge_adc, n_samples;
     int *waveform_adc0, *waveform_adc2;        
    	};
 

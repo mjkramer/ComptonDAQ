@@ -23,6 +23,8 @@ HistoManager::HistoManager():rootFile(0), outTree(0){
   waveform_adc0 = new int[1100];
   waveform_adc2 = new int[1100];
   ge_adc = 0;
+  n_samples = 0;
+
 
 
 }
@@ -59,8 +61,10 @@ histo1D[0] = new TH1F("2", "Germanium Energy Deposit [ADC counts]", 4000, 0., 40
 
 outTree = new TTree("datatree","");
 outTree->Branch("ge_adc", &ge_adc, "ge_adc/i");
+outTree->Branch("n_sample", &n_samples, "n_samples/i");
 outTree->Branch("waveform_adc0", waveform_adc0, "waveform_adc0[n_samples]/i");
 outTree->Branch("waveform_adc2", waveform_adc2, "waveform_adc2[n_samples]/i");
+
 
 
 cout << "Histogram file is opened!" << endl;
@@ -77,7 +81,7 @@ void HistoManager::ProcessData(std::vector<DataBlock*> *data){
 	
 	DataBlock_v1785* p1785_cast = dynamic_cast<DataBlock_v1785*>((data->at(0)));
 	DataBlock_v1731* p1731_cast = dynamic_cast<DataBlock_v1731*>((data->at(1)));
-	DataBlock_v1290* p1290_cast = dynamic_cast<DataBlock_v1290*>((data->at(2)));
+	//DataBlock_v1290* p1290_cast = dynamic_cast<DataBlock_v1290*>((data->at(2)));
 
 	if(p1785_cast){
 		ge_peak = p1785_cast->GetPeak();
@@ -87,13 +91,13 @@ void HistoManager::ProcessData(std::vector<DataBlock*> *data){
 	if(p1731_cast){
 		waveform1 = p1731_cast->GetWaveform_Channel0();
 		waveform2 = p1731_cast->GetWaveform_Channel2();
-		cout << "Waveform array  "<< endl;
+
 	}
 
-	if(p1290_cast){
+	//if(p1290_cast){
 		//time_difference = p1290_cast->GetTimeDifference(1,2);
-		cout << "TDC array: "  << endl;
-	}
+	//	cout << "TDC array: "  << endl;
+	//}
 
 	Fill1DHisto(0, ge_peak); //Fill the Ge-energy to a histogram
 	FillNTuple(ge_peak, waveform1, waveform2); //Save the waveforms	
@@ -157,10 +161,12 @@ TH2F* HistoManager::Get2DHisto(int id2D) {
 void HistoManager::FillNTuple(int eGe, std::vector<int> wf0, std::vector<int> wf2){
 
 ge_adc = eGe;
+n_samples = wf0.size();
 
-for(int i; i<wf0.size(); i++){
-	waveform_adc0[i] = wf0.at(i);
-	waveform_adc2[i] = wf2.at(i);
+for(int i; i<n_samples; i++){
+	waveform_adc0[i] = wf0[i];
+	waveform_adc2[i] = wf2[i];
+	cout << waveform_adc0[i] << "  -  " << waveform_adc2[i] << endl;
 }
 
 if (outTree) outTree->Fill();
