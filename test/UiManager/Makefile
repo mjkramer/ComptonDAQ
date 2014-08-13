@@ -1,18 +1,15 @@
 CC = g++
-CFLAGS = -I../../source/include $(shell root-config --cflags) -g
+CFLAGS = -I mock -I ../../source/include $(shell root-config --cflags) -g
 LDFLAGS = $(shell root-config --libs)
 
-all: server client
+all: server
 
 RootDict.cxx: ../../source/include/LinkDef.hh
 	rootcint -f $@ -c $^
 	sed -i '1i#include <map>' $(subst .cxx,.h,$@)
 
-server: server.cc ../../source/src/UiManager.cc ../../source/src/HistoManager.cc RootDict.cxx
+server: server.cc ../../source/src/UiManager.cc mock/HistoManager.cc RootDict.cxx
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) -lrt
-
-client: client.cc RootDict.cxx
-	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 .PHONY: clean
 clean:

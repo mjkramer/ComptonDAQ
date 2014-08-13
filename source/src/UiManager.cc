@@ -194,7 +194,7 @@ void UiManager::SendHist(int fd, int histId)
 
   if (0 <= histId && histId < maxHisto1D)
     hist = (TObject*) m_histoMgr->Get1DHisto(histId);
-  else if (maxHisto1D <= histId && histId < maxHisto2D)
+  else if (maxHisto1D <= histId && histId - maxHisto1D < maxHisto2D)
     hist = (TObject*) m_histoMgr->Get2DHisto(histId - maxHisto1D);
 
   if (hist) m_buf.WriteObject(hist);

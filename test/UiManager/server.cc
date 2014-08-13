@@ -5,8 +5,8 @@
 #include <TH2F.h>
 #include <TRandom.h>
 
-#include "UiManager.hh"
 #include "HistoManager.hh"
+#include "UiManager.hh"
 
 void fill1D(TH1F* h)
 {
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   TApplication app("server", &argc, argv);
 
   HistoManager histoMgr;
-  histoMgr.Book(12345);
+  histoMgr.Book();
 
   for (int i = 0; i < maxHisto1D; ++i)
     fill1D(histoMgr.Get1DHisto(i));

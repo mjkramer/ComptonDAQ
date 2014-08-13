@@ -19,7 +19,7 @@ void help(const char* progname)
        << " [<option>...] <command> [<arguments>...]" << endl;
 
   cerr << endl << "Available commands:" << endl;
-  cerr << "\tstatus        Display DAQ status" << endl;
+  cerr << "\tinfo          Display DAQ status and info" << endl;
   cerr << "\tlisthists     List available histograms (not yet implemented)" << endl;
   cerr << "\thist <ID>     Display histogram (e.g., hist 3)" << endl;
 
@@ -39,15 +39,14 @@ void configure(Client& client, ArgParser& ap)
 void runcmd(Client& client, ArgParser& ap)
 {
   try {
-    if (ap.cmd == "status") {
+    if (ap.cmd == "info") {
       client.Connect();
-      cout << client.Status();
+      cout << client.Info();
     }
 
     else if (ap.cmd == "listhists") {
-      cerr << "Not yet implemented!" << endl;
-      // client.Connect();
-      // cout << client.ListHists() << endl;
+      client.Connect();
+      cout << client.ListHists();
     }
 
     else if (ap.cmd == "hist") {

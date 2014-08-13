@@ -14,15 +14,15 @@ public:
   void SetPort(int port) { m_port = port; }
   void Connect();
 
-  string Status();
+  string Info();
   string ListHists();
   void ShowHist(int histId);
 
-  enum CommError {ConnectError, SendError, ReceiveError };
+  enum CommError {ConnectError, SendError, ReceiveError, NoData };
   
 private:
   int m_port, m_sock;
-  TClass* m_mapClass;
+  TClass* m_mapClass, *m_vecClass;
 };
 
 #endif
