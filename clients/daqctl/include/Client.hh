@@ -12,6 +12,7 @@ public:
   Client();
 
   void SetPort(int port) { m_port = port; }
+  void SetHost(const char *host) { m_host = host; }
   void Connect();
 
   string Info();
@@ -22,6 +23,7 @@ public:
   
 private:
   int m_port, m_sock;
+  const char *m_host;
   TClass* m_mapClass, *m_vecClass;
 };
 

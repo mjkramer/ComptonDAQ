@@ -20,20 +20,22 @@ void help(const char* progname)
 
   cerr << endl << "Available commands:" << endl;
   cerr << "\tinfo          Display DAQ status and info" << endl;
-  cerr << "\tlisthists     List available histograms (not yet implemented)" << endl;
+  cerr << "\tlisthists     List available histograms" << endl;
   cerr << "\thist <ID>     Display histogram (e.g., hist 3)" << endl;
 
   cerr << endl << "Available options:" << endl;
+  cerr << "\t-h <host>     Address of DAQ machine (default: localhost)" << endl;
   cerr << "\t-p <port>     Connect to DAQ on port <port> (default: "
        << PORT_DEFAULT << ")" << endl;
-  cerr << endl;
 }
 
 void configure(Client& client, ArgParser& ap)
 {
-  int port = ap.HasOpt('p') ? atoi(ap.options['p']) : PORT_DEFAULT;
+  if (ap.HasOpt('h'))
+    client.SetHost(ap.options['h']);
 
-  client.SetPort(port);
+  if (ap.HasOpt('p'))
+    client.SetPort(atoi(ap.options['p']));
 }
 
 void runcmd(Client& client, ArgParser& ap)

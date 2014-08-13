@@ -1,5 +1,6 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <sstream>
 #include <map>
 #include <string>
@@ -13,19 +14,25 @@
 #include "Client.hh"
 #include "UiProtocol.hh"
 
+#define PORT_DEFAULT 8520
+
 using namespace std;
 
 Client::Client()
-{
-  m_mapClass = gROOT->FindSTLClass("std::map<std::string,std::string>", true);
-  m_vecClass = gROOT->FindSTLClass("std::vector<std::string>", true);
-}
+  : m_host("localhost"), m_port(PORT_DEFAULT),
+    m_mapClass(gROOT->FindSTLClass("std::map<std::string,std::string>", true)),
+    m_vecClass(gROOT->FindSTLClass("std::vector<std::string>", true))
+{}
 
 void Client::Connect()
 {
+  hostent *h = gethostbyname(m_host);
+  if (!h || h->h_addrtype != AF_INET)
+    throw ConnectError;
+
   sockaddr_in sin;
   sin.sin_family = AF_INET;
-  sin.sin_addr.s_addr = 0;
+  sin.sin_addr = *(in_addr*) h->h_addr;
   sin.sin_port = htons(m_port);
 
   m_sock = socket(AF_INET, SOCK_STREAM, 0);
