@@ -6,109 +6,110 @@
 
 int Module_v1731::InitializeVMEModule(){
 	printf("****Initializing CAEN V1731 Digitizer****");
-	
 	int32_t Handle = ModuleManager::GetHandle();
-	
-	//Settings:
-	
-	v1731_RegisterWrite(Handle, V1731::base, V1731_ACQUISITION_CONTROL, 0x0, V1731::am);  //Reset acquisition
-	v1731_RegisterWrite(Handle, V1731::base, V1731_SW_RESET, 1, V1731::am);  
-	v1731_RegisterWrite(Handle, V1731::base, V1731_SW_CLEAR, 0x2, V1731::am);
-	
-	
-	v1731_RegisterWrite(Handle, V1731::base, V1731_ZS_NSAMP, 0,V1731::am);
-	v1731_RegisterWrite(Handle, V1731::base, V1731_ZS_NSAMP_CH2, 0, V1731::am);
-	
-	//enable only channel 0 and 2
-	// 0x8120
-	v1731_RegisterWrite(Handle, V1731::base, V1731_CHANNEL_EN_MASK, 5, V1731::am); // Bit[2] and Bit[0] = 1
-	
-	//enable external trigger
-	// 0x810C
-	v1731_RegisterWrite(Handle, V1731::base, V1731_TRIG_SRCE_EN_MASK, 0x40000000, V1731::am);  //Bit[30] = 1
-	
-	//Setting post trigger sample number to be 0
-	// 0x8114
-	v1731_RegisterWrite(Handle, V1731::base, V1731_POST_TRIGGER_SETTING, 0, V1731::am);  //All pre trigger samples
-	
-	// 0x8000
-	//Setting sampling rate to be 1GS/s
-	v1731_RegisterWrite(Handle, V1731::base, V1731_CHANNEL_CONFIG, 0x1010, V1731::am);  // Bit[12] = 1 for 1GS/s sampling rate,
-	                                                                      // Bit[4]  = 1 for Memory sequential access
-	// 0x800C
-	//Setting number of buffer block(s) = 1
-	v1731_RegisterWrite(Handle, V1731::base, V1731_BUFFER_ORGANIZATION,  0, V1731::am);  //Setting 1 buffer block
-	
-	int nsample = 1024;
-	int memory_location = nsample / 16;  //for double sampling rate. Dividied by 8 for 500MS/s
-	//Setting for recording %d samples only...\n", nsample);
-	v1731_RegisterWrite(Handle, V1731::base, V1731_CUSTOM_SIZE, memory_location, V1731::am);  //Setting designated number of samples per channel
-	
+
+	v1731_RegisterWrite(handle, V1731::base, V1731_SW_RESET, 0x1, V1731::am); //software reset
+	v1731_RegisterWrite(handle, V1731::base, V1731_SW_CLEAR, 0x1, V1731::am); // clears all the memories
+
+	v1731_RegisterWrite(handle, V1731::base, V1731_CHANNEL_EN_MASK, 0x5, V1731::am);//enable channels 0 and 2
+	v1731_RegisterWrite(handle, V1731::base, V1731_CHANNEL_DAC, 0x100, V1731::am);
+	v1731_RegisterWrite(handle, V1731::base, V1731_CHANNEL_DAC_CH2, 0x100, V1731::am);
+
+	v1731_RegisterWrite(handle, V1731::base, V1731_TRIG_SRCE_EN_MASK, 0x40000000, V1731::am); //enable external trigger
+	v1731_RegisterWrite(handle, V1731::base, V1731_POST_TRIGGER_SETTING, 0, V1731::am); //we only want pre-trigger samples
+	v1731_RegisterWrite(handle, V1731::base, V1731_CHANNEL_CONFIG, 0x0, V1731::am); //trigger overlapping disabled (default)
+
+	v1731_RegisterWrite(handle, V1731::base, V1731_BUFFER_ORGANIZATION, 0xA, V1731::am); //seperate buffer into 1024 blocks (each can hold 		4k samples @1Gs/s or 2k samples @500Ms/s)
+ 	 
+	//make events custom sized:	
+	//nsamples = 1024;
+	//memory_location = nsamples/(8 bzw 16 for 1Gs/s) = 128@1Gs/s = 0x80
+	v1731_RegisterWrite(Handle, V1731::base, V1731_CUSTOM_SIZE, 0x80, V1731::am);
+
+	//set board online
+	v1731_RegisterWrite(Handle, V1731::base, V1731_ACQUISITION_CONTROL, 0x2, V1731::am);
+		
 	printf("  --  OK\n");
 	//v1731_Status(Handle, V1731::base, V1731::am);
-	return 0;
 
+
+	return 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataBlock* Module_v1731::GetModuleBuffer(){  
-	
-	int32_t Handle = ModuleManager::GetHandle();
-	
-	int status;
-	int version = 1; //temp
+	int32_t handle = ModuleManager::GetHandle();
+	CVErrorCodes error_code;
+	int error_status = 0;	
+
 	int nsample = 1024;
-	
-	int nr_elem = (nsample / 4) * 2 + 4;  // 1/4 samples per DWORD, there are 2 CHs and 4 DWORDs for the header
-	
+	int nr_elem = (nsample / 4) * 2 + 4;  // 4 samples per DWORD, there are 2 CHs and 4 DWORDs for the header
+	int size = nr_elem* 32 / 8;
+	int count;
         uint32_t* rawdata = new uint32_t[nr_elem];
-    
-	status = v1731_ReadBuffer_and_Output(Handle, V1731::base, nsample, V1731::am, rawdata);
+	for(int i = 0; i<nr_elem; i++){
+	rawdata[i] = 10;
 	
+}
+
+	error_code = CAENVME_MBLTReadCycle(handle, V1731::base, rawdata, size, cvA32_S_MBLT, &count);
+        error_status = CAEN::ErrorDecode(error_code);
+        
+	if (error_status == 0){
+	    ;
+	}else{
+		printf("Error during readout of digitizer datablocks");
+	}
+
+	int version = 1; 
 	DataBlock_v1731* datablock = new DataBlock_v1731(version, rawdata);
-	
 	datablock->Set_nr_sample(nsample);
 	
+	for(int i = 0; i<nr_elem; i++){
+	printf("%d\n",rawdata[i]);
+	
+}
+printf("\n\n\n\n\n");	
 	return datablock;
 }
 
 
-/* Standard fuctions:
 
-int ModuleManager::InitializeVMEModule(){
-	return 1;
+void Module_v1731::CalibrateChannels(){
+
+//set 1 to the calibration bit
+v1731_RegisterWrite(handle, V1731::base, V1731_CALIBRATION_CH1,0x2,V1731::am);
+v1731_RegisterWrite(handle, V1731::base, V1731_CALIBRATION_CH2,0x2,V1731::am);
+v1731_RegisterWrite(handle, V1731::base, V1731_CALIBRATION_CH3,0x2,V1731::am);
+v1731_RegisterWrite(handle, V1731::base, V1731_CALIBRATION_CH4,0x2,V1731::am);
+
+//reset calibration bit to 0
+v1731_RegisterWrite(handle, V1731::base, V1731_CALIBRATION_CH1,0x0,V1731::am);
+v1731_RegisterWrite(handle, V1731::base, V1731_CALIBRATION_CH2,0x0,V1731::am);
+v1731_RegisterWrite(handle, V1731::base, V1731_CALIBRATION_CH3,0x0,V1731::am);
+v1731_RegisterWrite(handle, V1731::base, V1731_CALIBRATION_CH4,0x0,V1731::am);
+
+usleep(100000);
+if(v1731_RegisterRead(handle, V1731::base, V1731_CALIBRATION_STATUS_CH4, V1731::am)){;}
+
 }
 
-int ModuleManager::SetOnline(){
-	return 1;
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void Module_v1731::v1731_RegisterWrite(int32_t handle, uint32_t base, int offset, uint32_t value, CVAddressModifier AM){
+	uint32_t write = value;
+	CVErrorCodes error_code;
+	int error_status;
+	error_code = CAENVME_WriteCycle(handle, base+offset, &write, AM, cvD32);
+	error_status = CAEN::ErrorDecode(error_code);
+
+	if(error_status){
+		printf("Error while writing digitizer registers!\n");}
 }
 
-int ModuleManager::SetOffline(){
-	return 1;
-}
 
-int ModuleManager::DataReady(){
-	return 1;
-}
-
-int ModuleManager::DeleteBuffer(){
-	return 1;
-}
-
-int ModuleManager::ResetModule(){
-	return 1;
-}
-
-double ModuleManager::GetModuleBuffer(){
-	return 1.0;
-}
-
-int ModuleManager::CloseConnection(){
-	return 1;
-}
-
-*/
 
 
 uint32_t Module_v1731::v1731_RegisterRead(int32_t handle, uint32_t base, int offset, CVAddressModifier AM){
@@ -119,6 +120,8 @@ uint32_t Module_v1731::v1731_RegisterRead(int32_t handle, uint32_t base, int off
 	
 	error_code = CAENVME_ReadCycle(handle, base+offset, &read, AM, cvD32);
 	error_status = CAEN::ErrorDecode(error_code);
+
+	if(error_status){printf("Error while reading digitizer register.\n");}
 	
 	return read;
 }
@@ -206,16 +209,7 @@ void     Module_v1731::v1731_TrgCtl(int32_t handle, uint32_t base, uint32_t reg,
 	v1731_RegisterWrite(handle, base, reg, mask, AM);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void     Module_v1731::v1731_RegisterWrite(int32_t handle, uint32_t base, int offset, uint32_t value, CVAddressModifier AM){
-	uint32_t write = value;
-	CVErrorCodes error_code;
-	int error_status;
-	
-	error_code = CAENVME_WriteCycle(handle, base+offset, &write, AM, cvD32);
-	error_status = CAEN::ErrorDecode(error_code);
-}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -505,9 +499,9 @@ int      Module_v1731::DataReady(){
 	status = ((status << 28) >> 31);
 	
 	if (status == 1){  //ready
-		return 0;
-	}else{
 		return 1;
+	}else{
+		return 0;
 	}
 }
 

@@ -64,6 +64,17 @@ class DataBlock;
 #define V1731_BUFFER_OCCUPANCY_CH2            0x1294      /* For channel 2 */
 #define V1731_CHANNEL_DAC_CH2                 0x1298      /* For channel 2 */
 
+
+#define V1731_CALIBRATION_CH1		      0x119C //for channel 1
+#define V1731_CALIBRATION_CH2		      0x129C //for channel 2
+#define V1731_CALIBRATION_CH3		      0x139C //for channel 3
+#define V1731_CALIBRATION_CH4		      0x149C //for channel 4
+
+#define V1731_CALIBRATION_STATUS_CH1	      0x1188 //for channel 1
+#define V1731_CALIBRATION_STATUS_CH2	      0x1288 //for channel 2
+#define V1731_CALIBRATION_STATUS_CH3	      0x1388 //for channel 3
+#define V1731_CALIBRATION_STATUS_CH4	      0x1488 //for channel 4
+
 #define V1731_RUN_START                             0x0001
 #define V1731_RUN_STOP                              0x0002
 #define V1731_REGISTER_RUN_MODE                     0x0003
@@ -90,6 +101,8 @@ class Module_v1731: public ModuleManager{
   public:
 	int InitializeVMEModule();
 	DataBlock* GetModuleBuffer();
+
+	void CalibrateChannels();
 	
 	uint32_t v1731_RegisterRead(int32_t handle, uint32_t base, int offset, CVAddressModifier AM);
 	

@@ -65,7 +65,7 @@ int DataAcquisition::StartRun(){
 		CheckKeyboardCommands(); //sets "state"
 
 		//check if PADC has data
-		if(modules[0]->DataReady()){
+		if(modules[1]->DataReady()){
 
 		//create DataBlock vector
 		std::vector<DataBlock*> *data = new std::vector<DataBlock*>;
