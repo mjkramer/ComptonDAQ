@@ -64,35 +64,88 @@ int DataAcquisition::StartRun(){
 	while(state){
 		CheckKeyboardCommands(); //sets "state"
 
-		//check if PADC has data
-		if(modules[1]->DataReady()){
+			Module_v1731* p1731_cast = dynamic_cast<Module_v1731*>((modules[1]));
+			if(p1731_cast){
+					if(p1731_cast->DataReady()){
+						p1731_cast->GetModuleBuffer();}
+				
 
-		//create DataBlock vector
-		std::vector<DataBlock*> *data = new std::vector<DataBlock*>;
 
-		//read out all modules
-		for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-    		        data->push_back((*i)->GetModuleBuffer());
-    		}
-		
-    		//pass data vector pointer to HistoManager
-    		fHistoManager->ProcessData(data);
-    		
+}
 
-		//delete DataBlock vector
-    		for(std::vector<DataBlock*>::iterator i = data->begin(); i != data->end(); ++i){
-    		    delete (*i);
-		    (*i) = 0;
-    		}
-		delete data;
-		data = 0;
-		
-
-		} //end if data ready
 	}//end while
 
 	return 0;
 }
+
+
+/*
+if(modules[0]->DataReady()){
+
+			Module_v1731* p1731_cast = dynamic_cast<Module_v1731*>((modules[1]));
+			if(p1731_cast){p1731_cast->GenerateSoftwareTrigger();}
+
+			//create DataBlock vector
+			std::vector<DataBlock*> *data = new std::vector<DataBlock*>;
+
+			//read out all modules
+			for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+    		        data->push_back((*i)->GetModuleBuffer());}
+
+			fHistoManager->ProcessData(data);
+
+			//delete DataBlock vector
+	    		for(std::vector<DataBlock*>::iterator i = data->begin(); i != data->end(); ++i){
+	    			delete (*i);
+				(*i) = 0;}
+			delete data;
+			data = 0;
+*/
+
+
+
+//Module_v1731* p1731_cast = dynamic_cast<Module_v1731*>((modules[1]));
+//		if(p1731_cast){
+//			p1731_cast->InitializeVMEModule();
+//			usleep(4000000);
+			//p1731_cast->GenerateSoftwareTrigger();}
+//		usleep(100000);
+
+		//check if PADC has data
+		//if(modules[1]->DataReady()){
+
+
+
+
+		//data->push_back(modules[0]->GetModuleBuffer());
+			
+//}
+
+
+
+		//read out all modules
+		//for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+    		//        data->push_back((*i)->GetModuleBuffer());
+    		//}
+		
+
+
+
+    		//pass data vector pointer to HistoManager
+    		//fHistoManager->ProcessData(data);
+    		
+
+		//delete DataBlock vector
+    		//for(std::vector<DataBlock*>::iterator i = data->begin(); i != data->end(); ++i){
+    		  //  delete (*i);
+		    //(*i) = 0;
+    		//}
+		//delete data;
+		//data = 0;
+		
+
+		//} //end if data ready
+
 
 
 
