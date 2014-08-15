@@ -15,6 +15,8 @@ int Module_v1731::InitializeVMEModule(){
 	 WriteRegister(SW_RESET, 0x1, cvD32); //software reset
 	 WriteRegister(SW_CLEAR, 0x2, cvD32); // clears all the memories
 
+	 CalibrateChannels(); //channel calibration
+
 	 WriteRegister(ZS_NSAMP, 0, cvD32); //set zero supression zero
 	 WriteRegister(ZS_NSAMP_CH2, 0, cvD32); //set zero supression zero
 
@@ -25,17 +27,17 @@ int Module_v1731::InitializeVMEModule(){
 
 	 WriteRegister(ACQUISITION_CONTROL, 0x10,cvD32);//fill up buffers and use last one as circular buffer (p29)
 
-	 //WriteRegister(TRIG_SRCE_EN_MASK, 0x40000000,cvD32); //enable external trigger
+	 WriteRegister(TRIG_SRCE_EN_MASK, 0x40000000,cvD32); //enable external trigger
 	 WriteRegister(POST_TRIGGER_SETTING, 0,cvD32); //we only want pre-trigger samples
 	 WriteRegister(CHANNEL_CONFIG, 0x0,cvD32); //trigger overlapping disabled (default)
 
-	 WriteRegister(CHANNEL_CONFIG, 0x1010, cvD32);//seqential memory access and 1Gs/s
+	 WriteRegister(CHANNEL_CONFIG, 0x10, cvD32);//seqential memory access
 
 	 WriteRegister(BUFFER_ORGANIZATION, 0xA, cvD32); //seperate buffer into 1024 blocks (each can hold 4k samples @1Gs/s or 2k samples @500Ms/s)
 	//make events custom sized:	
-	//nsamples = 4096;
+	//nsamples = 2048;
 	//memory_locations = nsamples/(8 bzw 16 for 1Gs/s) = 256@1Gs/s = 0x100
-	 WriteRegister(CUSTOM_SIZE, 0x100,cvD32);
+	 WriteRegister(CUSTOM_SIZE, 0x100, cvD32);
 
 	//set board online
 	SetOnline();
@@ -50,7 +52,7 @@ DataBlock* Module_v1731::GetModuleBuffer(){
 	CVErrorCodes error_code;
 	int error_status = 0;	
 
-	int nsample = 2000;
+	int nsample = 2048;
 	int nr_elem = (nsample / 4)*2 + 4;  // 4 samples per DWORD, 2 CHs and 4 DWORDs for the header
 	int size = nr_elem*32/8;//size in bytes
 	int count = 0; //number of bytes transfered
@@ -64,6 +66,30 @@ DataBlock* Module_v1731::GetModuleBuffer(){
         error_status = CAEN::ErrorDecode(error_code);
 
 
+
+
+//Event size
+unsigned int check1 = (unsigned int) ((rawdata[0]&(1<<31))>>31);
+unsigned int check2 = (unsigned int) ((rawdata[0]&(1<<30))>>30);
+unsigned int check3 = (unsigned int) ((rawdata[0]&(1<<29))>>29);
+unsigned int check4 = (unsigned int) ((rawdata[0]&(1<<28))>>28);
+
+printf("c1: %d, c0: %d, c1: %d, c0: %d\n", check1, check2, check3, check4);
+printf("%u\n", rawdata[0]);
+
+unsigned int event_size = (unsigned int) ((rawdata[0] << 4) >> 4);
+unsigned int channel = (unsigned int) ((rawdata[1] <<24)>>24);
+
+printf("event size: %d\n", event_size);
+printf("channel nr: %d\n", channel);
+
+//printf("rawdata: %d\n", rawdata[0]); 
+
+
+
+
+
+
        	if (error_status == 0){
 	    ;}
 	else{
@@ -73,7 +99,7 @@ DataBlock* Module_v1731::GetModuleBuffer(){
 
 	int version = 1; 
 	DataBlock_v1731* datablock = new DataBlock_v1731(version, rawdata);
-	datablock->Set_nr_sample(nsample);
+	datablock->SetNumberOfSamples(nsample);
 	//	for(int i = 0; i<nr_elem; i++){
 	//	if(rawdata[i] > 0){
 	//		printf("%d\n",rawdata[i]);}
@@ -144,30 +170,41 @@ int Module_v1731::DataReady(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-
-/*
-
 void Module_v1731::CalibrateChannels(){
 
 //set 1 to the calibration bit
- WriteRegister(CALIBRATION_CH1,0x2,V1731::am);
- WriteRegister(CALIBRATION_CH2,0x2,V1731::am);
- WriteRegister(CALIBRATION_CH3,0x2,V1731::am);
- WriteRegister(CALIBRATION_CH4,0x2,V1731::am);
+ WriteRegister(CALIBRATION_CH1,0x2,cvD32);
+ WriteRegister(CALIBRATION_CH2,0x2,cvD32);
+ WriteRegister(CALIBRATION_CH3,0x2,cvD32);
+ WriteRegister(CALIBRATION_CH4,0x2,cvD32);
+usleep(100000);
 
 //reset calibration bit to 0
- WriteRegister(CALIBRATION_CH1,0x0,V1731::am);
- WriteRegister(CALIBRATION_CH2,0x0,V1731::am);
- WriteRegister(CALIBRATION_CH3,0x0,V1731::am);
- WriteRegister(CALIBRATION_CH4,0x0,V1731::am);
-
+ WriteRegister(CALIBRATION_CH1,0x0,cvD32);
+ WriteRegister(CALIBRATION_CH2,0x0,cvD32);
+ WriteRegister(CALIBRATION_CH3,0x0,cvD32);
+ WriteRegister(CALIBRATION_CH4,0x0,cvD32);
 usleep(100000);
-if( RegisterRead(CALIBRATION_STATUS_CH4)){;}
+
+//readout odd channels:
+//WriteRegister(CHANNEL_EN_MASK, 0xA, cvD32);//enable channels 1 and 3
+//DataBlock *block = GetModuleBuffer();
+//DataBlock_v1731* p1731_cast = dynamic_cast<DataBlock_v1731*>(block);
+//if(p1731_cast){
+//if(DataReady()){
+//std::vector<int> CH1 = p1731_cast->GetWaveform_Channel0(); //actually channel 1
+//std::vector<int> CH3 = p1731_cast->GetWaveform_Channel2(); //actually channel 3
+//printf("Channel 1 ADC value: %d\n", CH1.at(0));
+//printf("Channel 3 ADC value: %d\n", CH3.at(0));
+//}}
+//WriteRegister(CHANNEL_EN_MASK, 0x0, cvD32);//disable all channels
+
+
 
 }
 
 
-*/
+
 
 /*
 //0x8010

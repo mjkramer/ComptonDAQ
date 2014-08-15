@@ -110,12 +110,12 @@ class Module_v1731: public ModuleManager{
 
   void WriteRegister(int offset, uint32_t value, CVDataWidth width);//ok
   uint32_t ReadRegister(int offset, CVDataWidth width);//ok
-
+void CalibrateChannels();
 	
 	void GenerateSoftwareTrigger();//ok
 	
 	/*
-	//void CalibrateChannels();
+	//
 	// The returned integer states which buffers are free
 	uint32_t BufferFreeRead( );
 	

@@ -167,13 +167,15 @@ TH2F* HistoManager::Get2DHisto(int id2D) {
 void HistoManager::FillNTuple(int eGe, std::vector<int> wf0, std::vector<int> wf2){
 
 ge_adc = eGe;
+
 n_samples = wf0.size();
 
 for(int i; i<n_samples; i++){
 	waveform_adc0[i] = wf0[i];
 	waveform_adc2[i] = wf2[i];
-	cout << waveform_adc0[i] << "  -  " << waveform_adc2[i] << endl;
+	//cout << waveform_adc0[i] << " " << waveform_adc2[i] << endl;
 }
 
 if (outTree) outTree->Fill();
+
 }

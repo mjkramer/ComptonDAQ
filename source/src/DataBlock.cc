@@ -42,11 +42,12 @@ DataBlock_v1731::DataBlock_v1731(int version, uint32_t* data):DataBlock::DataBlo
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-std::vector<int> DataBlock_v1731::GetWaveform_Channel0(){
+std::vector<int> DataBlock_v1731::GetWaveform_Channel0(){	
 	int nr_elem = (nr_sample / 4) * 2 + 4;
+	int half = ((nr_elem-4)/2 + 4);
 	std::vector<int> CH0(nr_sample);
 	
-    for (int i=4 ; i<((nr_elem-4)/2 + 4) ;i++){ 
+    for (int i=4 ; i<half ;i++){ 
     	CH0.at((4*i-16)) = (int) (((DataBlock::data[i]) <<24 )>>24);
     	CH0.at((4*i-15)) = (int) (((DataBlock::data[i]) <<16 )>>24);
     	CH0.at((4*i-14)) = (int) (((DataBlock::data[i]) <<8  )>>24);
@@ -61,13 +62,14 @@ std::vector<int> DataBlock_v1731::GetWaveform_Channel0(){
 
 std::vector<int> DataBlock_v1731::GetWaveform_Channel2(){
 	int nr_elem = (nr_sample / 4) * 2 + 4;
+	int half = ((nr_elem-4)/2 + 4);
 	std::vector<int> CH2(nr_sample);
 	
-    for(int i=((nr_elem-4)/2 + 4); i<nr_elem; i++){ 
-    	CH2.at(( 4*i-4*((nr_elem-4)/2 + 4) ))    = (int) (((DataBlock::data[i]) <<24 )>>24);
-    	CH2.at(( 4*i-4*((nr_elem-4)/2 + 4) + 1)) = (int) (((DataBlock::data[i]) <<16 )>>24);
-    	CH2.at(( 4*i-4*((nr_elem-4)/2 + 4) + 2)) = (int) (((DataBlock::data[i]) <<8  )>>24);
-    	CH2.at(( 4*i-4*((nr_elem-4)/2 + 4) + 3)) = (int) ((DataBlock::data[i]) >>24);
+    for(int i=half; i<nr_elem; i++){ 
+    	CH2.at((4*(i-half)))    = (int) (((DataBlock::data[i]) <<24 )>>24);
+    	CH2.at((4*(i-half) + 1)) = (int) (((DataBlock::data[i]) <<16 )>>24);
+    	CH2.at((4*(i-half) + 2)) = (int) (((DataBlock::data[i]) <<8  )>>24);
+    	CH2.at((4*(i-half) + 3)) = (int) ((DataBlock::data[i]) >>24);
     }
     
     return CH2;
