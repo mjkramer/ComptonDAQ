@@ -92,6 +92,11 @@ void HistoManager::ProcessData(std::vector<DataBlock*> *data){
 		waveform1 = p1731_cast->GetWaveform_Channel0();
 		waveform2 = p1731_cast->GetWaveform_Channel2();
 
+n_samples = waveform1.size();
+for(int i; i<n_samples; i++){
+	cout << waveform1[i] << "  -  " << waveform2[i] << endl;
+}
+
 	}
 
 	//if(p1290_cast){
@@ -166,7 +171,7 @@ n_samples = wf0.size();
 for(int i; i<n_samples; i++){
 	waveform_adc0[i] = wf0[i];
 	waveform_adc2[i] = wf2[i];
-	//cout << waveform_adc0[i] << "  -  " << waveform_adc2[i] << endl;
+	cout << waveform_adc0[i] << "  -  " << waveform_adc2[i] << endl;
 }
 
 if (outTree) outTree->Fill();

@@ -1,4 +1,5 @@
 #include "ModuleManager.hh"
+#include "CAENVMEtypes.h"
 
 class DataBlock;
 
@@ -107,9 +108,8 @@ class Module_v1731: public ModuleManager{
 	int DataReady();//ok
 
 
-	void WriteRegister(int offset, uint32_t value);//ok
-	void WriteRegister32(int offset, uint32_t value);
-	uint32_t ReadRegister(int offset);//ok
+  void WriteRegister(int offset, uint32_t value, CVDataWidth width);//ok
+  uint32_t ReadRegister(int offset, CVDataWidth width);//ok
 
 	
 	void GenerateSoftwareTrigger();//ok
