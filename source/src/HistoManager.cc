@@ -20,8 +20,8 @@ HistoManager::HistoManager():rootFile(0), outTree(0){
   for (int k=0; k<maxHisto1D; k++) histo1D[k] = 0;
   for (int i=0; i<maxHisto2D; i++) histo2D[i] = 0;
   
-  waveform_adc0 = new int[1100];
-  waveform_adc2 = new int[1100];
+  waveform_adc0 = new int[2500];
+  waveform_adc2 = new int[2500];
   ge_adc = 0;
   n_samples = 0;
 
@@ -92,20 +92,21 @@ void HistoManager::ProcessData(std::vector<DataBlock*> *data){
 		waveform1 = p1731_cast->GetWaveform_Channel0();
 		waveform2 = p1731_cast->GetWaveform_Channel2();
 
-n_samples = waveform1.size();
-for(int i; i<n_samples; i++){
-	cout << waveform1[i] << "  -  " << waveform2[i] << endl;
-}
-
+		//n_samples = waveform1.size();
+		//for(int i; i<n_samples; i++){
+			//cout << waveform1[i] << "  -  " << waveform2[i] << endl;}
+			//printf("\n\n\n\n\n");
 	}
+
 
 	//if(p1290_cast){
 		//time_difference = p1290_cast->GetTimeDifference(1,2);
 	//	cout << "TDC array: "  << endl;
 	//}
 
+
 	Fill1DHisto(0, ge_peak); //Fill the Ge-energy to a histogram
-	FillNTuple(ge_peak, waveform1, waveform2); //Save the waveforms	
+	FillNTuple(ge_peak, waveform1, waveform2); //Save the waveforms and the Ge-peak
 	
 }
 

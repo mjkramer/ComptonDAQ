@@ -15,30 +15,27 @@ int Module_v1731::InitializeVMEModule(){
 	 WriteRegister(SW_RESET, 0x1, cvD32); //software reset
 	 WriteRegister(SW_CLEAR, 0x2, cvD32); // clears all the memories
 
-
-
-	 /*new*/	WriteRegister(ZS_NSAMP, 0, cvD32);
-	 /*new*/	WriteRegister(ZS_NSAMP_CH2, 0, cvD32);
+	 WriteRegister(ZS_NSAMP, 0, cvD32); //set zero supression zero
+	 WriteRegister(ZS_NSAMP_CH2, 0, cvD32); //set zero supression zero
 
 	 WriteRegister(CHANNEL_EN_MASK, 0x5, cvD32);//enable channels 0 and 2
-	 WriteRegister(CHANNEL_DAC, 0x2, cvD32);//dc offset
-	 WriteRegister(CHANNEL_DAC_CH2, 0x2, cvD32);//dc offset
+	 WriteRegister(CHANNEL_DAC, 0x2000, cvD32);//dc offset
+	 WriteRegister(CHANNEL_DAC_CH2, 0x2000, cvD32);//dc offset
+	 usleep(1000); //wait for dc offset to be updated
 
 	 WriteRegister(ACQUISITION_CONTROL, 0x10,cvD32);//fill up buffers and use last one as circular buffer (p29)
-	 // WriteRegister(ALMOST_FULL_LEVEL, 0x14,);//triggers a busy signal
 
-	 WriteRegister(TRIG_SRCE_EN_MASK, 0x40000000,cvD32); //enable external trigger
+	 //WriteRegister(TRIG_SRCE_EN_MASK, 0x40000000,cvD32); //enable external trigger
 	 WriteRegister(POST_TRIGGER_SETTING, 0,cvD32); //we only want pre-trigger samples
 	 WriteRegister(CHANNEL_CONFIG, 0x0,cvD32); //trigger overlapping disabled (default)
 
-	 /*new*/  WriteRegister(CHANNEL_CONFIG, 0x1010, cvD32);//1Gs/s
+	 WriteRegister(CHANNEL_CONFIG, 0x1010, cvD32);//seqential memory access and 1Gs/s
 
-	 /*modified*/	 WriteRegister(BUFFER_ORGANIZATION, 0xA, cvD32); // (0 instead of A - one buffer block) seperate buffer into 1024 blocks (each can hold 4k samples @1Gs/s or 2k samples @500Ms/s)
+	 WriteRegister(BUFFER_ORGANIZATION, 0xA, cvD32); //seperate buffer into 1024 blocks (each can hold 4k samples @1Gs/s or 2k samples @500Ms/s)
 	//make events custom sized:	
-	//nsamples = 2048;
-	//memory_location = nsamples/(8 bzw 16 for 1Gs/s) = 128@1Gs/s = 0x80
-	 WriteRegister(CUSTOM_SIZE, 0x20,cvD32);
-	 printf("custom size: %d\n",ReadRegister(CUSTOM_SIZE,cvD32));
+	//nsamples = 4096;
+	//memory_locations = nsamples/(8 bzw 16 for 1Gs/s) = 256@1Gs/s = 0x100
+	 WriteRegister(CUSTOM_SIZE, 0x100,cvD32);
 
 	//set board online
 	SetOnline();
@@ -50,11 +47,10 @@ int Module_v1731::InitializeVMEModule(){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataBlock* Module_v1731::GetModuleBuffer(){  
-	usleep(1000000);
 	CVErrorCodes error_code;
 	int error_status = 0;	
 
-	int nsample = 256;
+	int nsample = 2000;
 	int nr_elem = (nsample / 4)*2 + 4;  // 4 samples per DWORD, 2 CHs and 4 DWORDs for the header
 	int size = nr_elem*32/8;//size in bytes
 	int count = 0; //number of bytes transfered
@@ -124,7 +120,6 @@ uint32_t Module_v1731::ReadRegister(int offset, CVDataWidth width){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v1731::SetOnline(){	
-	 printf("Setting module online\n");
 	   WriteRegister(ACQUISITION_CONTROL, 0x4,cvD32);
 	 return 0;
 }

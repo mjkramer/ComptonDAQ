@@ -65,9 +65,6 @@ int DataAcquisition::StartRun(){
 		CheckKeyboardCommands(); //sets "state"
 		if(modules[0]->DataReady()){
 
-			Module_v1731* p1731_cast = dynamic_cast<Module_v1731*>((modules[1]));
-			if(p1731_cast){p1731_cast->GenerateSoftwareTrigger();}
-
 			//create DataBlock vector
 			std::vector<DataBlock*> *data = new std::vector<DataBlock*>;
 
