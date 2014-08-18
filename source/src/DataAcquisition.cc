@@ -42,8 +42,11 @@ DataAcquisition::~DataAcquisition(){
 int DataAcquisition::Initialize(){
     fConfigFileManager->OpenConfigFile();
     run_number = fConfigFileManager->GetRunNumber();
+
     (*fUiManager)[UiKeys::knRunNumber] = run_number + 1;
     (*fUiManager)[UiKeys::knTakingData] = false;
+    fUiManager->StartListener();
+
     fHistoManager->Book(run_number + 1);
 
     Module_v2718 *v2718 = new Module_v2718(); // controller card
