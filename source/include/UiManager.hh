@@ -26,6 +26,7 @@ public:
   class MapHandle;			// defined below
 
   MapHandle operator[](const string& key);
+  MapHandle operator[](const char* key);
   void Remove(const string& key);
 
   enum DaqCmd { NoCmd=0, StartDaq, StopDaq };
