@@ -26,7 +26,6 @@ public:
   class MapHandle;			// defined below
 
   MapHandle operator[](const string& key);
-  MapHandle operator[](const char* key);
   void Remove(const string& key);
 
   enum DaqCmd { NoCmd=0, StartDaq, StopDaq };
@@ -73,9 +72,6 @@ typedef UiManager::MapHandle MapHandle;
 
 inline MapHandle UiManager::operator[](const string& key)
 { return MapHandle(m_data[key]); }
-
-inline MapHandle UiManager::operator[](const char *key)
-{ return MapHandle(m_data[string(key)]); }
 
 inline MapHandle& MapHandle::operator=(const string& value)
 { m_str = value; }
