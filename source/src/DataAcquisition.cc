@@ -42,6 +42,8 @@ DataAcquisition::~DataAcquisition(){
 int DataAcquisition::Initialize(){
     fConfigFileManager->OpenConfigFile();
     run_number = fConfigFileManager->GetRunNumber();
+    fUiManager[UiKeys::knRunNumber] = run_number + 1;
+    fUiManager[UiKeys::knTakingData] = false;
     fHistoManager->Book(run_number + 1);
 
     Module_v2718 *v2718 = new Module_v2718(); // controller card
@@ -59,6 +61,7 @@ int DataAcquisition::Initialize(){
 
 
 int DataAcquisition::StartRun(){
+        fUiManager[UiKeys::knTakingData] = true;
 	fConfigFileManager->IncrementRunNumber();
 
 	while(state){
@@ -80,7 +83,9 @@ int DataAcquisition::StartRun(){
 				(*i) = 0;}
 			delete data;
 			data = 0;
-}
+		}
+
+		fUiManager->ProcessIO();
 
 
 	}//end while
@@ -106,6 +111,7 @@ int DataAcquisition::StartRun(){
 int DataAcquisition::StopRun(){
 	fConfigFileManager->CloseConfigFile();
 	fHistoManager->Save();
+	fUiManager[UiKeys::knTakingData] = false;
 	return 0;	
 }
 

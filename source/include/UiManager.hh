@@ -13,6 +13,11 @@ using namespace std;
 class HistoManager;
 class TClass;
 
+namespace UiKeys {
+  static const char *knTakingData = "Taking data";
+  static const char *knRunNumber = "Run number";
+}
+
 class UiManager {
 public:
   UiManager(HistoManager* histoMgr);
@@ -27,6 +32,7 @@ public:
 
   void StartListener(int port=8520);
   DaqCmd ProcessIO();
+
 
 private:
   HistoManager *m_histoMgr;
