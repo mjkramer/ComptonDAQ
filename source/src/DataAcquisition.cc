@@ -40,6 +40,11 @@ DataAcquisition::~DataAcquisition(){
 int DataAcquisition::Initialize(){
     fConfigFileManager->OpenConfigFile();
     run_number = fConfigFileManager->GetRunNumber();
+
+    (*fUiManager)[UiKeys::knRunNumber] = run_number + 1;
+    (*fUiManager)[UiKeys::knTakingData] = false;
+    fUiManager->StartListener();
+
     fHistoManager->Book(run_number + 1);
 
     Module_v2718 *v2718 = new Module_v2718(); // controller card
@@ -58,10 +63,12 @@ int DataAcquisition::Initialize(){
 
 int DataAcquisition::StartRun(){
   fConfigFileManager->IncrementRunNumber();
+  (*fUiManager)[UiKeys::knTakingData] = true;
+
   //Set modules online
   for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-	(*i)->SetOnline();
-     	}
+    (*i)->SetOnline();
+  }
   usleep(1000000);
 
   std::cout << endl << "DAQ is running..." << std::endl;
@@ -77,7 +84,7 @@ int DataAcquisition::StartRun(){
 	  i != modules.end(); 
 	  ++i){
 	data.push_back( (*i)->GetModuleBuffer());
-     	}
+      }
 
       // Process data from each module
       fHistoManager->ProcessData(data);
@@ -90,6 +97,8 @@ int DataAcquisition::StartRun(){
 	(*i) = 0;
       }
     }
+
+    fUiManager->ProcessIO();
   }//end while
 
   return 0;
@@ -100,6 +109,7 @@ int DataAcquisition::StopRun(){
 	int run_number = fConfigFileManager->GetRunNumber();
 	fConfigFileManager->CloseConfigFile();
 	fHistoManager->Save(run_number);
+	(*fUiManager)[UiKeys::knTakingData] = false;
 	return 0;	
 }
 
