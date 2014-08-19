@@ -59,33 +59,35 @@ int DataAcquisition::Initialize(){
 
 
 int DataAcquisition::StartRun(){
-	fConfigFileManager->IncrementRunNumber();
+  fConfigFileManager->IncrementRunNumber();
 
-	while(state){
-		CheckKeyboardCommands(); //sets "state"
-		if(modules[0]->DataReady()){
+  while(state){
+    CheckKeyboardCommands(); //sets "state"
+    if(modules[0]->DataReady()){
+      //create DataBlock vector
+      std::vector<DataBlock*> data;
+      
+      //Read data blocks from all modules
+      for(std::vector<ModuleManager*>::iterator i = modules.begin(); 
+	  i != modules.end(); 
+	  ++i){
+	data.push_back( (*i)->GetModuleBuffer() );
+      }
 
-			//create DataBlock vector
-			std::vector<DataBlock*> *data = new std::vector<DataBlock*>;
+      // Process data from each module
+      fHistoManager->ProcessData(data);
 
-			//read out all modules
-			for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-    		        data->push_back((*i)->GetModuleBuffer());}
+      //Delete DataBlocks
+      for(std::vector<DataBlock*>::iterator i = data.begin(); 
+	  i != data.end(); 
+	  ++i){
+	delete (*i);
+	(*i) = 0;
+      }
+    }
+  }//end while
 
-			fHistoManager->ProcessData(data);
-
-			//delete DataBlock vector
-	    		for(std::vector<DataBlock*>::iterator i = data->begin(); i != data->end(); ++i){
-	    			delete (*i);
-				(*i) = 0;}
-			delete data;
-			data = 0;
-}
-
-
-	}//end while
-
-	return 0;
+  return 0;
 }
 
 

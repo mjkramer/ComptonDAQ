@@ -4,7 +4,7 @@
 //v1720 - VME digitizer
 
 #include "DataBlock.hh"
-
+#include <iostream>
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -39,43 +39,96 @@ int DataBlock:: GetVersion(){
 DataBlock_v1731::DataBlock_v1731(int version, uint32_t* data):DataBlock::DataBlock(v1731, version, data){
 }
 
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-std::vector<int> DataBlock_v1731::GetWaveform_Channel0(){	
-	int nr_elem = (nr_sample / 4) * 2 + 4;
-	int half = ((nr_elem-4)/2 + 4);
-	std::vector<int> CH0(nr_sample);
-	
-    for (int i=4 ; i<half ;i++){ 
-    	CH0.at((4*i-16)) = (int) (((DataBlock::data[i]) <<24 )>>24);
-    	CH0.at((4*i-15)) = (int) (((DataBlock::data[i]) <<16 )>>24);
-    	CH0.at((4*i-14)) = (int) (((DataBlock::data[i]) <<8  )>>24);
-    	CH0.at((4*i-13)) = (int) ((DataBlock::data[i]) >>24);
-    }
-    
-    return CH0;
-    
+unsigned int DataBlock_v1731::GetEventSize()
+{
+  if(!data){
+    std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
+    return 0;
+  }
+  return ((data[0] << 4) >> 4);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-std::vector<int> DataBlock_v1731::GetWaveform_Channel2(){
-	int nr_elem = (nr_sample / 4) * 2 + 4;
-	int half = ((nr_elem-4)/2 + 4);
-	std::vector<int> CH2(nr_sample);
-	
-    for(int i=half; i<nr_elem; i++){ 
-    	CH2.at((4*(i-half)))    = (int) (((DataBlock::data[i]) <<24 )>>24);
-    	CH2.at((4*(i-half) + 1)) = (int) (((DataBlock::data[i]) <<16 )>>24);
-    	CH2.at((4*(i-half) + 2)) = (int) (((DataBlock::data[i]) <<8  )>>24);
-    	CH2.at((4*(i-half) + 3)) = (int) ((DataBlock::data[i]) >>24);
-    }
-    
-    return CH2;
-    
+unsigned int DataBlock_v1731::GetNBlocks()
+{
+  if(!data){
+    std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
+    return 0;
+  }
+  
+  uint32_t channelMask = data[1] & 0xFF;
+  unsigned int nBlocks = 0;
+  for(int i=0; i<8; i++){
+    nBlocks += (channelMask >> i) & 0x1;
+  }
+  return nBlocks;
 }
 
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+unsigned int DataBlock_v1731::GetBlockSize()
+{
+  if(!data){
+    std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
+    return 0;
+  }
+  unsigned int headerSize = 4; // FIXME: move to definitions
+  return (GetEventSize() - headerSize)/GetNBlocks();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+unsigned int DataBlock_v1731::GetNumberOfSamples()
+{
+  if(!data){
+    std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
+    return 0;
+  }
+  unsigned int waveformBlockSize = GetBlockSize();
+  unsigned int samplesPerWord = 4; // FIXME: Move this to module definitions
+  return (waveformBlockSize * samplesPerWord);
+}
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+std::vector<unsigned int> DataBlock_v1731::GetWaveform(const unsigned int blockIndex){
+  // Return a vector containing the waveform samples
+  //  blockIndex: count from 0 to n over the number of active read-out channels
+  //              (NOT the channel number!)
+
+  std::vector<unsigned int> waveform(0);
+  if(!data){
+    std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
+    return waveform;
+  }
+  unsigned int headerSize = 4; // FIXME: move to definitions
+  unsigned int samplesPerWord = 4; // FIXME: Move this to module definitions
+  unsigned int sampleMask = 0xFF; // FIXME: move to definitions
+  unsigned int blockSize = GetBlockSize();
+
+  if(blockIndex >= GetNBlocks()){
+    std::cout << "Error: DataBlock_v1731: Requesting invalid block " 
+	      << blockIndex << " of known " << GetNBlocks() << " blocks."
+	      << std::endl;
+    return waveform;
+  }
+
+  waveform.resize(blockSize * samplesPerWord);
+  uint32_t* waveStart = data + headerSize + blockIndex*blockSize;
+  for(int i=0; i<blockSize; i++){ 
+    waveform[4*i]   = ( (waveStart[i] >> 0) & sampleMask );
+    waveform[4*i+1] = ( (waveStart[i] >> 8) & sampleMask );
+    waveform[4*i+2] = ( (waveStart[i] >> 16) & sampleMask );
+    waveform[4*i+3] = ( (waveStart[i] >> 24) & sampleMask );
+  }
+
+  return waveform;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

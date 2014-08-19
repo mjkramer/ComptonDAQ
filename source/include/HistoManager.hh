@@ -30,8 +30,9 @@ class HistoManager{
 
     void Fill1DHisto(int id1D, int bin, double weight = 1.0);
     void Fill2DHisto(int id2D, int xbin, int ybin);   
-    void FillNTuple(int eGe, std::vector<int> wf0, std::vector<int> wf2);
-    void ProcessData(std::vector<DataBlock*> *data);
+    void FillNTuple(int eGe, std::vector<unsigned int>& wf0, 
+		    std::vector<unsigned int>& wf2);
+    void ProcessData(std::vector<DataBlock*>& data);
 
     TH1F* Get1DHisto(int id1D);
     TH2F* Get2DHisto(int id2D);

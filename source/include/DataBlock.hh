@@ -26,19 +26,22 @@ class DataBlock{
 
 
 
- class DataBlock_v1731: public DataBlock{
-  public:
- 	DataBlock_v1731(int version, uint32_t* data);
-        virtual ~DataBlock_v1731(){;}
- 	void SetNumberOfSamples(int nsample){nr_sample = nsample;};
-	int GetNumberOfSamples(){return nr_sample;}
- 	std::vector<int> GetWaveform_Channel0();  //Decode the data array.
- 	                                //Need to release memory afterwards.
- 	std::vector<int> GetWaveform_Channel2();  //Decode the SAME data array.
- 	                                //Need to release memory afterwards.	
-  private:
- 	int nr_sample; 	
- }; 
+class DataBlock_v1731: public DataBlock{
+public:
+  DataBlock_v1731(int version, uint32_t* data);
+  virtual ~DataBlock_v1731(){;}
+  // Return the number of samples in each waveform.
+  unsigned int GetNumberOfSamples();
+  // Return the waveform for this channel as a vector.
+  std::vector<unsigned int> GetWaveform(const unsigned int channelIndex);
+
+  // Total event data block size
+  unsigned int GetEventSize();
+  // Number of individual waveform data blocks in this event
+  unsigned int GetNBlocks();
+  // Size of each individual waveform data block in this event
+  unsigned int GetBlockSize();
+}; 
 
 
  class DataBlock_v1290: public DataBlock{
