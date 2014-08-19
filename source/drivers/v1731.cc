@@ -61,8 +61,6 @@ int Module_v1731::InitializeVMEModule(){
   //memory_locations = m_nsamples/(8 bzw 16 for 1Gs/s) = 256@1Gs/s = 0x100
   //WriteRegister(CUSTOM_SIZE, 0x100, cvD32);
   
-  //set board online
-  SetOnline();
   printf("  --  OK\n");
   
   return 0;
@@ -224,14 +222,14 @@ int Module_v1731::UpdateEventBuffer(){
   // Set endpoint of currently read data
   m_bufferEnd = &m_eventBuffer[totalReadLength];
 
-
+/*
   std::cout << "Info: Module_v1731: Read " << totalReadLength << " from board."
 	    << std::endl;
   std::cout << "Info: Module_v1731: Should contain " << eStored << " events."
 	    << std::endl;
   std::cout << "Info: Module_v1731: Contains " << BufferedEvents() << " events."
 	    << std::endl;
-
+*/
   // Return
   return error_status;
 }

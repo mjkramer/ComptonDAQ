@@ -87,14 +87,11 @@ void HistoManager::ProcessData(std::vector<DataBlock*>& data){
 	}
 
 	if(p1731_cast){
-	  //std::cout << "EventSize: " << p1731_cast->GetEventSize() << std::endl;
+	  //std::cout << "EventSize: " << p1731_cast->GetEventSize() 
+	  //          << std::endl;
 	  //std::cout << "NBlocks: " << p1731_cast->GetNBlocks() << std::endl;
 	  waveform1 = p1731_cast->GetWaveform(0);
 	  waveform2 = p1731_cast->GetWaveform(1);
-	  //std::cout << "waveform1 size: " << waveform1.size() << std::endl;
-	  //std::cout << "waveform2 size: " << waveform2.size() << std::endl;
-	  //std::cout << "waveform1[0]: " << waveform1[0] << std::endl;
-	  //std::cout << "waveform2[0]: " << waveform2[0] << std::endl;
 	}
 	
 
@@ -113,11 +110,11 @@ void HistoManager::ProcessData(std::vector<DataBlock*>& data){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void HistoManager::Save(){ 
+void HistoManager::Save(int run_number){ 
   if (rootFile) {
     rootFile->Write();       // Writing the histograms to the file
     rootFile->Close();        // and closing the tree (and the file)
-    cout << "ROOT file is saved" << endl;
+    cout << "ROOT file " << "'run" << run_number << ".root'" <<" was saved." << endl;
   }
 }
 
@@ -170,7 +167,6 @@ void HistoManager::FillNTuple(int eGe, std::vector<unsigned int>& wf0,
   for(int i=0; i<n_samples; i++){
     waveform_adc0[i] = wf0[i];
     waveform_adc2[i] = wf2[i];
-    //cout << waveform_adc0[i] << " " << waveform_adc2[i] << endl;
   }
   if (outTree) outTree->Fill();
 }

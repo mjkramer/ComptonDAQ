@@ -27,7 +27,7 @@ class HistoManager{
     ~HistoManager();
 
     void Book(int run_number);
-    void Save();
+    void Save(int run_number);
 
     void Fill1DHisto(int id1D, int bin, double weight = 1.0);
     void Fill2DHisto(int id2D, int xbin, int ybin);   

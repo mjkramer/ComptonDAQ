@@ -58,6 +58,13 @@ int DataAcquisition::Initialize(){
 
 int DataAcquisition::StartRun(){
   fConfigFileManager->IncrementRunNumber();
+  //Set modules online
+  for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+	(*i)->SetOnline();
+     	}
+  usleep(1000000);
+
+  std::cout << endl << "DAQ is running..." << std::endl;
 
   while(state){
     CheckKeyboardCommands(); //sets "state"
@@ -90,8 +97,9 @@ int DataAcquisition::StartRun(){
 
 
 int DataAcquisition::StopRun(){
+	int run_number = fConfigFileManager->GetRunNumber();
 	fConfigFileManager->CloseConfigFile();
-	fHistoManager->Save();
+	fHistoManager->Save(run_number);
 	return 0;	
 }
 
