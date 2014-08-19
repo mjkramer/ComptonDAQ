@@ -20,8 +20,8 @@ HistoManager::HistoManager():rootFile(0), outTree(0){
   for (int k=0; k<maxHisto1D; k++) histo1D[k] = 0;
   for (int i=0; i<maxHisto2D; i++) histo2D[i] = 0;
   
-  waveform_adc0 = new int[2500];
-  waveform_adc2 = new int[2500];
+  waveform_adc0 = new Int_t[2500];
+  waveform_adc2 = new Int_t[2500];
   ge_adc = 0;
   n_samples = 0;
 
@@ -49,25 +49,23 @@ void HistoManager::Book(int run_number){
   char buf[40];
   sprintf(buf,"/home/dayabay/compton_data/run%i.root",run_number);
   const char *filename = buf;
- 
- rootFile = new TFile(filename,"RECREATE");
- if(!rootFile) {
-   cout << "Problems creating ROOT file!" << endl;
-   return;
- }
+  
+  rootFile = new TFile(filename,"RECREATE");
+  if(!rootFile) {
+    cout << "Problems creating ROOT file!" << endl;
+    return;
+  }
+  
+  histo1D[0] = new TH1F("2", "Germanium Energy Deposit [ADC counts]", 
+			4000, 0., 4000);
+  
+  outTree = new TTree("datatree","");
+  outTree->Branch("ge_adc", &ge_adc, "ge_adc/I");
+  outTree->Branch("n_sample", &n_samples, "n_samples/I");
+  outTree->Branch("waveform_adc0", waveform_adc0, "waveform_adc0[n_samples]/I");
+  outTree->Branch("waveform_adc2", waveform_adc2, "waveform_adc2[n_samples]/I");
 
-
-histo1D[0] = new TH1F("2", "Germanium Energy Deposit [ADC counts]", 4000, 0., 4000);
-
-outTree = new TTree("datatree","");
-outTree->Branch("ge_adc", &ge_adc, "ge_adc/i");
-outTree->Branch("n_sample", &n_samples, "n_samples/i");
-outTree->Branch("waveform_adc0", waveform_adc0, "waveform_adc0[n_samples]/i");
-outTree->Branch("waveform_adc2", waveform_adc2, "waveform_adc2[n_samples]/i");
-
-
-
-cout << "Histogram file is opened!" << endl;
+  cout << "Histogram file is opened!" << endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -93,13 +91,12 @@ void HistoManager::ProcessData(std::vector<DataBlock*>& data){
 	  //std::cout << "NBlocks: " << p1731_cast->GetNBlocks() << std::endl;
 	  waveform1 = p1731_cast->GetWaveform(0);
 	  waveform2 = p1731_cast->GetWaveform(1);
-
-		//n_samples = waveform1.size();
-		//for(int i; i<n_samples; i++){
-			//cout << waveform1[i] << "  -  " << waveform2[i] << endl;}
-			//printf("\n\n\n\n\n");
+	  //std::cout << "waveform1 size: " << waveform1.size() << std::endl;
+	  //std::cout << "waveform2 size: " << waveform2.size() << std::endl;
+	  //std::cout << "waveform1[0]: " << waveform1[0] << std::endl;
+	  //std::cout << "waveform2[0]: " << waveform2[0] << std::endl;
 	}
-
+	
 
 	//if(p1290_cast){
 		//time_difference = p1290_cast->GetTimeDifference(1,2);
@@ -170,7 +167,7 @@ void HistoManager::FillNTuple(int eGe, std::vector<unsigned int>& wf0,
 			      std::vector<unsigned int>& wf2){
   ge_adc = eGe;
   n_samples = wf0.size();
-  for(int i; i<n_samples; i++){
+  for(int i=0; i<n_samples; i++){
     waveform_adc0[i] = wf0[i];
     waveform_adc2[i] = wf2[i];
     //cout << waveform_adc0[i] << " " << waveform_adc2[i] << endl;

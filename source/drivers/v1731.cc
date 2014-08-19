@@ -224,6 +224,7 @@ int Module_v1731::UpdateEventBuffer(){
   // Set endpoint of currently read data
   m_bufferEnd = &m_eventBuffer[totalReadLength];
 
+
   std::cout << "Info: Module_v1731: Read " << totalReadLength << " from board."
 	    << std::endl;
   std::cout << "Info: Module_v1731: Should contain " << eStored << " events."

@@ -33,8 +33,6 @@ DataAcquisition::~DataAcquisition(){
 		delete *i;
 		*i = 0;
 	}	
-
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -71,8 +69,8 @@ int DataAcquisition::StartRun(){
       for(std::vector<ModuleManager*>::iterator i = modules.begin(); 
 	  i != modules.end(); 
 	  ++i){
-	data.push_back( (*i)->GetModuleBuffer() );
-      }
+	data.push_back( (*i)->GetModuleBuffer());
+     	}
 
       // Process data from each module
       fHistoManager->ProcessData(data);
@@ -89,20 +87,6 @@ int DataAcquisition::StartRun(){
 
   return 0;
 }
-
-
-			//Module_v1731* p1731_cast = dynamic_cast<Module_v1731*>((modules[1]));
-			//if(p1731_cast){
-			//		if(p1731_cast->DataReady()){
-			//			fHistoManager->ProcessData(p1731_cast->GetModuleBuffer());}
-
-
-
-
-
-
-
-
 
 
 int DataAcquisition::StopRun(){

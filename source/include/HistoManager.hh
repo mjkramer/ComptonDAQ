@@ -1,5 +1,6 @@
 //Christian Dorfer 
 //July 21, 2014
+#include "Rtypes.h"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -43,8 +44,8 @@ class HistoManager{
     TTree*   outTree;  
     TH1F*    histo1D[maxHisto1D];
     TH2F*    histo2D[maxHisto2D];
-    int ge_adc, n_samples;
-    int *waveform_adc0, *waveform_adc2;        
+    Int_t ge_adc, n_samples;
+    Int_t *waveform_adc0, *waveform_adc2;        
    	};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
