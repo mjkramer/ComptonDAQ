@@ -71,49 +71,44 @@ int DataAcquisition::StartRun(){
   }
 
   std::cout << endl << "DAQ is running..." << std::endl;
-
+  long event_count = 0;  
+	
   while(state){
-    CheckKeyboardCommands(); //sets "state"
+    CheckKeyboardCommands(); //sets variable "state"
+
     if(modules[0]->DataReady()){
       //create DataBlock vector
       std::vector<DataBlock*> data;
 
-//debug
-  for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-    (*i)->SetOffline();}
+      //set modules offline
+      for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+        (*i)->SetOffline();}
 
-
-
-
-      
-      //Read data blocks from all modules
-      for(std::vector<ModuleManager*>::iterator i = modules.begin(); 
-	  i != modules.end(); 
-	  ++i){
+      //Read data blocks from all modules & save if necessary
+      for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
 	data.push_back( (*i)->GetModuleBuffer());
+	++event_count;
+     	if(event_count%200000 == 0){fHistoManager->IntermediateSave();
+	printf("Event count: %l\n", event_count);}
       }
 
+      //set modules online
+      for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+        (*i)->SetOnline();}
 
-//debug
-  for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-    (*i)->SetOnline();}
-
-
-
-
-      // Process data from each module
+      // Process acquired data
       fHistoManager->ProcessData(data);
 
       //Delete DataBlocks
-      for(std::vector<DataBlock*>::iterator i = data.begin(); 
-	  i != data.end(); 
-	  ++i){
+      for(std::vector<DataBlock*>::iterator i = data.begin(); i != data.end(); ++i){
 	delete (*i);
-	(*i) = 0;
+	(*i) = 0;}
       }
-    }
 
-    fUiManager->ProcessIO();
+      fUiManager->ProcessIO();
+
+ 
+
   }//end while
 
   return 0;

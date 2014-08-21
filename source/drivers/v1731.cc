@@ -212,7 +212,7 @@ int Module_v1731::UpdateEventBuffer(){
     }
     currentReadLength += readLength;
   }
-  printf("events stored: %u %u (%u)\n", eStored,currentReadLength/eSize,eSize);
+ // printf("events stored: %u %u (%u)\n", eStored,currentReadLength/eSize,eSize);
 
   // Set endpoint of currently read data
   m_bufferEnd = &m_eventBuffer[totalReadLength];

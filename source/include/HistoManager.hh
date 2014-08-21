@@ -34,6 +34,7 @@ class HistoManager{
     void FillNTuple(int eGe, std::vector<unsigned int>& wf0, 
 		    std::vector<unsigned int>& wf2);
     void ProcessData(std::vector<DataBlock*>& data);
+    void IntermediateSave();
 
     TH1F* Get1DHisto(int id1D);
     TH2F* Get2DHisto(int id2D);

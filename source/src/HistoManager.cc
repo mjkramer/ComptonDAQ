@@ -170,3 +170,26 @@ void HistoManager::FillNTuple(int eGe, std::vector<unsigned int>& wf0,
   }
   if (outTree) outTree->Fill();
 }
+
+void HistoManager::IntermediateSave(){
+  if (outTree){
+    Long64_t filled_bytes = 0;
+    filled_bytes = outTree->AutoSave("SaveSelf");
+    if(!filled_bytes){
+      printf("AutoSave not successfull\n");}
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
