@@ -69,7 +69,6 @@ int DataAcquisition::StartRun(){
   for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
     (*i)->SetOnline();
   }
-  usleep(1000000);
 
   std::cout << endl << "DAQ is running..." << std::endl;
 
@@ -78,6 +77,14 @@ int DataAcquisition::StartRun(){
     if(modules[0]->DataReady()){
       //create DataBlock vector
       std::vector<DataBlock*> data;
+
+//debug
+  for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+    (*i)->SetOffline();}
+
+
+
+
       
       //Read data blocks from all modules
       for(std::vector<ModuleManager*>::iterator i = modules.begin(); 
@@ -85,6 +92,14 @@ int DataAcquisition::StartRun(){
 	  ++i){
 	data.push_back( (*i)->GetModuleBuffer());
       }
+
+
+//debug
+  for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+    (*i)->SetOnline();}
+
+
+
 
       // Process data from each module
       fHistoManager->ProcessData(data);

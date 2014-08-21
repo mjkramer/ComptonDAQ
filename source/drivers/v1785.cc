@@ -10,11 +10,10 @@
 
 
 int Module_v1785::InitializeVMEModule(){
-	printf("****Initializing CAEN V1785 Peak ADC****");
-
-   	int32_t Handle;
-    	Handle = ModuleManager::GetHandle();
-        CVErrorCodes error_code;
+    printf("****Initializing CAEN V1785 Peak ADC****");	
+    int32_t Handle;
+    Handle = ModuleManager::GetHandle();
+    CVErrorCodes error_code;
 
 
     if(IsPresent() == 0){
@@ -22,10 +21,8 @@ int Module_v1785::InitializeVMEModule(){
         return 1;
     }
 
-    //clears all the data, event counter, bit set, bit clear..
-    //if(ResetModule()){
-	//return 1;}
-
+    SetOffline();
+    DeleteBuffer();
     //disable 7 out of 8 channels (only ch0-high is used) - each channel has a high&low
     uint16_t threshold[16] = {0x000, //ch0-high
     			    0x100, //ch1-low
@@ -60,6 +57,58 @@ DataBlock* Module_v1785::GetModuleBuffer(){
 	
 
 	return datablock;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+
+int Module_v1785::SetOnline(){
+
+	int32_t Handle;
+    Handle = ModuleManager::GetHandle();
+
+	
+	CVErrorCodes error_code;  //Error code if any
+	uint16_t write_online = 0x2;
+	int error_status;
+
+	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_CLEAR2_WO, &write_online, V1785::am, cvD16);
+	error_status = CAEN::ErrorDecode(error_code);
+
+	if (error_status == 0){  //success
+		return 0;
+	}else{  //failure
+
+		printf("OnlineSet could not be executed successfully!\n");
+		return 1;
+
+	}
+	
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+int Module_v1785::SetOffline(){
+
+	int32_t Handle;
+    Handle = ModuleManager::GetHandle();
+
+	
+	CVErrorCodes error_code;  //Error code if any
+	uint16_t write_offline = 0x2;
+	int error_status;
+	
+
+	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_SET2_RW, &write_offline, V1785::am, cvD16);
+	error_status = CAEN::ErrorDecode(error_code);
+
+	if (error_status == 0){  //success
+		return 0;
+
+	}else{  //failure
+		printf("OfflineSet could not be executed successfully.\n");
+		return 1;;
+
+	}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -217,62 +266,12 @@ void Module_v1785::ControlRegister1Write(uint16_t pat){
 	}
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-
-int Module_v1785::SetOnline(){
-
-	int32_t Handle;
-    Handle = ModuleManager::GetHandle();
-
-	
-	CVErrorCodes error_code;  //Error code if any
-	uint16_t write_online = 0x2;
-	int error_status;
-	
-
-	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_CLEAR2_WO, &write_online, V1785::am, cvD16);
-	error_status = CAEN::ErrorDecode(error_code);
-
-	if (error_status == 0){  //success
-		return 0;
-	}else{  //failure
-
-		printf("OnlineSet could not be executed successfully!\n");
-		return 1;
-
-	}
-	
-}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
-int Module_v1785::SetOffline(){
 
-	int32_t Handle;
-    Handle = ModuleManager::GetHandle();
-
-	
-	CVErrorCodes error_code;  //Error code if any
-	uint16_t write_offline = 0x2;
-	int error_status;
-	
-
-	error_code = CAENVME_WriteCycle(Handle, V1785::base+BIT_SET2_RW, &write_offline, V1785::am, cvD16);
-	error_status = CAEN::ErrorDecode(error_code);
-
-	if (error_status == 0){  //success
-		return 0;
-
-	}else{  //failure
-		printf("OfflineSet could not be executed successfully.\n");
-		return 1;;
-
-	}
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v1785::BlkEndEnable(){
 	int32_t Handle;
@@ -642,10 +641,11 @@ int Module_v1785::DeleteBuffer(){
 	error_code_2 = CAENVME_WriteCycle(Handle, V1785::base+BIT_CLEAR2_WO, &write, V1785::am, cvD16);
 	error_status_2 = CAEN::ErrorDecode(error_code_2);
 
-	if ( (error_status_1 == 1) && (error_status_2 == 1) ){  //success
+	if (error_status_1 == 0 && error_status_2 ==0){  //success
 		return 0;
 	}else{
 		printf("DataClear could not be executed!\n");
+		printf("error status: %d\n:", error_status_1);
 		return 1;
 	}
 }
