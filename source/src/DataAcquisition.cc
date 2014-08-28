@@ -88,8 +88,9 @@ int DataAcquisition::StartRun(){
       for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
 	data.push_back( (*i)->GetModuleBuffer());
 	++event_count;
-     	if(event_count%200000 == 0){fHistoManager->IntermediateSave();
-	printf("Event count: %l\n", event_count);}
+     	if(event_count%10000 == 0){fHistoManager->IntermediateSave();
+	//printf("Event count: %d\n", event_count);
+}
       }
 
       //set modules online

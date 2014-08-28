@@ -1,7 +1,11 @@
 Started data taking on August, 21, 17:45
 
-Experiment 1:
+Run 1:
 Setup: Using old collimation (block with 5mm hole and 8mm slid made up by two other 5x5x5cm lead blocks), catcher = big lead block, no close shielding
 
 run1.root - 30deg
-
+run2.root - 40deg
+run3.root - stopped and adjusted the voltage of the lower tube (+80V), still at 40deg
+run4.root - pedestal peak in run3 was too broad (was is the HV supply that needs time to adjust?)
+run5.root - switched the PMT channel inputs on the digitizer to see if there's any difference - yes (it is the lower tube that is still causing trouble)
+run6.root - switched the PMT channels back - problem PMT now again on channel 2, switched power supplies for the PMTs -->same problem
