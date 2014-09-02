@@ -36,14 +36,14 @@ int Module_v1731::InitializeVMEModule(){
   WriteRegister(SW_RESET, 0x1, cvD32); //software reset
   WriteRegister(SW_CLEAR, 0x2, cvD32); // clears all the memories
   
-  CalibrateChannels(); //channel calibration
+  //CalibrateChannels(); //channel calibration
   
   //WriteRegister(ZS_NSAMP, 0, cvD32); //set zero supression zero
   //WriteRegister(ZS_NSAMP_CH2, 0, cvD32); //set zero supression zero
   
   WriteRegister(CHANNEL_EN_MASK, 0x5, cvD32);//enable channels 0 and 2
-  WriteRegister(CHANNEL_DAC, 0x2000, cvD32);//dc offset
-  WriteRegister(CHANNEL_DAC_CH2, 0x2000, cvD32);//dc offset
+  WriteRegister(CHANNEL_DAC, 0x19B0, cvD32);//dc offset
+  WriteRegister(CHANNEL_DAC_CH2, 0x1FB0, cvD32);//dc offset
   usleep(1000); //wait for dc offset to be updated
  
   
