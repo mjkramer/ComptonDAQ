@@ -18,8 +18,8 @@ HistoManager::HistoManager():rootFile(0), outTree(0){
   wf2_adc = new Int_t[1000];
   ge_adc = 0;
   n_samples = 0;
-  wf0_peak = 0;
-  wf2_peak = 0;
+  wf0_sig = 0;
+  wf2_sig = 0;
   wf0_ped = 0;
   wf2_ped = 0;
 
@@ -178,8 +178,8 @@ void HistoManager::FillNTuple(int eGe, std::vector<unsigned int>& wf0, std::vect
   for(int i=0; i<ped_len; i++){
     wf0_adc[i] = wf0[i];
     wf2_adc[i] = wf2[i];
-    wf0_sig += wf0[i];
-    wf2_sig += wf2[i];
+    wf0_ped += wf0[i];
+    wf2_ped += wf2[i];
   }
 
   //calculate peak minus pedestal and fill waveforms
@@ -197,7 +197,6 @@ void HistoManager::FillNTuple(int eGe, std::vector<unsigned int>& wf0, std::vect
   //subtracting pedestal from signal
   wf0_sig = wf0_sig - (wf0_ped*(n_samples-ped_len));
   wf2_sig = wf2_sig - (wf2_ped*(n_samples-ped_len));
-
 
   if (outTree) outTree->Fill();
 }
