@@ -19,27 +19,27 @@ ModuleManager::~ModuleManager(){
 
 
 int ModuleManager::InitializeVMEModule(){
-	return 1;
+	return 0;
 }
 
 int ModuleManager::SetOnline(){
-	return 1;
+	return 0;
 }
 
 int ModuleManager::SetOffline(){
-	return 1;
+	return 0;
 }
 
 int ModuleManager::DataReady(){
-	return 1;
+	return 0;
 }
 
 int ModuleManager::DeleteBuffer(){
-	return 1;
+	return 0;
 }
 
 int ModuleManager::ResetModule(){
-	return 1;
+	return 0;
 }
 
 DataBlock* ModuleManager::GetModuleBuffer(){
@@ -47,5 +47,5 @@ DataBlock* ModuleManager::GetModuleBuffer(){
 }
 
 int ModuleManager::CloseConnection(){
-	return 1;
+	return 0;
 }

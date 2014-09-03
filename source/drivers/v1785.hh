@@ -1,9 +1,9 @@
+#ifndef SOURCE_DRIVERS_V1785_H_
+#define SOURCE_DRIVERS_V1785_H_
+
 #include "ModuleManager.hh"
 
 class DataBlock;
-
-#ifndef SOURCE_DRIVERS_V1785_H_
-#define SOURCE_DRIVERS_V1785_H_
 
 #define  MAX_CHANNELS       (uint32_t) 8
 #define  REG_BASE           (uint32_t) (0x1000) 
@@ -94,4 +94,4 @@ class Module_v1785: public ModuleManager{
 
 
 
-#endif //SOURCE_DRIVERS_H_1785_H
+#endif

@@ -1,3 +1,6 @@
+#ifndef SOURCE_DRIVERS_V1290_H_
+#define SOURCE_DRIVERS_V1290_H_
+
 #include  <cstdlib>
 #include  <cstdint>
 #include  <unistd.h>
@@ -6,10 +9,6 @@
 #include "CAEN_VME_def.hh"
 #include "ModuleManager.hh"
 #include "DataBlock.hh"
-
-
-#ifndef SOURCE_DRIVERS_V1290_H_
-#define SOURCE_DRIVERS_V1290_H_
 
 class DataBlock;
 

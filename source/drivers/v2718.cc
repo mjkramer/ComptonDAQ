@@ -1,6 +1,7 @@
 #include "v2718.hh"
 #include "CAEN_VME_def.hh"
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int Module_v2718::InitializeVMEModule(){
 	printf("****Initializing CAEN V2718****");
@@ -18,6 +19,7 @@ int Module_v2718::InitializeVMEModule(){
 	return 0;	
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v2718:: V2718_PulserConfSet(int32_t handle, int pulser, uint32_t period, uint32_t width, int pulseNo){
     CVPulserSelect pulSel;  // 0 for pulser A, 1 for pulser B
@@ -68,6 +70,7 @@ void Module_v2718:: V2718_PulserConfSet(int32_t handle, int pulser, uint32_t per
     CAENVME_SetPulserConf(handle, pulSel, period, width, unit, pulseNo, cvManualSW, cvManualSW);
 }
 
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v2718:: V2718_PulserStart(int32_t handle, int pulser){
@@ -84,6 +87,7 @@ void Module_v2718:: V2718_PulserStart(int32_t handle, int pulser){
 	CAENVME_StartPulser(handle, pulSel);
 }
 
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void Module_v2718:: V2718_PulserStop(int32_t handle, int pulser){
@@ -99,5 +103,3 @@ void Module_v2718:: V2718_PulserStop(int32_t handle, int pulser){
 	}
 	CAENVME_StopPulser(handle, pulSel);
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

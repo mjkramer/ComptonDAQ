@@ -21,6 +21,8 @@ DataAcquisition::DataAcquisition(ConfigFileManager* fConfig, HistoManager* fHist
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataAcquisition::~DataAcquisition(){ 
+
+  //clean up
 	delete fConfigFileManager;
 	delete fHistoManager;
 	delete fUiManager;
@@ -32,27 +34,33 @@ DataAcquisition::~DataAcquisition(){
 	for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
 		delete *i;
 		*i = 0;
-	}	
+	}
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int DataAcquisition::Initialize(){
+    //update configuration file
     fConfigFileManager->OpenConfigFile();
     run_number = fConfigFileManager->GetRunNumber();
 
+    //initialize UiManager
     (*fUiManager)[UiKeys::knRunNumber] = run_number + 1;
     (*fUiManager)[UiKeys::knTakingData] = false;
     fUiManager->StartListener();
 
+    //initialize histograms, trees and ouput file
     fHistoManager->Book(run_number + 1);
 
+    //create modules
     Module_v2718 *v2718 = new Module_v2718(); // controller card
     modules.push_back(new Module_v1785()); //Peak sensing ADC
     modules.push_back(new Module_v1731()); //Digitizer
     //modules.push_back(new Module_v1290N()); //TDC
 
-    v2718->InitializeVMEModule();
+    //initialize VME modules
+    v2718->InitializeVMEModule(); //controller card is not included in the module vector for ease of future use of the module vector
     for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
     	(*i)->InitializeVMEModule();
     }
@@ -60,6 +68,7 @@ int DataAcquisition::Initialize(){
     return 0;
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int DataAcquisition::StartRun(){
   fConfigFileManager->IncrementRunNumber();
@@ -77,53 +86,62 @@ int DataAcquisition::StartRun(){
     CheckKeyboardCommands(); //sets variable "state"
 
     if(modules[0]->DataReady()){
-      //create DataBlock vector
+
+      //create DataBlock vector to hold the data
       std::vector<DataBlock*> data;
 
       //set modules offline
       for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
         (*i)->SetOffline();}
 
-      //Read data blocks from all modules & save if necessary
+
+      //Read data blocks from all modules & save after a certain number of events was reached
       for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-	data.push_back( (*i)->GetModuleBuffer());
-	++event_count;
-     	if(event_count%10000 == 0){fHistoManager->IntermediateSave();
-	//printf("Event count: %d\n", event_count);
-}
+	      data.push_back((*i)->GetModuleBuffer());
+	      ++event_count;
+     	  if(event_count%10000 == 0){
+          fHistoManager->IntermediateSave();}
       }
 
-      //set modules online
+      //set modules online again
       for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
-        (*i)->SetOnline();}
+        (*i)->SetOnline();
+      }
 
       // Process acquired data
       fHistoManager->ProcessData(data);
 
-      //Delete DataBlocks
+      //delete DataBlock vector again
       for(std::vector<DataBlock*>::iterator i = data.begin(); i != data.end(); ++i){
-	delete (*i);
-	(*i) = 0;}
+	      delete (*i);
+	      (*i) = 0;
       }
+      
+      }//end if(DataReady())
 
       fUiManager->ProcessIO();
-
- 
 
   }//end while
 
   return 0;
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int DataAcquisition::StopRun(){
+  //get run number for terminal output reasons and close configuration file
 	int run_number = fConfigFileManager->GetRunNumber();
 	fConfigFileManager->CloseConfigFile();
+
+  //save foot file
 	fHistoManager->Save(run_number);
+
+  //inform UiManager of changed run state
 	(*fUiManager)[UiKeys::knTakingData] = false;
 	return 0;	
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void DataAcquisition::CheckKeyboardCommands(){
     int c = 0;
@@ -134,9 +152,11 @@ void DataAcquisition::CheckKeyboardCommands(){
     c = getch();
 
     if(c == 'q'){
-	SetRunState(false);}
+	    SetRunState(false);
+    }
 
     if(c == 's'){
-	SetRunState(true);}
+	    SetRunState(true);
+    }
 
 }

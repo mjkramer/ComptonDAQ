@@ -1,17 +1,11 @@
-//Christian Dorfer 
-//July 22, 2014
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <iostream>
-using namespace std;
-
 #include "HistoManager.hh"
 #include "DataBlock.hh"
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -20,52 +14,64 @@ HistoManager::HistoManager():rootFile(0), outTree(0){
   for (int k=0; k<maxHisto1D; k++) histo1D[k] = 0;
   for (int i=0; i<maxHisto2D; i++) histo2D[i] = 0;
   
-  waveform_adc0 = new Int_t[2500];
-  waveform_adc2 = new Int_t[2500];
+  wf0_adc = new Int_t[1000];
+  wf2_adc = new Int_t[1000];
   ge_adc = 0;
   n_samples = 0;
-
-
+  wf0_peak = 0;
+  wf2_peak = 0;
+  wf0_ped = 0;
+  wf2_ped = 0;
 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 HistoManager::~HistoManager(){ 
-
-   if (rootFile) delete rootFile;
+   //clean up
+   if(rootFile) delete rootFile;
    rootFile = 0;
 
-   delete [] waveform_adc0;
-   delete [] waveform_adc2;
-   waveform_adc0 = 0;
-   waveform_adc2 = 0;
+   delete [] wf0_adc;
+   delete [] wf2_adc;
+   wf0_adc = 0;
+   wf2_adc = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HistoManager::Book(int run_number){ 
 
+  //create a filename
   char buf[40];
   sprintf(buf,"/home/dayabay/compton_data/run%i.root",run_number);
   const char *filename = buf;
   
+  //create root file
   rootFile = new TFile(filename,"RECREATE");
   if(!rootFile) {
-    cout << "Problems creating ROOT file!" << endl;
+    std::cout << "Problems creating ROOT file!" << std::endl;
     return;
   }
   
-  histo1D[0] = new TH1F("2", "Germanium Energy Deposit [ADC counts]", 
-			4000, 0., 4000);
+  //initialize root structures
+
+  //histograms
+  histo1D[0] = new TH1F("2", "Germanium Energy Deposit [ADC counts]", 4000, 0., 4000);
   
+  //tree
   outTree = new TTree("datatree","");
   outTree->Branch("ge_adc", &ge_adc, "ge_adc/I");
   outTree->Branch("n_sample", &n_samples, "n_samples/I");
-  outTree->Branch("waveform_adc0", waveform_adc0, "waveform_adc0[n_samples]/I");
-  outTree->Branch("waveform_adc2", waveform_adc2, "waveform_adc2[n_samples]/I");
+  outTree->Branch("wf0_adc", wf0_adc, "wf0_adc[n_samples]/I");
+  outTree->Branch("wf2_adc", wf2_adc, "wf2_adc[n_samples]/I");
+  outTree->Branch("wf0_sig", &wf0_sig, "wf0_sig/F");
+  outTree->Branch("wf2_sig", &wf2_sig, "wf2_sig/F");
+  outTree->Branch("wf0_ped", &wf0_ped, "wf0_ped/F");
+  outTree->Branch("wf2_ped", &wf2_ped, "wf2_ped/F");
 
-  cout << "Histogram file is opened!" << endl;
+  std::cout << "Histogram file is opened!" << std::endl;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -75,32 +81,22 @@ void HistoManager::ProcessData(std::vector<DataBlock*>& data){
 	int ge_peak = 0;
 	std::vector<unsigned int> waveform1;
 	std::vector<unsigned int> waveform2;
-	int time_difference;
-	
+
+  //get individual data blocks via dynamic cast	
 	DataBlock_v1785* p1785_cast = dynamic_cast<DataBlock_v1785*>((data.at(0)));
 	DataBlock_v1731* p1731_cast = dynamic_cast<DataBlock_v1731*>((data.at(1)));
-	//DataBlock_v1290* p1290_cast = dynamic_cast<DataBlock_v1290*>((data->at(2)));
 
+  //get data
 	if(p1785_cast){
 		ge_peak = p1785_cast->GetPeak();
-		//cout << "Peak: " << ge_peak << endl;
 	}
 
 	if(p1731_cast){
-	  //std::cout << "EventSize: " << p1731_cast->GetEventSize() 
-	  //          << std::endl;
-	  //std::cout << "NBlocks: " << p1731_cast->GetNBlocks() << std::endl;
 	  waveform1 = p1731_cast->GetWaveform(0);
 	  waveform2 = p1731_cast->GetWaveform(1);
 	}
-	
 
-	//if(p1290_cast){
-		//time_difference = p1290_cast->GetTimeDifference(1,2);
-	//	cout << "TDC array: "  << endl;
-	//}
-
-
+  //pass obtained information to histogram(s) and tree(s)
 	Fill1DHisto(0, ge_peak); //Fill the Ge-energy to a histogram
 	FillNTuple(ge_peak, waveform1, waveform2); //Save the waveforms and the Ge-peak
 	
@@ -111,40 +107,49 @@ void HistoManager::ProcessData(std::vector<DataBlock*>& data){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HistoManager::Save(int run_number){ 
-  if (rootFile) {
-    rootFile->Write();       // Writing the histograms to the file
-    rootFile->Close();        // and closing the tree (and the file)
-    cout << "ROOT file " << "'run" << run_number << ".root'" <<" was saved." << endl;
+  if(rootFile){
+    rootFile->Write();   // Writing the histograms to the file
+    rootFile->Close();   // and closing the tree (and the file)
+    std::cout << "ROOT file " << "'run" << run_number << ".root'" <<" was saved." << std::endl;
   }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HistoManager::Fill1DHisto(int id1D, int bin, double weight){
-  if (id1D >= maxHisto1D) {
-	cout << "Warning from Histomanager::Fill1DHisto() : histogram " << id1D << " does not exist!" << endl;
+  if (id1D >= maxHisto1D){
+	  std::cout << "Warning from Histomanager::Fill1DHisto() : histogram " << id1D << " does not exist!" << std::endl;
     return;
   }
- if  (histo1D[id1D]) { histo1D[id1D]->Fill(bin, weight); }
+  
+  if(histo1D[id1D]){ 
+    histo1D[id1D]->Fill(bin, weight); 
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HistoManager::Fill2DHisto(int id2D, int xbin, int ybin){
   if (id2D >= maxHisto2D) {
-cout << "Warning from Histomanager::Fill1DHisto() : histogram " << id2D << " does not exist!" << endl;
+    std::cout << "Warning from Histomanager::Fill1DHisto() : histogram " << id2D << " does not exist!" << std::endl;
     return;
   }
- if  (histo2D[id2D]) { histo2D[id2D]->Fill(xbin, ybin); }
+
+ if(histo2D[id2D]){ 
+   histo2D[id2D]->Fill(xbin, ybin); 
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 TH1F* HistoManager::Get1DHisto(int id1D) {
   if (id1D >= maxHisto1D) {
-    cout << "Warning from HistoManager::Get1DHisto() : histogram " << id1D
-	 << " does not exist!" << endl;
-  } else if (histo1D[id1D]) { return histo1D[id1D]; }
+    std::cout << "Warning from HistoManager::Get1DHisto() : histogram " << id1D
+	 << " does not exist!" << std::endl;
+  } 
+
+  else if(histo1D[id1D]){return histo1D[id1D];}
+
   return NULL;
 }
 
@@ -152,24 +157,52 @@ TH1F* HistoManager::Get1DHisto(int id1D) {
 
 TH2F* HistoManager::Get2DHisto(int id2D) {
   if (id2D >= maxHisto2D) {
-    cout << "Warning from HistoManager::Get2DHisto() : histogram " << id2D
-	 << " does not exist!" << endl;
-  } else if (histo2D[id2D]) { return histo2D[id2D]; }
+    std::cout << "Warning from HistoManager::Get2DHisto() : histogram " << id2D
+	 << " does not exist!" << std::endl;
+  } 
+
+  else if(histo2D[id2D]){return histo2D[id2D];}
+
   return NULL;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void HistoManager::FillNTuple(int eGe, std::vector<unsigned int>& wf0, 
-			      std::vector<unsigned int>& wf2){
+void HistoManager::FillNTuple(int eGe, std::vector<unsigned int>& wf0, std::vector<unsigned int>& wf2){
   ge_adc = eGe;
-  n_samples = wf0.size();
-  for(int i=0; i<n_samples; i++){
-    waveform_adc0[i] = wf0[i];
-    waveform_adc2[i] = wf2[i];
+  n_samples = wf0.size(); //800
+  int ped_len = 300;
+
+
+  //calculate pedestal and fill waveforms
+  for(int i=0; i<ped_len; i++){
+    wf0_adc[i] = wf0[i];
+    wf2_adc[i] = wf2[i];
+    wf0_sig += wf0[i];
+    wf2_sig += wf2[i];
   }
+
+  //calculate peak minus pedestal and fill waveforms
+  for(int i=ped_len; i<n_samples; i++){
+    wf0_adc[i] = wf0[i];
+    wf2_adc[i] = wf2[i];
+    wf0_sig += wf0[i];
+    wf2_sig += wf2[i];
+  }
+
+  wf0_ped = wf0_ped / ped_len;
+  wf2_ped = wf2_ped / ped_len;
+
+
+  //subtracting pedestal from signal
+  wf0_sig = wf0_sig - (wf0_ped*(n_samples-ped_len));
+  wf2_sig = wf2_sig - (wf2_ped*(n_samples-ped_len));
+
+
   if (outTree) outTree->Fill();
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HistoManager::IntermediateSave(){
   if (outTree){
@@ -179,17 +212,3 @@ void HistoManager::IntermediateSave(){
       printf("AutoSave not successfull\n");}
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

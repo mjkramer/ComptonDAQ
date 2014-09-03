@@ -7,8 +7,6 @@
 class ConfigFileManager;
 class HistoManager;
 class UiManager;
-//class ModuleManager;
-
 
 
 class DataAcquisition{
@@ -31,14 +29,8 @@ class DataAcquisition{
   	UiManager *fUiManager;
 
   	int run_number;
-	bool state;
+	  bool state;
   	std::vector<ModuleManager*>modules;
- 
-  	
-
-
    	};
 
-
-
-#endif //DATAAQUISITION_H_   	
+#endif 	

@@ -1,5 +1,6 @@
-//Christian Dorfer 
-//July 29, 2014
+#ifndef SOURCE_INCLUDE_CONFIGFILEMANAGER_H_
+#define SOURCE_INCLUDE_CONFIGFILEMANAGER_H_
+
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
@@ -7,11 +8,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#ifndef SOURCE_INCLUDE_CONFIGFILEMANAGER_H_
-#define SOURCE_INCLUDE_CONFIGFILEMANAGER_H_
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//filename
 static const char *config_file = "config.cfg";
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -27,11 +24,10 @@ class ConfigFileManager{
     int GetRunNumber();
     void IncrementRunNumber();
 
-   private: 
-	libconfig::Config cfg;      
-   	};
+  private: 
+	  libconfig::Config cfg;      
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+};
 
-#endif //SOURCE_INCLUDE_CONFIGFILEMANAGER
+#endif
 

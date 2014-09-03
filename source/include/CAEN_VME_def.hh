@@ -1,9 +1,9 @@
+#ifndef SOURCE_INCLUDE_CAEN_VME_DEF_H_
+#define SOURCE_INCLUDE_CAEN_VME_DEF_H_
+
 #include <cstdint>
 #include "CAENVMElib.h"
 #include "CAENDigitizer.h"
-
-#ifndef SOURCE_INCLUDE_CAEN_VME_DEF_H_
-#define SOURCE_INCLUDE_CAEN_VME_DEF_H_
 
 
 namespace CAEN{
@@ -15,9 +15,9 @@ namespace CAEN{
 
 namespace V2718{
 	 static const uint32_t base                       = 0xA1000000;
-	 static const short board_number		  = 0;
-	 static const CVBoardTypes board_type		  = cvV2718;
-	 static const short link			  = 3;
+	 static const short board_number		  		  = 0;
+	 static const CVBoardTypes board_type		  	  = cvV2718;
+	 static const short link			              = 3;
 }
 
 namespace V1785{  

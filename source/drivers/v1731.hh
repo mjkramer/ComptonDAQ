@@ -1,11 +1,10 @@
+#ifndef SOURCE_DRIVERS_V1731_H_
+#define SOURCE_DRIVERS_V1731_H_
+
 #include "ModuleManager.hh"
 #include "CAENVMEtypes.h"
 
 class DataBlock;
-
-#ifndef SOURCE_DRIVERS_V1731_H_
-#define SOURCE_DRIVERS_V1731_H_
-
 
 #define EVENT_READOUT_BUFFER            0x0000
 #define CHANNEL_CONFIG                  0x8000      /* R/W       ; D32 */ 
@@ -109,51 +108,11 @@ public:
   int SetOnline();
   int SetOffline();
   int DataReady();
-  
-  
   void WriteRegister(int offset, uint32_t value, CVDataWidth width);
   uint32_t ReadRegister(int offset, CVDataWidth width);
   void CalibrateChannels();
-  
   void GenerateSoftwareTrigger();
-  
-  /*
-  //
-  // The returned integer states which buffers are free
-  uint32_t BufferFreeRead( );
-  
-  // The returned integer states which buffers are occupied (in binary)
-  uint32_t BufferOccupancy(int32_t handle, uint32_t base, uint32_t channel, CVAddressModifier AM);
-  
-  // Free the first "nbuffer" output buffer memory blocks // 
-  uint32_t BufferFree(int32_t handle, uint32_t base, int nbuffer, CVAddressModifier AM);
-  
-  void     AcqCtl(int32_t handle, uint32_t base, uint32_t operation, CVAddressModifier AM);
-  void     ChannelCtl(int32_t handle, uint32_t base, uint32_t reg, uint32_t mask, CVAddressModifier AM);
-  void     TrgCtl(int32_t handle, uint32_t base, uint32_t reg, uint32_t mask, CVAddressModifier AM);
-  
-  
-  void     Reset(int32_t handle, uint32_t base, CVAddressModifier AM);
-  
-  void     Status(int32_t handle, uint32_t base, CVAddressModifier AM);
-  int      Setup(int32_t handle, uint32_t base, int mode, CVAddressModifier AM);
-  void     info(int32_t handle, uint32_t base, int *nchannels, uint32_t *n32word, CVAddressModifier AM);
-  uint32_t DataRead(int32_t handle,uint32_t base, uint32_t *pdata, uint32_t n32w, CVAddressModifier AM);  //Pick data via padata
-  uint32_t DataBlockRead(int32_t handle, uint32_t base, uint32_t *pdest, uint32_t *nentry, CVAddressModifier AM);
-  void     ChannelThresholdSet(int32_t handle, uint32_t base, uint32_t channel, uint32_t threshold, CVAddressModifier AM);
-  void     ChannelOUThresholdSet(int32_t handle, uint32_t base, uint32_t channel, uint32_t threshold, CVAddressModifier AM);
-  void     ChannelDACSet(int32_t handle, uint32_t base, uint32_t channel, uint32_t dac, CVAddressModifier AM);
-  int      ChannelDACGet(int32_t handle, uint32_t base, uint32_t channel, uint32_t *dac, CVAddressModifier AM);
-  void     ChannelSet(int32_t handle, uint32_t base, uint32_t channel, uint32_t what, uint32_t that, CVAddressModifier AM);
-  uint32_t ChannelGet(int32_t handle, uint32_t base, uint32_t channel, uint32_t what, CVAddressModifier AM);
-  void     ChannelConfig(int32_t handle, uint32_t base, uint32_t operation, CVAddressModifier AM);
-  void     Align64Set(int32_t handle, uint32_t base, CVAddressModifier AM);
-  
-  // CH0[]: Array for ADC counts from CH0; CH2[]: Array for ADC counts from CH2.
-  // Return 1 for success and 0 for failure.
-  int      ReadBuffer_and_Output(int32_t handle, uint32_t base, int nsample, CVAddressModifier AM, uint32_t *rawdata);
-  
-  */
+
   
 private:
   int UpdateEventBuffer();
@@ -170,4 +129,4 @@ private:
   uint32_t* m_bufferEnd;
 };
 
-#endif //SOURCE_DRIVERS_H_1731_H
+#endif

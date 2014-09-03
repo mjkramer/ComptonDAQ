@@ -1,48 +1,41 @@
-//v2718 - VME controller
-//v1785 - VME peak sensing ADC
-//v1290 - VME TDC
-//v1720 - VME digitizer
-
 #include "DataBlock.hh"
 #include <iostream>
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DataBlock::DataBlock()
-	:version(0), data(0){ 
-//type(DataBlock::kUnknown)
+DataBlock::DataBlock():version(0), data(0){ 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataBlock::DataBlock(DataBlock::Type_t type, int version, uint32_t* data)
 	:type(type), version(version), data(data){ 
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataBlock::~DataBlock(){   
-delete [] data;
-data = 0;
+  delete [] data;
+  data = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int DataBlock:: GetVersion(){
-	return 0;
+  return 0;
 }
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DataBlock_v1731::DataBlock_v1731(int version, uint32_t* data):DataBlock::DataBlock(v1731, version, data){
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-unsigned int DataBlock_v1731::GetEventSize()
-{
+unsigned int DataBlock_v1731::GetEventSize(){
   if(!data){
     std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
     return 0;
@@ -52,8 +45,7 @@ unsigned int DataBlock_v1731::GetEventSize()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-unsigned int DataBlock_v1731::GetNBlocks()
-{
+unsigned int DataBlock_v1731::GetNBlocks(){
   if(!data){
     std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
     return 0;
@@ -70,8 +62,7 @@ unsigned int DataBlock_v1731::GetNBlocks()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-unsigned int DataBlock_v1731::GetBlockSize()
-{
+unsigned int DataBlock_v1731::GetBlockSize(){
   if(!data){
     std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
     return 0;
@@ -82,8 +73,7 @@ unsigned int DataBlock_v1731::GetBlockSize()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-unsigned int DataBlock_v1731::GetNumberOfSamples()
-{
+unsigned int DataBlock_v1731::GetNumberOfSamples(){
   if(!data){
     std::cout << "Error: DataBlock_v1731 is not initialized!" << std::endl;
     return 0;
@@ -92,7 +82,6 @@ unsigned int DataBlock_v1731::GetNumberOfSamples()
   unsigned int samplesPerWord = 4; // FIXME: Move this to module definitions
   return (waveformBlockSize * samplesPerWord);
 }
-
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -129,6 +118,7 @@ std::vector<unsigned int> DataBlock_v1731::GetWaveform(const unsigned int blockI
 
   return waveform;
 }
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -177,11 +167,8 @@ int DataBlock_v1290::GetTimeDifference(int chX, int chY){
 		list[j][1] = time[j];
 	}
 	
-	//int time_diff = list[chX][1] - list[chY][1];
 	int time_diff = 0;
 
-	//delete list;
-	//list = 0;
 	return time_diff;
 }
 
@@ -204,9 +191,9 @@ int DataBlock_v1785::GetPeak(){
 	    
 	    if (((w >> 24) & 0x7) != 0) continue;
 	        channel = (w >> 17) & 0xF;
-	        value = (w & 0x3FFF);}
-	
-	
+	        value = (w & 0x3FFF);
+	}
+
 	return value;
 	
 }
