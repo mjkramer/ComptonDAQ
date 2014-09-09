@@ -48,7 +48,7 @@ void HistoManager::Book(int run_number){
   const char *filename = buf;
   
   //create root file
-  rootFile = new TFile(filename,"RECREATE");
+  rootFile = new TFile(filename,"NEW");
   if(!rootFile) {
     std::cout << "Problems creating ROOT file!" << std::endl;
     return;
@@ -70,7 +70,7 @@ void HistoManager::Book(int run_number){
   outTree->Branch("wf0_ped", &wf0_ped, "wf0_ped/F");
   outTree->Branch("wf2_ped", &wf2_ped, "wf2_ped/F");
 
-  std::cout << "Histogram file is opened!" << std::endl;
+  std::cout << "Root file " << "run" << run_number << ".root is opened!" << std::endl;
 
 }
 
@@ -172,31 +172,36 @@ void HistoManager::FillNTuple(int eGe, std::vector<unsigned int>& wf0, std::vect
   ge_adc = eGe;
   n_samples = wf0.size(); //800
   int ped_len = 300;
+  Float_t wf0_ped_temp = 0;
+  Float_t wf2_ped_temp = 0;
+  Float_t wf0_sig_temp = 0;
+  Float_t wf2_sig_temp = 0;
 
+  if(n_samples < 800) return;
 
   //calculate pedestal and fill waveforms
   for(int i=0; i<ped_len; i++){
     wf0_adc[i] = wf0[i];
     wf2_adc[i] = wf2[i];
-    wf0_ped += wf0[i];
-    wf2_ped += wf2[i];
+    wf0_ped_temp += wf0[i];
+    wf2_ped_temp += wf2[i];
   }
 
   //calculate peak minus pedestal and fill waveforms
   for(int i=ped_len; i<n_samples; i++){
     wf0_adc[i] = wf0[i];
     wf2_adc[i] = wf2[i];
-    wf0_sig += wf0[i];
-    wf2_sig += wf2[i];
+    wf0_sig_temp += wf0[i];
+    wf2_sig_temp += wf2[i];
   }
 
-  wf0_ped = wf0_ped / ped_len;
-  wf2_ped = wf2_ped / ped_len;
+  wf0_ped = wf0_ped_temp / ped_len;
+  wf2_ped = wf2_ped_temp / ped_len;
 
+  wf0_sig = (wf0_ped*(n_samples-ped_len)) - wf0_sig_temp;
+  wf2_sig = (wf2_ped*(n_samples-ped_len)) - wf2_sig_temp;
 
-  //subtracting pedestal from signal
-  wf0_sig = wf0_sig - (wf0_ped*(n_samples-ped_len));
-  wf2_sig = wf2_sig - (wf2_ped*(n_samples-ped_len));
+ // std::cout << wf2_sig << " " << wf2_ped << " " << wf0_sig << " " << wf2_ped << std::endl;
 
   if (outTree) outTree->Fill();
 }
