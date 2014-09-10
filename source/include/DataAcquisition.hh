@@ -15,9 +15,9 @@ class DataAcquisition{
     DataAcquisition(ConfigFileManager*, HistoManager*, UiManager*);
     ~DataAcquisition();
 
-    int Initialize();
-    int StartRun();
-    int StopRun();
+    void Initialize();
+    void StartRun();
+    void StopRun();
 
     bool GetRunState(){return state;}
     void SetRunState(bool s){state = s;}

@@ -26,7 +26,6 @@ class ModuleManager{
     virtual int DataReady();
     virtual int DeleteBuffer();
     virtual int ResetModule();
-    virtual int CloseConnection();
     virtual DataBlock* GetModuleBuffer();
 
     void SetHandle(int32_t h){handle = h;}

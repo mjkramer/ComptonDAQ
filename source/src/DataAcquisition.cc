@@ -40,7 +40,7 @@ DataAcquisition::~DataAcquisition(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int DataAcquisition::Initialize(){
+void DataAcquisition::Initialize(){
     //update configuration file
     fConfigFileManager->OpenConfigFile();
     run_number = fConfigFileManager->GetRunNumber();
@@ -64,13 +64,11 @@ int DataAcquisition::Initialize(){
     for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
     	(*i)->InitializeVMEModule();
     }
-
-    return 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int DataAcquisition::StartRun(){
+void DataAcquisition::StartRun(){
   fConfigFileManager->IncrementRunNumber();
   (*fUiManager)[UiKeys::knTakingData] = true;
 
@@ -108,6 +106,7 @@ int DataAcquisition::StartRun(){
         (*i)->SetOnline();
       }
 
+
       // Process acquired data
       fHistoManager->ProcessData(data);
 
@@ -123,12 +122,11 @@ int DataAcquisition::StartRun(){
 
   }//end while
 
-  return 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int DataAcquisition::StopRun(){
+void DataAcquisition::StopRun(){
   //get run number for terminal output reasons and close configuration file
 	int run_number = fConfigFileManager->GetRunNumber();
 	fConfigFileManager->CloseConfigFile();
@@ -136,9 +134,12 @@ int DataAcquisition::StopRun(){
   //save foot file
 	fHistoManager->Save(run_number);
 
+  //set modules offline
+        for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){
+          (*i)->SetOffline();}
+
   //inform UiManager of changed run state
-	(*fUiManager)[UiKeys::knTakingData] = false;
-	return 0;	
+	(*fUiManager)[UiKeys::knTakingData] = false;	
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -159,4 +160,7 @@ void DataAcquisition::CheckKeyboardCommands(){
 	    SetRunState(true);
     }
 
+    else{
+      std::cout << "Unknown key input." << std::endl;}
 }
+

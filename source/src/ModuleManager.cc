@@ -46,6 +46,4 @@ DataBlock* ModuleManager::GetModuleBuffer(){
 	return NULL;
 }
 
-int ModuleManager::CloseConnection(){
-	return 0;
-}
+
