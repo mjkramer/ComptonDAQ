@@ -109,9 +109,9 @@ void HistoManager::Save(){
   if(rootFile){
     rootFile = outTree->GetCurrentFile();
     rootFile->Write();   // Writing the histograms to the file
+    std::cout << "ROOT file " << rootFile->GetName() << " was written" << std::endl;
     delete rootFile;	 // and closing the tree (and the file)
     rootFile = NULL;
-    std::cout << "ROOT file " << "'run" << run_number << ".root'" <<" was saved." << std::endl;
   }
 }
 
