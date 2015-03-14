@@ -29,8 +29,8 @@ HistoManager::HistoManager():rootFile(0), outTree(0){
 
 HistoManager::~HistoManager(){ 
    //clean up
-   if(rootFile) delete rootFile;
-   rootFile = 0;
+   if(rootFile)
+     Save();
 
    delete [] wf0_adc;
    delete [] wf2_adc;
@@ -42,10 +42,8 @@ HistoManager::~HistoManager(){
 
 void HistoManager::Book(int run_number){ 
 
-  //create a filename
-  char buf[40];
-  sprintf(buf,"/home/dayabay/compton_data/run%i.root",run_number);
-  const char *filename = buf;
+  const char *filename =
+    Form("/home/dayabay/compton_data/run%i.root", run_number);
   
   //create root file
   rootFile = new TFile(filename,"NEW");
@@ -53,7 +51,7 @@ void HistoManager::Book(int run_number){
     std::cout << "Problems creating ROOT file!" << std::endl;
     return;
   }
-  
+
   //initialize root structures
 
   //histograms
@@ -70,8 +68,9 @@ void HistoManager::Book(int run_number){
   outTree->Branch("wf0_ped", &wf0_ped, "wf0_ped/F");
   outTree->Branch("wf2_ped", &wf2_ped, "wf2_ped/F");
 
+  TTree::SetMaxTreeSize(MAX_TREE_SIZE);
+  
   std::cout << "Root file " << "run" << run_number << ".root is opened!" << std::endl;
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -106,10 +105,12 @@ void HistoManager::ProcessData(std::vector<DataBlock*>& data){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void HistoManager::Save(int run_number){ 
+void HistoManager::Save(){ 
   if(rootFile){
+    rootFile = outTree->GetCurrentFile();
     rootFile->Write();   // Writing the histograms to the file
-    rootFile->Close();   // and closing the tree (and the file)
+    delete rootFile;	 // and closing the tree (and the file)
+    rootFile = NULL;
     std::cout << "ROOT file " << "'run" << run_number << ".root'" <<" was saved." << std::endl;
   }
 }

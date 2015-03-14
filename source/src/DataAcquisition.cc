@@ -43,7 +43,7 @@ DataAcquisition::~DataAcquisition(){
 void DataAcquisition::Initialize(){
     //update configuration file
     fConfigFileManager->OpenConfigFile();
-    run_number = fConfigFileManager->GetRunNumber();
+    run_number = fConfigFileManager->GetRunNumber(); // LAST run number
 
     //initialize UiManager
     (*fUiManager)[UiKeys::knRunNumber] = run_number + 1;
@@ -132,7 +132,7 @@ void DataAcquisition::StopRun(){
 	fConfigFileManager->CloseConfigFile();
 
   //save foot file
-	fHistoManager->Save(run_number);
+	fHistoManager->Save();
 
   //set modules offline
         for(std::vector<ModuleManager*>::iterator i = modules.begin(); i != modules.end(); ++i){

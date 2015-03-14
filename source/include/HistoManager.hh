@@ -11,6 +11,7 @@ class DataBlock;
 
 const int maxHisto1D = 1;
 const int maxHisto2D = 0;
+const int MAX_TREE_SIZE = int(500e6);
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
