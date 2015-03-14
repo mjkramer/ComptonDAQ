@@ -110,7 +110,7 @@ void HistoManager::Save(){
     rootFile = outTree->GetCurrentFile();
     rootFile->Write();   // Writing the histograms to the file
     std::cout << "ROOT file " << rootFile->GetName() << " was written" << std::endl;
-    delete rootFile;	 // and closing the tree (and the file)
+    rootFile->Close();	 // and closing the tree (and the file)
     rootFile = NULL;
   }
 }
