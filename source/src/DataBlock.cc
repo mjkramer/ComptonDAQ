@@ -122,6 +122,97 @@ std::vector<unsigned int> DataBlock_v1731::GetWaveform(const unsigned int blockI
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+DataBlock_v1730::DataBlock_v1730(int version, uint32_t* data):DataBlock::DataBlock(v1730, version, data){
+
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+unsigned int DataBlock_v1730::GetEventSize(){
+  if(!data){
+    std::cout << "Error: DataBlock_v1730 is not initialized!" << std::endl;
+    return 0;
+  }
+  return ((data[0] << 4) >> 4);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+unsigned int DataBlock_v1730::GetNBlocks(){
+  if(!data){
+    std::cout << "Error: DataBlock_v1730 is not initialized!" << std::endl;
+    return 0;
+  }
+  
+  uint32_t channelMask = data[1] & 0xFF;
+  unsigned int nBlocks = 0;
+  for(int i=0; i<8; i++){
+    nBlocks += (channelMask >> i) & 0x1;
+  }
+  return nBlocks;
+}
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+unsigned int DataBlock_v1730::GetBlockSize(){
+  if(!data){
+    std::cout << "Error: DataBlock_v1730 is not initialized!" << std::endl;
+    return 0;
+  }
+  unsigned int headerSize = 4; // FIXME: move to definitions
+  return (GetEventSize() - headerSize)/GetNBlocks();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+unsigned int DataBlock_v1730::GetNumberOfSamples(){
+  if(!data){
+    std::cout << "Error: DataBlock_v1730 is not initialized!" << std::endl;
+    return 0;
+  }
+  unsigned int waveformBlockSize = GetBlockSize();
+  unsigned int samplesPerWord = 2; // FIXME: Move this to module definitions
+  return (waveformBlockSize * samplesPerWord);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+std::vector<unsigned int> DataBlock_v1730::GetWaveform(const unsigned int blockIndex){
+  // Return a vector containing the waveform samples
+  //  blockIndex: count from 0 to n over the number of active read-out channels
+  //              (NOT the channel number!)
+
+  std::vector<unsigned int> waveform(0);
+  if(!data){
+    std::cout << "Error: DataBlock_v1730 is not initialized!" << std::endl;
+    return waveform;
+  }
+  unsigned int headerSize = 4; // FIXME: move to definitions
+  unsigned int samplesPerWord = 2; // FIXME: Move this to module definitions
+  unsigned int sampleMask = 0xFFFF; // FIXME: move to definitions
+  unsigned int blockSize = GetBlockSize();
+
+  if(blockIndex >= GetNBlocks()){
+    std::cout << "Error: DataBlock_v1730: Requesting invalid block " 
+	      << blockIndex << " of known " << GetNBlocks() << " blocks."
+	      << std::endl;
+    return waveform;
+  }
+
+  waveform.resize(blockSize * samplesPerWord);
+  uint32_t* waveStart = data + headerSize + blockIndex*blockSize;
+  for(int i=0; i<blockSize; i++){ 
+    waveform[2*i]   = ( (waveStart[i] >> 0) & sampleMask );
+    waveform[2*i+1] = ( (waveStart[i] >> 16) & sampleMask );
+  }
+
+  return waveform;
+}
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 DataBlock_v1290::DataBlock_v1290(int version, uint32_t* data):DataBlock::DataBlock(v1290N, version, data){
 
 }

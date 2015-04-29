@@ -1,5 +1,5 @@
 #include <cstdio>
-#include "v1731.hh"
+#include "v1730.hh"
 #include <unistd.h>
 #include "CAENVMElib.h"
 #include "CAEN_VME_def.hh"
@@ -7,8 +7,8 @@
 #include <iostream>
 #include <string.h>
 
-Module_v1731::Module_v1731():
-  m_v1731_handle(0),
+Module_v1730::Module_v1730():
+  m_v1730_handle(0),
   m_bufferSize(0),
   m_eventBuffer(0),
   m_currentEvent(0),
@@ -17,7 +17,7 @@ Module_v1731::Module_v1731():
   ;
 }
 
-Module_v1731::~Module_v1731()
+Module_v1730::~Module_v1730()
 {
   if(m_eventBuffer){
     delete [] m_eventBuffer;
@@ -25,9 +25,9 @@ Module_v1731::~Module_v1731()
   }
 }
 
-int Module_v1731::InitializeVMEModule(){
-  printf("****Initializing CAEN V1731 Digitizer****");
-  m_v1731_handle = ModuleManager::GetHandle();
+int Module_v1730::InitializeVMEModule(){
+  printf("****Initializing CAEN V1730 Digitizer****\n");
+  m_v1730_handle = ModuleManager::GetHandle();
 
   // Enough space for ~1000 events
   m_bufferSize = 1028*1000;
@@ -36,22 +36,29 @@ int Module_v1731::InitializeVMEModule(){
   WriteRegister(SW_RESET, 0x1, cvD32); //software reset
   WriteRegister(SW_CLEAR, 0x2, cvD32); // clears all the memories
   
-  //CalibrateChannels(); //channel calibration
-  
   //WriteRegister(ZS_NSAMP, 0, cvD32); //set zero supression zero
   //WriteRegister(ZS_NSAMP_CH2, 0, cvD32); //set zero supression zero
-  
+
+  WaitChannelStatus(0xA);
   WriteRegister(CHANNEL_EN_MASK, 0x5, cvD32);//enable channels 0 and 2
-  WriteRegister(CHANNEL_DAC, 0x1990, cvD32);//dc offset channel 0 (0x19B0)
-  WriteRegister(CHANNEL_DAC_CH2, 0x1FB0, cvD32);//dc offset channel 2
-  usleep(1000); //wait for dc offset to be updated
- 
-  
+  //WriteRegister(CHANNEL_EN_MASK, 0x14, cvD32);//enable channels 2 and 4
+  WaitChannelStatus(0xA);
+  WriteRegister(CHANNEL_DAC, 0x2000, cvD32);//dc offset channel 0 
+  WaitChannelStatus(0xA);
+  WriteRegister(CHANNEL_DAC_CH2, 0x2000, cvD32);//dc offset channel 2
+  WaitChannelStatus(0xA);
+  //WriteRegister(CHANNEL_DAC_CH4, 0x2000, cvD32);//dc offset channel 4
+  //WaitChannelStatus(0xA);
+
+  CalibrateChannels(); //channel calibration
+
   WriteRegister(TRIG_SRCE_EN_MASK, 0x40000000,cvD32); //enable external trigger
   WriteRegister(POST_TRIGGER_SETTING, 0,cvD32); //we only want pre-trigger samples
   
-  WriteRegister(BUFFER_ORGANIZATION, 0x0A, cvD32); //seperate buffer into 1024 blocks (each can hold 4k samples @1Gs/s or 2k samples @500Ms/s)
-  WriteRegister(CUSTOM_SIZE, 0x64, cvD32);
+  // Seperate buffer into 512 blocks 
+  WriteRegister(BUFFER_ORGANIZATION, 0x09, cvD32); 
+  // Waveform length: 800 samples (0x50 * 10), 1.6 us
+  WriteRegister(CUSTOM_SIZE, 0x50, cvD32);
   
   printf("  --  OK\n");
   
@@ -60,7 +67,7 @@ int Module_v1731::InitializeVMEModule(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-DataBlock* Module_v1731::GetModuleBuffer(){  
+DataBlock* Module_v1730::GetModuleBuffer(){  
   CVErrorCodes error_code;
   int error_status = 0;	
   
@@ -68,31 +75,31 @@ DataBlock* Module_v1731::GetModuleBuffer(){
     error_status = UpdateEventBuffer();
     if (error_status != 0) return NULL;
   }
-  //std::cout << "Info: Module_v1731: Getting next event from buffer containing " 
+  //std::cout << "Info: Module_v1730: Getting next event from buffer containing " 
   //	    << BufferedEvents() << " events." << std::endl;
 
   int version = 1;
-  DataBlock_v1731* dataBlock = new DataBlock_v1731(version, GetNextEvent());
+  DataBlock_v1730* dataBlock = new DataBlock_v1730(version, GetNextEvent());
   return dataBlock;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-uint Module_v1731::GetEventSize(uint32_t* event){  
+uint Module_v1730::GetEventSize(uint32_t* event){  
   // Read event size from event data block
-  //  See pg. ?? in CAEN v1731 manual.
+  //  See pg. ?? in CAEN v1730 manual.
   return ((event[0] << 4) >> 4);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-uint Module_v1731::BufferedEvents(){  
+uint Module_v1730::BufferedEvents(){  
   // Examine the event buffer and determine the current number of
   // buffered events
 
   // Check if a pointer to the current event is set
   if(m_currentEvent == 0){
-    //std::cout << "Error: Module_v1731 buffer not initialized!" << std::endl;
+    //std::cout << "Error: Module_v1730 buffer not initialized!" << std::endl;
     return 0;
   }
   // FIXME: DEBUG //return ((m_bufferEnd - m_currentEvent)/404);	
@@ -109,18 +116,18 @@ uint Module_v1731::BufferedEvents(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-uint32_t* Module_v1731::GetNextEvent(){  
+uint32_t* Module_v1730::GetNextEvent(){  
   // Pop the next event from the top of the event buffer
 
   // Check if there is at least one event in the buffer
   if(BufferedEvents() < 1){
-    std::cout << "Error: Module_v1731: Attempting to retrieve event from empty buffer!" << std::endl;
+    std::cout << "Error: Module_v1730: Attempting to retrieve event from empty buffer!" << std::endl;
     return NULL;
   }
 
   // Check if a pointer to the current event is set
   if(m_currentEvent == 0){
-    std::cout << "Error: Module_v1731: Buffer not initialized!" << std::endl;
+    std::cout << "Error: Module_v1730: Buffer not initialized!" << std::endl;
     return NULL;
   }
 
@@ -128,7 +135,7 @@ uint32_t* Module_v1731::GetNextEvent(){
   uint eventSize = GetEventSize(m_currentEvent);
   if(eventSize <= 0 
      || eventSize > ((int)(m_currentEvent - m_bufferEnd))){
-    std::cout << "Error: Module_v1731: Invalid event size = "
+    std::cout << "Error: Module_v1730: Invalid event size = "
 	      << eventSize << std::endl;
     return NULL;
   }
@@ -148,7 +155,7 @@ uint32_t* Module_v1731::GetNextEvent(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int Module_v1731::UpdateEventBuffer(){  
+int Module_v1730::UpdateEventBuffer(){  
   CVErrorCodes error_code;
   int error_status = 0;	
 
@@ -189,17 +196,18 @@ int Module_v1731::UpdateEventBuffer(){
     if(readLength > (totalReadLength-currentReadLength))
       readLength = totalReadLength-currentReadLength;
     count = 0;
-    error_code = CAENVME_BLTReadCycle(m_v1731_handle, V1731::base, 
+    error_code = CAENVME_BLTReadCycle(m_v1730_handle, V1730::base, 
 				      &m_eventBuffer[currentReadLength], 
 				      readLength*4, // Bytes
 				      cvA32_S_BLT, cvD32, &count);
     error_status = CAEN::ErrorDecode(error_code);
     if(error_status != 0 || count!=(readLength*4)){
-      std::cout << "Error: Module_v1731: BLT read failed after reading "
+      std::cout << "Error: Module_v1730: BLT read failed after reading "
 		<< currentReadLength << " words." << std::endl;
       return error_status;
     }
-    if(false){
+    /*
+    if(true){
       std::cout << "Data:" << std::endl;
       for(int i = 0; i<maxBLTReadLength; i+=4){
 	printf("%4d %10x %10x %10x %10x\n",
@@ -210,6 +218,7 @@ int Module_v1731::UpdateEventBuffer(){
 	       m_eventBuffer[currentReadLength+i+3]);
       }
     }
+    */
     currentReadLength += readLength;
   }
  // printf("events stored: %u %u (%u)\n", eStored,currentReadLength/eSize,eSize);
@@ -218,11 +227,11 @@ int Module_v1731::UpdateEventBuffer(){
   m_bufferEnd = &m_eventBuffer[totalReadLength];
 
 /*
-  std::cout << "Info: Module_v1731: Read " << totalReadLength << " from board."
+  std::cout << "Info: Module_v1730: Read " << totalReadLength << " from board."
 	    << std::endl;
-  std::cout << "Info: Module_v1731: Should contain " << eStored << " events."
+  std::cout << "Info: Module_v1730: Should contain " << eStored << " events."
 	    << std::endl;
-  std::cout << "Info: Module_v1731: Contains " << BufferedEvents() << " events."
+  std::cout << "Info: Module_v1730: Contains " << BufferedEvents() << " events."
 	    << std::endl;
 */
   // Return
@@ -231,19 +240,19 @@ int Module_v1731::UpdateEventBuffer(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void Module_v1731::GenerateSoftwareTrigger(){
+void Module_v1730::GenerateSoftwareTrigger(){
   WriteRegister(SOFTWARE_TRIGGER,0x2, cvD32);
 }
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void Module_v1731::WriteRegister(int offset, uint32_t value, CVDataWidth width){
+void Module_v1730::WriteRegister(int offset, uint32_t value, CVDataWidth width){
   uint32_t write = value;
   CVErrorCodes error_code;
   int error_status;
   
-  error_code = CAENVME_WriteCycle(m_v1731_handle, V1731::base+offset, &write, V1731::am, width);
+  error_code = CAENVME_WriteCycle(m_v1730_handle, V1730::base+offset, &write, V1730::am, width);
   error_status = CAEN::ErrorDecode(error_code);
   if(error_status != 0){printf("Error while writing digitizer registers!\n");}
 }
@@ -251,12 +260,12 @@ void Module_v1731::WriteRegister(int offset, uint32_t value, CVDataWidth width){
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
-uint32_t Module_v1731::ReadRegister(int offset, CVDataWidth width){
+uint32_t Module_v1730::ReadRegister(int offset, CVDataWidth width){
   uint32_t read;
   CVErrorCodes error_code;
   int error_status;
   
-  error_code = CAENVME_ReadCycle(m_v1731_handle, V1731::base+offset, &read, V1731::am, width);
+  error_code = CAENVME_ReadCycle(m_v1730_handle, V1730::base+offset, &read, V1730::am, width);
   error_status = CAEN::ErrorDecode(error_code);
   
   if(error_status){printf("Error while reading digitizer register.\n");}
@@ -265,7 +274,7 @@ uint32_t Module_v1731::ReadRegister(int offset, CVDataWidth width){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int Module_v1731::SetOnline(){	
+int Module_v1730::SetOnline(){	
   WriteRegister(SW_CLEAR, 0x2, cvD32); // clears all the memories
   WriteRegister(ACQUISITION_CONTROL, 0x4,cvD32);
   return 0;
@@ -273,14 +282,14 @@ int Module_v1731::SetOnline(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int Module_v1731::SetOffline(){
+int Module_v1730::SetOffline(){
   WriteRegister(ACQUISITION_CONTROL, 0x0,cvD32);
   return 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-int Module_v1731::DataReady(){
+int Module_v1730::DataReady(){
   uint32_t status = 0;
   status =  ReadRegister(ACQUISITION_STATUS,cvD32);
   status = ((status << 28) >> 31);
@@ -291,40 +300,41 @@ int Module_v1731::DataReady(){
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void Module_v1731::CalibrateChannels(){
-  
-  //set 1 to the calibration bit
-  WriteRegister(CALIBRATION_CH1,0x2,cvD32);
-  WriteRegister(CALIBRATION_CH2,0x2,cvD32);
-  WriteRegister(CALIBRATION_CH3,0x2,cvD32);
-  WriteRegister(CALIBRATION_CH4,0x2,cvD32);
-  usleep(100000);
-  
-  //reset calibration bit to 0
-  WriteRegister(CALIBRATION_CH1,0x0,cvD32);
-  WriteRegister(CALIBRATION_CH2,0x0,cvD32);
-  WriteRegister(CALIBRATION_CH3,0x0,cvD32);
-  WriteRegister(CALIBRATION_CH4,0x0,cvD32);
-  usleep(100000);
-  
-  //readout odd channels:
-  //WriteRegister(CHANNEL_EN_MASK, 0xA, cvD32);//enable channels 1 and 3
-  //DataBlock *block = GetModuleBuffer();
-  //DataBlock_v1731* p1731_cast = dynamic_cast<DataBlock_v1731*>(block);
-  //if(p1731_cast){
-  //if(DataReady()){
-  //std::vector<int> CH1 = p1731_cast->GetWaveform_Channel0(); //actually channel 1
-  //std::vector<int> CH3 = p1731_cast->GetWaveform_Channel2(); //actually channel 3
-  //printf("Channel 1 ADC value: %d\n", CH1.at(0));
-  //printf("Channel 3 ADC value: %d\n", CH3.at(0));
-  //}}
-  //WriteRegister(CHANNEL_EN_MASK, 0x0, cvD32);//disable all channels
-  
-  
+void Module_v1730::CalibrateChannels(){
+  // Run channel calibration process
+  std::cout << "Warning: calibration disabled pending CAEN repair." << std::endl;
+  return;
+  //WaitChannelStatus(0xA);
+  //WriteRegister(CHANNEL_CALIBRATION,0x1,cvD32);
+  //WaitChannelStatus(0xA);
+  return;
 }
 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-
+bool Module_v1730::WaitChannelStatus(int expectedStatus){
+  // Wait until channel status is correct before proceeding
+  //  Return 'true' if status is reached, 'false' if tired of waiting.
+  int maxWaits = 100;
+  int nWaits = 0;
+  int waitTime = 100000;
+  while(nWaits < maxWaits){
+    //int channelStat0 = (ReadRegister(0x1088,cvD32) & 0xF);
+    //int channelStat2 = (ReadRegister(0x1288,cvD32) & 0xF);
+    int channelStat0 = (ReadRegister(0x1288,cvD32) & 0xF);
+    int channelStat2 = (ReadRegister(0x1488,cvD32) & 0xF);
+    //std::cout << "  Chan Stat: " << channelStat0 << "\t" << channelStat2 
+    //	      << std::endl;
+    if(channelStat0==expectedStatus && channelStat2==expectedStatus){
+      //std::cout << "  Channels ready!" << std::endl;
+      return true;
+    }
+    usleep(waitTime); //wait for channel ready
+    nWaits++;
+  }
+  std::cout << "   Warning: Channel status incorrect." << std::endl;
+  return false;
+}
 
 
 

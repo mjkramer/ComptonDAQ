@@ -6,7 +6,7 @@
 #include "v2718.hh"
 #include "v1785.hh"
 #include "v1290N.hh"
-#include "v1731.hh"
+#include "v1730.hh"
 
 extern "C" {
 #include "keyhit.h"
@@ -56,7 +56,7 @@ void DataAcquisition::Initialize(){
     //create modules
     Module_v2718 *v2718 = new Module_v2718(); // controller card
     modules.push_back(new Module_v1785()); //Peak sensing ADC
-    modules.push_back(new Module_v1731()); //Digitizer
+    modules.push_back(new Module_v1730()); //Digitizer
     //modules.push_back(new Module_v1290N()); //TDC
 
     //initialize VME modules

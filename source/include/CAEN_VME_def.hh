@@ -38,5 +38,12 @@ namespace V1731{
 	 static const CAEN_DGTZ_ConnectionType LinkType  = CAEN_DGTZ_OpticalLink;
 }
 
+namespace V1730{
+	 static const uint32_t base                      = 0x11110000;
+	 static const int LinkNum                        = 3;
+	 static const int ConetNode                      = 0;
+	 static const CVAddressModifier am               = cvA32_S_DATA;
+	 static const CAEN_DGTZ_ConnectionType LinkType  = CAEN_DGTZ_OpticalLink;
+}
 
 #endif  //SOURCE_INCLUDE_CAEN_VME_DEF_H_

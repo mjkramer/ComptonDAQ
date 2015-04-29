@@ -9,9 +9,9 @@ class TH2F;
 class TTree;
 class DataBlock;
 
-const int maxHisto1D = 1;
+const int maxHisto1D = 0;
 const int maxHisto2D = 0;
-const int MAX_TREE_SIZE = int(500e6);
+const int MAX_ENTRIES_PER_FILE = int(1e6);
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -37,14 +37,20 @@ class HistoManager{
   
     
    private:
-    TFile*   rootFile;
-    TTree*   outTree;  
+    TFile*   waveFile;
+    TFile*   tqFile;
+    TTree*   waveTree;  
+    TTree*   tqTree;  
     TH1F*    histo1D[maxHisto1D];
     TH2F*    histo2D[maxHisto2D];
+    int      nEvents;
+    int      current_run_number;
+    int      current_seq_number;
     Int_t ge_adc, n_samples;
-    Float_t wf0_sig, wf2_sig, wf0_ped, wf2_ped;
-    Int_t *wf0_adc, *wf2_adc;        
-   	};
+    Float_t wf0_ped, wf0_pedRMS, wf0_pre, wf0_sig, wf0_tail, wf0_post;
+    Float_t wf2_ped, wf2_pedRMS, wf2_pre, wf2_sig, wf2_tail, wf2_post;
+    UShort_t *wf0_adc, *wf2_adc;        
+};
 
 #endif
 

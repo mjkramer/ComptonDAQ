@@ -29,7 +29,7 @@ endif
 #names of the targets
 OBJS =  $(TEMP)/main.o $(TEMP)/DataAcquisition.o $(TEMP)/HistoManager.o $(TEMP)/ModuleManager.o $(TEMP)/UiManager.o $(TEMP)/RootDict.o
 OBJS += $(TEMP)/ModuleManager.o $(TEMP)/ConfigFileManager.o $(TEMP)/DataBlock.o $(TEMP)/CAEN_VME_def.o $(TEMP)/keyhit.o
-OBJS += $(TEMP)/v1785.o $(TEMP)/v1290N.o $(TEMP)/v2718.o $(TEMP)/v1731.o 
+OBJS += $(TEMP)/v1785.o $(TEMP)/v1290N.o $(TEMP)/v2718.o $(TEMP)/v1731.o $(TEMP)/v1730.o 
 
 LIBS = -lm -lz -lutil -lnsl -pthread -lrt -lCAENVME -lconfig++
 
@@ -90,6 +90,10 @@ $(TEMP)/v2718.o: $(DRIVER_DIR)/v2718.cc
 	@echo Compiling $<...
 
 $(TEMP)/v1731.o: $(DRIVER_DIR)/v1731.cc
+	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
+	@echo Compiling $<...
+
+$(TEMP)/v1730.o: $(DRIVER_DIR)/v1730.cc
 	$(CXX) -c $< -o $@ $(INCLUDES) $(LIBS) $(CXX_FLAGS)
 	@echo Compiling $<...
 
